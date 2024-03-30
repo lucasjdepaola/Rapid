@@ -1,0 +1,58 @@
+html {
+  width:100%;
+  height:100%;
+  padding:0;
+  margin:0;
+  background-color:rgba(48, 54, 61, 1);
+}
+
+#bg {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100vh;
+  background-color:rgba(48, 54, 61, .8);
+  z-index : -100;
+}
+
+body {
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  color:white;
+  font-family:"comicmono";
+  white-space:pre;
+  background-color:rgba(48, 54, 61, .8);
+}
+#topbar {
+  display:block;
+  position:absolute;
+  top:0;
+  background-color:#3f4563;
+  height:5%;
+  width:100%;
+  line-height:55%;
+}
+#filename {
+  position:relative;
+  height:100%;
+  vertical-align:middle;
+  height:100%;
+}
+#text {
+  font-size:14;
+  color:white;
+}
+#command {
+  width:100%;
+  background-color:#30363d;
+  position:absolute;
+  bottom:1%;
+}
+
+@font-face {
+  font-family:"comicmono";
+  src: url("./fonts/ComicMono.ttf");
+}
