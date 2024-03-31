@@ -274,6 +274,12 @@ const rapid = (key) => {
           currentState = states.normal;
         } else if (key.key === "v") {
           pasteFromOS();
+        } else if (key.key === "y") {
+          if (currentlyHighlighting) {
+            copyInHighlightedRange();
+          } else {
+            copyMatrixToOS();
+          }
         }
       } else if (key.key === "j") {
         buildAwaitStr = "j";
@@ -999,6 +1005,25 @@ const copyMatrixToOS = () => {
       str += char;
     }
     str += "\n";
+  }
+  navigator.clipboard.writeText(str);
+};
+
+const copyInHighlightedRange = () => {
+  let str = "";
+  const minrow = Math.min(visualcoords.to.row, visualcoords.from.row);
+  const maxrow = Math.max(visualcoords.to.row, visualcoords.from.row);
+  const mincol = Math.min(visualcoords.to.col, visualcoords.from.col);
+  const maxcol = Math.max(visualcoords.to.col, visualcoords.from.col);
+  if (capitalV) {
+    for (let i = minrow; i <= maxrow; i++) {
+      for (const char of matrix[i]) {
+        str += char;
+      }
+      str += "\n";
+    }
+  } else {
+    // trickier
   }
   navigator.clipboard.writeText(str);
 };
