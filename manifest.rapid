@@ -1,0 +1,7 @@
+; this is going to be how syntax will look for the inevitable rapid configuration rc
+; things will be kept minimal, with little need to look anything up aside from this default file
+
+insert Tab Escape ; this changes Tab to Escape (enter normal mode)
+normal e i ; change e to the new insert mode button which is i
+command deleteAll (ggVGd) ; map the command deleteAll to a macro
+command name 'echo lucas' ; for commands with spaces, delimit with quotes

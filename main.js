@@ -20,6 +20,7 @@ let vimcopybuffer = ""; // this is what keeps track of the vim buffer when yanki
 let buildAwaitStr = ""; // to build the entire motion, such as fa, diw, ciw, d$
 let searchArr = [];
 let searchCoords = [];
+let nKey = false; // for searching around
 let searchIndex = 0; // to determine which to center it on
 let commandArr = [];
 let currentState = states.insert;
@@ -82,26 +83,45 @@ endmap['"'] = '"';
 endmap["'"] = "'";
 const cmpregex = /[(\[{"]/;
 const endregex = /[)\]}"]/;
+let autoTab = "";
+const TABWIDTH = "  ";
 
 const rapid = (key) => {
   /* cases for alt key, control key, backspace, etc */
   if (key.key === " ") key.preventDefault();
+  nKey = (key.key === "n" || key.key === "N") && currentState === states.normal;
   if (key.key.length > 1) {
     if (key.key === "Enter") {
       /* increment row, push new matrix before it */
       if (currentState === states.insert) {
         if (inBraces()) {
-          matrix[coords.row].splice(coords.col, 1);
+          autoTab += TABWIDTH;
+          matrix[coords.row].splice(coords.col, 1); // why?
           appendRow();
-          matrix[coords.row][0] = "}";
+          matrix[coords.row].unshift(
+            ...autoTab.split("").slice(0, autoTab.length - TABWIDTH.length),
+            "}",
+          );
           decrementRow();
         }
         appendRow();
+        console.log(autoTab.length);
+        console.log(...autoTab.split(""));
+        matrix[coords.row].unshift(...autoTab.split(""));
+        coords.col = autoTab.length;
       } else if (currentState === states.search) {
+        nKey = true;
+        if (searchCoords.length < 1) {
+          currentState = states.normal;
+          searchArr = [];
+          renderSearch();
+          return;
+        }
+        console.log(searchCoords[0].row);
         coords.row = searchCoords[0].row;
         coords.col = searchCoords[0].start;
         currentState = states.normal; // wedont want it to be immediately unhighlighted
-        searchArr = [];
+        // searchArr = []; // dont keep this, we want searches to stay on a successful case
         renderSearch();
         // TODO find function that sets cursor to the first highlight
       } else {
@@ -230,12 +250,21 @@ const rapid = (key) => {
         currentState = states.command;
       } else if (key.key === "/") { // search state
         searchCoords = [];
+        searchArr = [];
+        searchIndex = 0;
         currentState = states.search;
         renderSearch();
       } else if (key.key === ">") {
         rightArrow();
       } else if (key.key === "<") {
         leftArrow();
+      } else if (key.key === "n") {
+        if (searchCoords.length > 0) {
+          coords.row = searchCoords[searchIndex].row;
+          coords.col = searchCoords[searchIndex].start;
+          if (searchIndex < searchCoords.length - 1) searchIndex++;
+        }
+      } else if (key.key === "N") {
       }
     } else if (currentState === states.insert) { // insert()
       /* append letter to the current row and column which increments */
@@ -359,7 +388,7 @@ document.addEventListener("touchstart", () => {
 });
 
 const interpretCommand = () => {
-  const cmdstr = commandArr.join("");
+  const cmdstr = commandArr.join("").trim();
   currentState = states.normal;
   commandArr = [];
   renderCommand(); // so the text goes away
@@ -386,6 +415,8 @@ const interpretCommand = () => {
       updateFileName();
     }
     save(currentFilename); // save current file
+  } else if (cmdstr === "copy") {
+    copyMatrixToOS();
   }
 };
 
@@ -408,6 +439,7 @@ const scrollRelToCursor = () => {
 const renderText = () => {
   let lineno = 0;
   let htmlstr = "";
+  let searchHighlightIndex = 0;
   for (let i = 0; i < matrix.length; i++) {
     htmlstr += lineno < 10 ? "  " : lineno < 100 ? " " : "";
     htmlstr += lineno++ + "    ";
@@ -438,12 +470,18 @@ const renderText = () => {
           htmlstr += "<span style='background-color:" + HIGHLIGHTCOLOR + ";'>" +
             matrix[i][j] + "</span>";
         } else if (
-          currentState === states.search && searchCoords[i] !== undefined &&
-          searchCoords[i].row === i && j >= searchCoords[i].start &&
-          j <= searchCoords[i].end
+          searchCoords.length > 0 &&
+          (currentState === states.search || nKey) &&
+          searchCoords[searchHighlightIndex] !== undefined &&
+          searchCoords[searchHighlightIndex].row === i &&
+          j >= searchCoords[searchHighlightIndex].start &&
+          j <= searchCoords[searchHighlightIndex].end
         ) { // render search
           htmlstr += "<span style='background-color:" + canvas.highlightyellow +
             ";'>" + matrix[i][j] + "</span>";
+          if (searchCoords[searchHighlightIndex].end === j) {
+            searchHighlightIndex++;
+          }
         } else {
           htmlstr += matrix[i][j];
         }
@@ -593,6 +631,7 @@ const search = () => {
   try {
     searchRegex = new RegExp(searchArr.join(""), "i");
   } catch (error) {
+    console.log("regular expression error below, user related, not code");
     console.log(error);
   }
   for (let i = 0; i < matrix.length; i++) {
@@ -600,7 +639,8 @@ const search = () => {
     if (searchRegex.test(str)) {
       const start = str.search(searchRegex);
       const end = start + searchRegex.source.length;
-      searchCoords[i] = { start: start, end: end - 1, row: i }; // push start and end indexes, then row no
+      // searchCoords[i] = { start: start, end: end - 1, row: i }; // push start and end indexes, then row no
+      searchCoords.push({ start: start, end: end - 1, row: i }); // push start and end indexes, then row no
     }
   }
   renderSearch();
@@ -892,16 +932,37 @@ const pasteFromOS = async () => {
 };
 
 const leftArrow = () => {
-  for (i of [0, 1]) {
-    if (matrix[coords.row][0] === " " && matrix[coords.row].length > 1) {
-      matrix[coords.row].shift();
-      decrementCol();
+  if (currentlyHighlighting) {
+    const min = Math.min(visualcoords.from.row, visualcoords.to.row);
+    const max = Math.max(visualcoords.from.row, visualcoords.to.row);
+    for (let i = min; i <= max; i++) {
+      for (const j of [0, 1]) {
+        if (matrix[i][0] === " " && matrix[i].length > 1) {
+          matrix[i].shift();
+          decrementCol();
+        }
+      }
+    }
+  } else {
+    for (i of [0, 1]) {
+      if (matrix[coords.row][0] === " " && matrix[coords.row].length > 1) {
+        matrix[coords.row].shift();
+        decrementCol();
+      }
     }
   }
 };
 
 const rightArrow = () => {
-  matrix[coords.row].unshift(" ", " ");
+  if (currentlyHighlighting) {
+    const min = Math.min(visualcoords.from.row, visualcoords.to.row);
+    const max = Math.max(visualcoords.from.row, visualcoords.to.row);
+    for (let i = min; i <= max; i++) {
+      matrix[i].unshift(" ", " ");
+    }
+  } else {
+    matrix[coords.row].unshift(" ", " ");
+  }
 };
 
 const cachedump = () => { // dump to local storage
@@ -918,4 +979,15 @@ const loadcache = () => { // iterate over _file in localstorage and write to fil
       filemap[mapName] = localStorage[filename];
     }
   }
+};
+
+const copyMatrixToOS = () => {
+  let str = "";
+  for (const row of matrix) {
+    for (const char of row) {
+      str += char;
+    }
+    str += "\n";
+  }
+  navigator.clipboard.writeText(str);
 };
