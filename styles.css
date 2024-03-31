@@ -21,9 +21,9 @@ body {
   height:100%;
   margin:0;
   padding:0;
+  white-space:pre;
   color:white;
   font-family:"comicmono";
-  white-space:pre;
   background-color:rgba(48, 54, 61, .8);
 }
 #topbar {
@@ -42,13 +42,21 @@ body {
   height:100%;
 }
 #text {
+  position:relative;
   font-size:14;
   color:white;
+  text-overflow:ellipsis;
+}
+#textwrapper {
+  white-space:unset;
+  height:90%;
+  width:100%;
+  overflow:hidden;
 }
 #command {
   width:100%;
   background-color:#30363d;
-  position:absolute;
+  position:fixed;
   bottom:1%;
 }
 
