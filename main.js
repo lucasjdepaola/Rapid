@@ -47,6 +47,7 @@ const canvas = {
   highlightyellow: "rgba(252, 221, 57, .5)",
 };
 const media = { // collection of potential background images
+  none: "none",
   matrix:
     "https://i.pinimg.com/originals/21/7d/a2/217da299cc918fad9b76eb99e4bb75b3.gif",
   subway:
@@ -324,6 +325,10 @@ const rapid = (key) => {
           deleteLine();
           buildAwaitStr = "";
           currentState = states.normal;
+        } else if (key.key === "c") {
+          deleteLine();
+          buildAwaitStr = "";
+          currentState = states.insert;
         }
       } else if (
         buildAwaitStr === "di" || buildAwaitStr === "ci" ||
@@ -415,6 +420,11 @@ const interpretCommand = () => {
       updateFileName();
     }
     save(currentFilename); // save current file
+  } else if (splitcmd[0] === "background") {
+    if (media[splitcmd[1]] !== undefined) {
+      bg.style.backgroundImage = "url(" + media[splitcmd[1]] + ")";
+      // TODO notification system listing backgrounds, for failed commands, echoing, etc
+    }
   } else if (cmdstr === "copy") {
     copyMatrixToOS();
   }
@@ -500,7 +510,8 @@ const renderCommand = () => {
     command.innerHTML = "";
     return;
   }
-  command.innerHTML = "$ " + commandArr.join("");
+  command.innerHTML = "$ " + commandArr.join("") +
+    "<span style='border-left:1px solid white;'> </span>";
 };
 
 const del = (num) => {

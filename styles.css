@@ -25,6 +25,7 @@ body {
   color:white;
   font-family:"comicmono";
   background-color:rgba(48, 54, 61, .8);
+  overflow:hidden;
 }
 #topbar {
   display:block;
