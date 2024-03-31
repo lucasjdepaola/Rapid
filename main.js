@@ -355,7 +355,7 @@ const rapid = (key) => {
 
 document.addEventListener("keydown", rapid);
 document.addEventListener("touchstart", () => {
-  document.getElementById("mobile").focus;
+  document.getElementById("mobile").focus();
 });
 
 const interpretCommand = () => {
