@@ -60,6 +60,18 @@ body {
   position:fixed;
   bottom:1%;
 }
+#scope {
+  position:fixed;
+  display:none;
+  flex-direction:row;
+  width:60%;
+  height:60%;
+  left:50%;
+  top:50%;
+  transform:translate(-50%, -50%);
+  background-color:black;
+  border-radius:7px;
+}
 
 @font-face {
   font-family:"comicmono";

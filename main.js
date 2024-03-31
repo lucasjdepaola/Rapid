@@ -54,8 +54,14 @@ const media = { // collection of potential background images
     "https://www.pixground.com/wp-content/uploads/2024/03/Subway-Tunnel-Painting-4K-Wallpaper-1081x608.webp",
   coolplanet:
     "https://i.pinimg.com/originals/7e/ea/01/7eea01a7a420f7bcc39064b7dc9252fd.jpg",
+  hawk:
+    "https://wallpapers.com/images/hd/mysterious-1920-x-1080-wallpaper-kcflzidhjqcxcgpe.jpg",
 };
-bg.style.backgroundImage = "url(" + media.coolplanet + ")"; //test
+
+const imagefunc = (url) => {
+  return url;
+};
+bg.style.backgroundImage = "url(" + imagefunc(media.coolplanet) + ")"; //test
 
 const macros = {}; // a letter binds to a macro string, which is interpreted by the emulateKeys function
 const mark = {}; // a letter binds to a coordinate which acts as a cursor position
@@ -86,6 +92,8 @@ const cmpregex = /[(\[{"]/;
 const endregex = /[)\]}"]/;
 let autoTab = "";
 const TABWIDTH = "  ";
+const scopeElement = document.getElementById("scope");
+let scopeToggled = false;
 
 const rapid = (key) => {
   /* cases for alt key, control key, backspace, etc */
@@ -130,6 +138,7 @@ const rapid = (key) => {
       }
     } else if (key.key === "Escape") {
       currentState = states.normal; // go into normal mode
+      toggleScope();
     } else if (key.key === "Backspace") {
       if (key.ctrlKey) {
         ctrlBack();
@@ -199,8 +208,13 @@ const rapid = (key) => {
         del(1);
         currentState = states.insert;
       } else if (key.key === "f") {
-        currentState = states.awaitKey;
-        buildAwaitStr += "f";
+        if(key.ctrlKey) {
+          key.preventDefault();
+          toggleScope();
+        } else {
+          currentState = states.awaitKey;
+          buildAwaitStr += "f";
+        }
       } else if (key.key === "t") {
         currentState = states.awaitKey;
         buildAwaitStr += "t";
@@ -280,6 +294,10 @@ const rapid = (key) => {
           } else {
             copyMatrixToOS();
           }
+        }
+        else if(key.key === "f") {
+          key.preventDefault();
+          toggleScope();
         }
       } else if (key.key === "j") {
         buildAwaitStr = "j";
@@ -433,6 +451,9 @@ const interpretCommand = () => {
     }
   } else if (cmdstr === "copy") {
     copyMatrixToOS();
+  }
+  else if(cmdstr === "scope") {
+    toggleScope();
   }
 };
 
@@ -1026,4 +1047,23 @@ const copyInHighlightedRange = () => {
     // trickier
   }
   navigator.clipboard.writeText(str);
+};
+
+/* similar to telescope, going to be a fuzzy find interactive centered box */
+const scope = () => {
+  // scopeElement.style.display = "block";
+  let scopeStr = "<div style='width:45%;height:90%;display:flex;flex-direction:column;margin-left:2%;margin-top:2%;'>";
+  scopeStr += "<div style='height:10%;border:2px solid white;border-radius:7px;'>searchbar</div>";
+  scopeStr += "<div style='margin-top:3%;height:80%;border:2px solid white;border-radius:7px;'>bottombar</div></div>";
+  scopeStr += "<div style='width:45%;height:90%;border:2px solid white;border-radius:7px;margin-left:2%;margin-top:2%;'>right</div>";
+  scopeElement.innerHTML = scopeStr;
+  console.log("test");
+};
+scope();
+const toggleScope = () => { 
+  if(scopeToggled)
+    scopeElement.style.display = "none";
+  else
+    scopeElement.style.display = "flex";
+  scopeToggled = !scopeToggled;
 };
