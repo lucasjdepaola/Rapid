@@ -480,7 +480,13 @@ const renderText = () => {
     // htmlstr += lineno < 10 ? "  " : lineno < 100 ? " " : "";
     // htmlstr += lineno++ + "    ";
     htmlstr += Math.abs(relativeLine) < 10 ? "  " : lineno < 100 ? " " : "";
-    htmlstr += Math.abs(relativeLine--) + "    ";
+    if (relativeLine === 0) {
+      htmlstr += lineno + "    ";
+    } else {
+      htmlstr += Math.abs(relativeLine) + "    ";
+    }
+    relativeLine--;
+    lineno++;
     for (let j = 0; j < matrix[i].length; j++) {
       if (matrix[i][j] !== undefined) {
         if (coords.row === i && coords.col === j) {
