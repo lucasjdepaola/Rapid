@@ -208,7 +208,7 @@ const rapid = (key) => {
         del(1);
         currentState = states.insert;
       } else if (key.key === "f") {
-        if(key.ctrlKey) {
+        if (key.ctrlKey) {
           key.preventDefault();
           toggleScope();
         } else {
@@ -294,8 +294,7 @@ const rapid = (key) => {
           } else {
             copyMatrixToOS();
           }
-        }
-        else if(key.key === "f") {
+        } else if (key.key === "f") {
           key.preventDefault();
           toggleScope();
         }
@@ -451,8 +450,7 @@ const interpretCommand = () => {
     }
   } else if (cmdstr === "copy") {
     copyMatrixToOS();
-  }
-  else if(cmdstr === "scope") {
+  } else if (cmdstr === "scope") {
     toggleScope();
   }
 };
@@ -476,11 +474,13 @@ const scrollRelToCursor = () => {
 const renderText = () => {
   let lineno = 0;
   let htmlstr = "";
+  let relativeLine = coords.row;
   let searchHighlightIndex = 0;
   for (let i = 0; i < matrix.length; i++) {
-    htmlstr += lineno < 10 ? "  " : lineno < 100 ? " " : "";
-    htmlstr += lineno++ + "    ";
-    // htmlstr += "   <span style='color:gold;'>" + lineno++ + "    </span>"
+    // htmlstr += lineno < 10 ? "  " : lineno < 100 ? " " : "";
+    // htmlstr += lineno++ + "    ";
+    htmlstr += Math.abs(relativeLine) < 10 ? "  " : lineno < 100 ? " " : "";
+    htmlstr += Math.abs(relativeLine--) + "    ";
     for (let j = 0; j < matrix[i].length; j++) {
       if (matrix[i][j] !== undefined) {
         if (coords.row === i && coords.col === j) {
@@ -1052,18 +1052,23 @@ const copyInHighlightedRange = () => {
 /* similar to telescope, going to be a fuzzy find interactive centered box */
 const scope = () => {
   // scopeElement.style.display = "block";
-  let scopeStr = "<div style='width:45%;height:90%;display:flex;flex-direction:column;margin-left:2%;margin-top:2%;'>";
-  scopeStr += "<div style='height:10%;border:2px solid white;border-radius:7px;'>searchbar</div>";
-  scopeStr += "<div style='margin-top:3%;height:80%;border:2px solid white;border-radius:7px;'>bottombar</div></div>";
-  scopeStr += "<div style='width:45%;height:90%;border:2px solid white;border-radius:7px;margin-left:2%;margin-top:2%;'>right</div>";
+  let scopeStr =
+    "<div style='width:45%;height:90%;display:flex;flex-direction:column;margin-left:2%;margin-top:2%;'>";
+  scopeStr +=
+    "<div style='height:10%;border:2px solid white;border-radius:7px;'>searchbar</div>";
+  scopeStr +=
+    "<div style='margin-top:3%;height:80%;border:2px solid white;border-radius:7px;'>bottombar</div></div>";
+  scopeStr +=
+    "<div style='width:45%;height:90%;border:2px solid white;border-radius:7px;margin-left:2%;margin-top:2%;'>right</div>";
   scopeElement.innerHTML = scopeStr;
   console.log("test");
 };
 scope();
-const toggleScope = () => { 
-  if(scopeToggled)
+const toggleScope = () => {
+  if (scopeToggled) {
     scopeElement.style.display = "none";
-  else
+  } else {
     scopeElement.style.display = "flex";
+  }
   scopeToggled = !scopeToggled;
 };
