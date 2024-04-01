@@ -6,3 +6,4 @@ The main goal of this editor is to show that with under 1000 lines of code (arou
 Use this editor via [this link](https://lucasdepaola.com/Rapid)
 
 ![Editor footage](https://i.imgur.com/NZlaRrQ.jpeg)
+![More Editor footage](https://i.imgur.com/QB47BBH.jpeg)

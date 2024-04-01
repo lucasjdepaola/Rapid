@@ -1131,7 +1131,7 @@ const toggleScope = () => {
 
 const appendSearchScopeText = (key) => {
   scopeStr += key;
-  document.getElementById("scopesearch").innerText = "🔎 " + scopeStr;
+  document.getElementById("scopesearch").innerHTML = "🔎 " + scopeStr + "<span style='border-left:1px solid white;'></span>";
 };
 
 const updateScope = () => {
@@ -1143,9 +1143,9 @@ const updateScope = () => {
   for(const key of arr) {
     names.innerText += key + "\n";
   }
-  let outputstr = "";
+  let outputstr = "\n";
   for(const row of filemap[arr[0]]) { // first priority of map (top)
-    outputstr += row.join("") + "\n";
+    outputstr += " " + row.join("") + "\n";
   }
   output.innerText = outputstr;
 }
@@ -1186,7 +1186,7 @@ const scope = () => {
   scopeStr +=
     "<div id='scopesearch' style='height:10%;border:2px solid white;border-radius:7px;'>🔎 </div>";
   scopeStr +=
-    "<div id='scopefilenames' style='margin-top:3%;height:80%;border:2px solid white;border-radius:7px;'></div></div>";
+    "<div id='scopefilenames' style='margin-top:3%;height:90%;border:2px solid white;border-radius:7px;'></div></div>";
   scopeStr +=
     "<div id='scopefileoutput' style='width:45%;height:90%;border:2px solid white;border-radius:7px;margin-left:2%;margin-top:2%;'>right</div>";
   scopeElement.innerHTML = scopeStr;
