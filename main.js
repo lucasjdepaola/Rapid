@@ -13,6 +13,7 @@ const states = {
   "awaitKey": "AWAITKEY",
   "search": "SEARCH",
   "command": "COMMAND",
+  "scope": "SCOPE",
 };
 let currentlyHighlighting = false;
 let capitalV = false;
@@ -94,6 +95,7 @@ let autoTab = "";
 const TABWIDTH = "  ";
 const scopeElement = document.getElementById("scope");
 let scopeToggled = false;
+let scopeStr = "";
 
 const rapid = (key) => {
   /* cases for alt key, control key, backspace, etc */
@@ -114,8 +116,6 @@ const rapid = (key) => {
           decrementRow();
         }
         appendRow();
-        console.log(autoTab.length);
-        console.log(...autoTab.split(""));
         matrix[coords.row].unshift(...autoTab.split(""));
         coords.col = autoTab.length;
       } else if (currentState === states.search) {
@@ -126,7 +126,6 @@ const rapid = (key) => {
           renderSearch();
           return;
         }
-        console.log(searchCoords[0].row);
         coords.row = searchCoords[0].row;
         coords.col = searchCoords[0].start;
         currentState = states.normal; // wedont want it to be immediately unhighlighted
@@ -138,7 +137,7 @@ const rapid = (key) => {
       }
     } else if (key.key === "Escape") {
       currentState = states.normal; // go into normal mode
-      toggleScope();
+      scopestate = false;
     } else if (key.key === "Backspace") {
       if (key.ctrlKey) {
         ctrlBack();
@@ -156,6 +155,13 @@ const rapid = (key) => {
         search();
       } else if (currentState === states.insert) {
         delBackspace();
+      }
+      else if(currentState === states.scope) {
+        const scopear = scopeStr.split("");
+        scopear.pop();
+        scopeStr = scopear.join("");
+        appendSearchScopeText("");
+        updateScope();
       }
     }
   } else {
@@ -295,8 +301,11 @@ const rapid = (key) => {
             copyMatrixToOS();
           }
         } else if (key.key === "f") {
+          scopeStr = "";
           key.preventDefault();
           toggleScope();
+          updateScope();
+          appendSearchScopeText("");
         }
       } else if (key.key === "j") {
         buildAwaitStr = "j";
@@ -353,6 +362,30 @@ const rapid = (key) => {
           buildAwaitStr = "";
           currentState = states.insert;
         }
+        else if(key.key === "k") {
+          buildAwaitStr += "k";
+          if(buildAwaitStr === "dk") {
+            deleteRowAndAbove();
+            currentState = states.normal;
+          } else if(buildAwaitStr === "ck"){
+            //ck
+            deleteRowAndAbove();
+            currentState = states.insert;
+          }
+          buildAwaitStr = "";
+        }
+        else if(key.key === "j") {
+          buildAwaitStr += "j";
+          if(buildAwaitStr === "dj") {
+            deleteRowAndBelow();
+            currentState = states.normal;
+          } else {
+            // cj
+            deleteRowAndBelow();
+            currentState = states.insert;
+          }
+          buildAwaitStr = "";
+        }
       } else if (
         buildAwaitStr === "di" || buildAwaitStr === "ci" ||
         buildAwaitStr === "vi" || buildAwaitStr === "yi"
@@ -400,6 +433,26 @@ const rapid = (key) => {
       commandArr.push(key.key);
       if (key.key === "Enter") {
         interpretCommand();
+      }
+    } else if (currentState === states.scope) {
+      // scopestate() state
+      if (key.key > 1) {
+        // enter or tab or backspace
+        if(key.key === "Backspace") {
+        }
+      } else {
+        if (key.ctrlKey) {
+          if (key.key === "f") {
+            scopeStr = "";
+            key.preventDefault();
+            toggleScope();
+            updateScope();
+            appendSearchScopeText("");
+          }
+        } else {
+          appendSearchScopeText(key.key);
+          updateScope();
+        }
       }
     }
   }
@@ -479,10 +532,15 @@ const renderText = () => {
   for (let i = 0; i < matrix.length; i++) {
     // htmlstr += lineno < 10 ? "  " : lineno < 100 ? " " : "";
     // htmlstr += lineno++ + "    ";
-    htmlstr += Math.abs(relativeLine) < 10 ? "  " : lineno < 100 ? " " : "";
     if (relativeLine === 0) {
+      htmlstr += Math.abs(lineno) < 10 ? "  " : lineno < 100 ? " " : "";
       htmlstr += lineno + "    ";
     } else {
+      htmlstr += Math.abs(relativeLine) < 10
+        ? "  "
+        : relativeLine < 100
+        ? " "
+        : "";
       htmlstr += Math.abs(relativeLine) + "    ";
     }
     relativeLine--;
@@ -613,6 +671,10 @@ const decrementCol = () => {
 const incrementRow = () => {
   if (coords.row < matrix.length - 1) coords.row++;
 };
+
+const updateCol = () => {
+  if(coords.col > matrix[coords.row].length-1) coords.col = matrix[coords.row].length-1;
+}
 
 const decrementRow = () => {
   if (coords.row > 0) coords.row--;
@@ -883,6 +945,7 @@ const createFileButton = (name) => {
   span.style.height = "100%";
   span.style.verticalAlign = "middle";
   span.style.cursor = "pointer";
+  if(filemap[name] === undefined) filemap[name] = [[" "]]; // bandaid solution
   span.addEventListener("click", () => {
     matrix = filemap[name];
     if (matrix.length === 0) {
@@ -1055,26 +1118,100 @@ const copyInHighlightedRange = () => {
   navigator.clipboard.writeText(str);
 };
 
+const toggleScope = () => {
+  if (scopeToggled) {
+    scopeElement.style.display = "none";
+    currentState = states.normal;
+  } else {
+    scopeElement.style.display = "flex";
+    currentState = states.scope;
+  }
+  scopeToggled = !scopeToggled;
+};
+
+const appendSearchScopeText = (key) => {
+  scopeStr += key;
+  document.getElementById("scopesearch").innerText = "🔎 " + scopeStr;
+};
+
+const updateScope = () => {
+  const names = document.getElementById("scopefilenames");
+  const output = document.getElementById("scopefileoutput");
+  names.innerText = "";
+  const arr = fzf(scopeStr, filemap);
+  if(arr.length < 1) return;
+  for(const key of arr) {
+    names.innerText += key + "\n";
+  }
+  let outputstr = "";
+  for(const row of filemap[arr[0]]) { // first priority of map (top)
+    outputstr += row.join("") + "\n";
+  }
+  output.innerText = outputstr;
+}
+
+/* my fuzzy finding function */
+const fzf = (string, map) => {
+  const a = [];
+  if (string === "") {
+    for(const key in map) {
+      a.push(key);
+    }
+    return a;
+  }
+  let num = 0;
+  let cache = 0;
+  let flag = false;
+  for (const key in map) {
+    let str = string;
+    for (s of string) {
+      num = key.toLowerCase().indexOf(s.toLowerCase());
+      if (num === -1 || num < cache) {
+        flag = true;
+      } else {
+        str = str.replace(s, "");
+      }
+    }
+    if (!flag) a.push(key);
+    flag = false;
+  }
+  return a;
+}
+
 /* similar to telescope, going to be a fuzzy find interactive centered box */
 const scope = () => {
   // scopeElement.style.display = "block";
   let scopeStr =
     "<div style='width:45%;height:90%;display:flex;flex-direction:column;margin-left:2%;margin-top:2%;'>";
   scopeStr +=
-    "<div style='height:10%;border:2px solid white;border-radius:7px;'>searchbar</div>";
+    "<div id='scopesearch' style='height:10%;border:2px solid white;border-radius:7px;'>🔎 </div>";
   scopeStr +=
-    "<div style='margin-top:3%;height:80%;border:2px solid white;border-radius:7px;'>bottombar</div></div>";
+    "<div id='scopefilenames' style='margin-top:3%;height:80%;border:2px solid white;border-radius:7px;'></div></div>";
   scopeStr +=
-    "<div style='width:45%;height:90%;border:2px solid white;border-radius:7px;margin-left:2%;margin-top:2%;'>right</div>";
+    "<div id='scopefileoutput' style='width:45%;height:90%;border:2px solid white;border-radius:7px;margin-left:2%;margin-top:2%;'>right</div>";
   scopeElement.innerHTML = scopeStr;
-  console.log("test");
+  updateScope();
 };
 scope();
-const toggleScope = () => {
-  if (scopeToggled) {
-    scopeElement.style.display = "none";
-  } else {
-    scopeElement.style.display = "flex";
+
+const deleteRowAndBelow = () => {
+  vimcopybuffer = matrix.splice(coords.row, 2);
+  if (matrix[coords.row] === undefined) coords.row--;
+  if (matrix.length === 0) {
+    matrix = [[" "]];
+    coords.row = 0;
+    coords.col = 0;
   }
-  scopeToggled = !scopeToggled;
-};
+}
+
+const deleteRowAndAbove = () => {
+  vimcopybuffer = matrix.splice(coords.row-1, 2);
+  if (matrix[coords.row] === undefined) coords.row--;
+  if (matrix.length === 0) {
+    matrix = [[" "]];
+    coords.row = 0;
+    coords.col = 0;
+  }
+  updateCol();
+}
+
