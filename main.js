@@ -15,6 +15,14 @@ const states = {
   "command": "COMMAND",
   "scope": "SCOPE",
 };
+
+const cursors = {
+  "block" : "BLOCK",
+  "underscore" : "UNDERSCORE",
+  "half" : "HALF",
+  "insert" : "INSERT",
+}
+let currentCursor = cursors.block;
 let currentlyHighlighting = false;
 let capitalV = false;
 let vimcopybuffer = ""; // this is what keeps track of the vim buffer when yanking or deleting
@@ -121,14 +129,14 @@ const rapid = (key) => {
       } else if (currentState === states.search) {
         nKey = true;
         if (searchCoords.length < 1) {
-          currentState = states.normal;
+          setNormal();
           searchArr = [];
           renderSearch();
           return;
         }
         coords.row = searchCoords[0].row;
         coords.col = searchCoords[0].start;
-        currentState = states.normal; // wedont want it to be immediately unhighlighted
+        setNormal();
         // searchArr = []; // dont keep this, we want searches to stay on a successful case
         renderSearch();
         // TODO find function that sets cursor to the first highlight
@@ -136,7 +144,7 @@ const rapid = (key) => {
         interpretCommand();
       }
     } else if (key.key === "Escape") {
-      currentState = states.normal; // go into normal mode
+      setNormal();
       scopestate = false;
     } else if (key.key === "Backspace") {
       if (key.ctrlKey) {
@@ -144,13 +152,13 @@ const rapid = (key) => {
       } else if (currentState === states.command) {
         commandArr.pop();
         if (commandArr.length === 0) {
-          currentState = states.normal;
+          setNormal();
           renderCommand();
         }
       } else if (currentState === states.search) {
         searchArr.pop();
         if (searchArr.length === 0) {
-          currentState = states.normal;
+          setNormal();
         }
         search();
       } else if (currentState === states.insert) {
@@ -209,7 +217,8 @@ const rapid = (key) => {
         del(1);
       } else if (key.key === "r") {
         buildAwaitStr = "r";
-        currentState = states.awaitKey;
+        setAwait();
+        currentCursor = cursors.underscore;
       } else if (key.key === "s") {
         del(1);
         currentState = states.insert;
@@ -218,11 +227,11 @@ const rapid = (key) => {
           key.preventDefault();
           toggleScope();
         } else {
-          currentState = states.awaitKey;
+          setAwait();
           buildAwaitStr += "f";
         }
       } else if (key.key === "t") {
-        currentState = states.awaitKey;
+        setAwait();
         buildAwaitStr += "t";
       } else if (key.key === "o") {
         appendRow();
@@ -252,7 +261,7 @@ const rapid = (key) => {
           currentlyHighlighting = false;
         } else {
           buildAwaitStr += "d";
-          currentState = states.awaitKey;
+          setAwait();
         }
       } else if (key.key === "y") {
         yankVisualRange();
@@ -263,7 +272,7 @@ const rapid = (key) => {
           currentlyHighlighting = false;
         } else {
           buildAwaitStr += "c";
-          currentState = states.awaitKey;
+          setAwait();
         }
       } else if (key.key === "p") {
         pasteBuffer();
@@ -291,7 +300,7 @@ const rapid = (key) => {
       /* append letter to the current row and column which increments */
       if (key.ctrlKey) {
         if (key.key === "c") {
-          currentState = states.normal;
+          setNormal();
         } else if (key.key === "v") {
           pasteFromOS();
         } else if (key.key === "y") {
@@ -312,7 +321,7 @@ const rapid = (key) => {
         appendText(key.key);
       } else if (buildAwaitStr === "j") {
         if (key.key === "k") {
-          currentState = states.normal;
+          setNormal();
           decrementCol();
           del(1);
         } else {
@@ -334,17 +343,17 @@ const rapid = (key) => {
       /* awaiting states such as f( diw dfl etc */
       if (buildAwaitStr === "f") {
         setFind(key.key);
-        currentState = states.normal;
+        setNormal();
         buildAwaitStr = "";
       } else if (buildAwaitStr === "t") {
         if (setFind(key.key)) {
           coords.col--; // t means before or to
         }
-        currentState = states.normal;
+        setNormal();
         buildAwaitStr = "";
       } else if (buildAwaitStr === "r") {
         replaceChar(key.key);
-        currentState = states.normal;
+        setNormal();
       } else if (
         buildAwaitStr === "c" || buildAwaitStr === "d" || buildAwaitStr === "y"
       ) {
@@ -356,7 +365,7 @@ const rapid = (key) => {
         } else if (key.key === "d") {
           deleteLine();
           buildAwaitStr = "";
-          currentState = states.normal;
+          setNormal();
         } else if (key.key === "c") {
           deleteLine();
           buildAwaitStr = "";
@@ -366,7 +375,7 @@ const rapid = (key) => {
           buildAwaitStr += "k";
           if(buildAwaitStr === "dk") {
             deleteRowAndAbove();
-            currentState = states.normal;
+            setNormal();
           } else if(buildAwaitStr === "ck"){
             //ck
             deleteRowAndAbove();
@@ -378,7 +387,7 @@ const rapid = (key) => {
           buildAwaitStr += "j";
           if(buildAwaitStr === "dj") {
             deleteRowAndBelow();
-            currentState = states.normal;
+            setNormal();
           } else {
             // cj
             deleteRowAndBelow();
@@ -396,7 +405,7 @@ const rapid = (key) => {
           if (buildAwaitStr === "diw") {
             diw();
             buildAwaitStr = "";
-            currentState = states.normal;
+            setNormal();
           } else if (buildAwaitStr === "ciw") {
             ciw();
             buildAwaitStr = "";
@@ -417,11 +426,11 @@ const rapid = (key) => {
         if (key.key === "k") {
           del(2);
           decrementCol(); // change dec to loop with int param val
-          currentState = states.normal;
+          setNormal();
           buildAwaitStr = "";
         }
       } else {
-        currentState = states.normal; // return to normal it is not in constraint
+        setNormal(); // return to normal it is not in constraint
         buildAwaitStr = "";
       }
     } else if (currentState === states.search) {
@@ -470,7 +479,7 @@ document.addEventListener("touchstart", () => {
 
 const interpretCommand = () => {
   const cmdstr = commandArr.join("").trim();
-  currentState = states.normal;
+  setNormal();
   commandArr = [];
   renderCommand(); // so the text goes away
   // now interpret the command
@@ -550,10 +559,20 @@ const renderText = () => {
         if (coords.row === i && coords.col === j) {
           let span = "<span";
           if (currentState === states.insert) {
-            span += " id='livecursor' style='border-left: 1px solid white'";
+            span += " id='livecursor' style='border-left: 1px solid white;'";
           } else {
+            let cursorStyle = ""
+            if(currentCursor === cursors.half) {
+              cursorStyle = "background:linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(255,255,255,1) 50%);color:black;";
+            }
+            else if(currentCursor === cursors.block) {
+              cursorStyle = "background-color:white;color:black;";
+            }
+            else if(currentCursor === cursors.underscore) {
+              cursorStyle = "border-bottom: 2px solid white;";
+            }
             span +=
-              " id='livecursor' style='background-color:white;color:black;'";
+              " id='livecursor' style='" + cursorStyle + "'";
           }
           span += ">" + matrix[i][j] + "</span>";
           htmlstr += span;
@@ -1003,7 +1022,7 @@ const motionInChar = (char, motion) => {
       }
     }
   }
-  currentState = states.normal;
+  setNormal();
 };
 
 const motionInRange = (motion, start, end) => {
@@ -1121,7 +1140,7 @@ const copyInHighlightedRange = () => {
 const toggleScope = () => {
   if (scopeToggled) {
     scopeElement.style.display = "none";
-    currentState = states.normal;
+    setNormal();
   } else {
     scopeElement.style.display = "flex";
     currentState = states.scope;
@@ -1213,5 +1232,15 @@ const deleteRowAndAbove = () => {
     coords.col = 0;
   }
   updateCol();
+}
+
+const setAwait = () => {
+  currentState = states.awaitKey;
+  currentCursor = cursors.half;
+}
+
+const setNormal = () => {
+  currentState = states.normal;
+  currentCursor = cursors.block;
 }
 
