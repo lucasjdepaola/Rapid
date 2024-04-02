@@ -21,10 +21,7 @@ html {
   top:3%;
   right:1%;
   background-color:black;
-}
-
-#folderbtn {
-  display:none;
+  cursor:pointer;
 }
 
 body {

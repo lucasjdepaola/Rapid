@@ -1,10 +1,11 @@
 const leaderKey = " ";
 const text = document.getElementById("text");
-const userFolder = document.getElementById("folderbtn")
+const userFolder = document.getElementById("userfolder")
 const bg = document.getElementById("bg");
 const command = document.getElementById("command");
 let matrix = [[" "]];
 let filemap = {}; // keep track of all files
+let realFileMap = {}; // for actual files
 let userfiles;
 let currentFilename = "Untitled";
 const keys =
@@ -32,6 +33,7 @@ let vimcopybuffer = ""; // this is what keeps track of the vim buffer when yanki
 let buildAwaitStr = ""; // to build the entire motion, such as fa, diw, ciw, d$
 let searchArr = [];
 let searchCoords = [];
+let commentStyle = "//"; // for now, can make dynamic
 let nKey = false; // for searching around
 let searchIndex = 0; // to determine which to center it on
 let commandArr = [];
@@ -102,6 +104,7 @@ endmap['"'] = '"';
 endmap["'"] = "'";
 const cmpregex = /[(\[{"]/;
 const endregex = /[)\]}"]/;
+const wordBreakRegex = / ."\[\]\(\)!@#$%\^&\*/
 let autoTab = "";
 const TABWIDTH = "  ";
 const scopeElement = document.getElementById("scope");
@@ -304,7 +307,15 @@ const rapid = (key) => {
         setAwait();
       }
       else if(key.key === leaderKey) {
+        buildAwaitStr = " ";
         setAwait();
+      }
+      else if(key.key === "C") {
+        deleteInRange(coords.col, matrix[coords.row].length-1);
+        currentState = states.insert;
+      }
+      else if(key.key === "D") {
+        deleteInRange(coords.col, matrix[coords.row].length-1);
       }
     } else if (currentState === states.insert) { // insert()
       /* append letter to the current row and column which increments */
@@ -351,6 +362,7 @@ const rapid = (key) => {
       }
     } else if (currentState === states.awaitKey) {
       /* awaiting states such as f( diw dfl etc */
+      console.log(buildAwaitStr + ", " + key.key);
       if (buildAwaitStr === "f") {
         setFind(key.key);
         setNormal();
@@ -443,12 +455,15 @@ const rapid = (key) => {
       } else if(buildAwaitStr === leaderKey) {
         if(key.key === "w") {
           // save TODO interpretcommand(string) so commands can be bound
+          console.log("saving real file");
+          saveRealFile(currentFilename);
+          setNormal();
+          buildAwaitStr = "";
         }
         // else if(key.key === "")
       } 
       else if(buildAwaitStr === "g") {
         if(key.key === "g") {
-          console.log("here");
           coords.row = 0;
           buildAwaitStr = "";
           setNormal();
@@ -491,39 +506,50 @@ const rapid = (key) => {
     }
   }
   if (currentlyHighlighting) updateVisualCoordinates();
+  updateCol();
   renderText();
   if (currentState === states.command) {
     renderCommand();
   }
 };
 
-const importFolder = (file) => {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const newmatrix = e.target.result.split(/\r?\n/);
-    for (let i = 0; i < newmatrix.length; i++) {
-      newmatrix[i] = newmatrix[i].split("");
-      newmatrix[i].push(" ");
-    }
-    matrix = newmatrix;
-    // filemap[reader.target.file.name] = newmatrix;
-    unhighlightTab(currentFilename);
-    currentFilename = reader.fileName;
-    createFileButton(currentFilename);
-    updateFileName();
-    coords.col = 0;
-    coords.row = 0;
-    renderText();
-  };
-  reader.readAsText(file);
-  reader.fileName = file.name;
+const importRealFile = async(fileHandler) => {
+  const file = await fileHandler.getFile();
+  let newmatrix = await file.text();
+  newmatrix = newmatrix.split(/\r?\n/);
+  for (let i = 0; i < newmatrix.length; i++) {
+    newmatrix[i] = newmatrix[i].split("");
+    newmatrix[i].push(" ");
+  }
+  matrix = newmatrix;
+  filemap[file.name] = newmatrix;
+  unhighlightTab(currentFilename);
+  currentFilename = file.name;
+  createFileButton(currentFilename);
+  updateFileName();
+  coords.col = 0;
+  coords.row = 0;
+  renderText();
 }
 
-userFolder.addEventListener("change", (e) => {
+userFolder.addEventListener("click", async () => {
   filemap = {};
-  userfiles = e.target.files;
-  for(const file of userfiles) {
-    importFolder(file);
+  console.log("click");
+  const options = {
+    mode: "readwrite"
+  };
+  const dirHandle = await window.showDirectoryPicker(options);
+  console.log(dirHandle)
+  for await(const entry of dirHandle.values()) {
+    if(entry.kind === "file") {
+      //handle file
+      realFileMap[entry.name] = entry;
+      console.log("file" + entry);
+      await importRealFile(entry);
+    }
+    else if(entry.kind === "directory") {
+      console.log("cannot handle directories yet");
+    }
   }
 });
 
@@ -569,6 +595,16 @@ const interpretCommand = () => {
     copyMatrixToOS();
   } else if (cmdstr === "scope") {
     toggleScope();
+  }
+  else if(cmdstr === "buffer") {
+    clipTransfer(vimcopybuffer);
+  }
+  else if(splitcmd[0] === "replace") {
+    // replace here
+    replace(splitcmd[1], splitcmd[2]);
+  }
+  else if(cmdstr === "game") {
+    // game here
   }
 };
 
@@ -747,6 +783,8 @@ const incrementRow = () => {
 };
 
 const updateCol = () => {
+  // if(currentState !== states.insert && coords.col >= matrix[coords.row].length-1) decrementCol();
+  if(matrix[coords.row] === undefined) matrix[coords.row] = [" "];
   if(coords.col > matrix[coords.row].length-1) coords.col = matrix[coords.row].length-1;
 }
 
@@ -895,9 +933,9 @@ const deleteVisualRange = () => {
   }
   if (matrix[coords.row] === undefined) coords.row--;
 };
-
+let globarr;
 const deleteInRange = (start, end) => {
-  vimcopybuffer = matrix[coords.row].splice(start, end - start);
+  vimcopybuffer = [matrix[coords.row].splice(start, end - start)];
 };
 
 const yankVisualRange = () => {
@@ -909,21 +947,20 @@ const yankVisualRange = () => {
   if (capitalV) {
     capitalV = false;
   }
-  vimcopybuffer = [matrix.slice(minrow, maxrow - minrow + 1)];
+  vimcopybuffer = matrix.slice(minrow, maxrow - minrow + 1);
 };
 
 const pasteBuffer = () => {
   const originalrow = coords.row;
   const originalcol = coords.col;
   for (line of vimcopybuffer) {
+    appendRow();
+    coords.col = 0;
     for (c of line) {
       appendText(c);
     }
-    if (coords.row === matrix.length) appendRow();
-    incrementRow();
-    coords.col = 0;
   }
-  coords.row = originalrow;
+  updateCol();
 };
 
 const appendText = (key) => {
@@ -1211,11 +1248,11 @@ const appendSearchScopeText = (key) => {
 const updateScope = () => {
   const names = document.getElementById("scopefilenames");
   const output = document.getElementById("scopefileoutput");
-  names.innerText = "";
+  names.innerText = "→";
   const arr = fzf(scopeStr, filemap);
   if(arr.length < 1) return;
   for(const key of arr) {
-    names.innerText += key + "\n";
+    names.innerText += " " + key + "\n";
   }
   let outputstr = "\n";
   for(const row of filemap[arr[0]]) { // first priority of map (top)
@@ -1298,4 +1335,49 @@ const setNormal = () => {
   currentState = states.normal;
   currentCursor = cursors.block;
 }
+
+const replace = (string, replaceString) => { // replace globally
+  for(let i = 0; i < matrix.length; i++) {
+    matrix[i] = matrix[i].join("").replaceAll(string, replaceString).split("");
+  }
+}
+
+const clipTransfer = () => {
+  let str = "";
+  for (line of vimcopybuffer) {
+    for (c of line) {
+      str += c;
+    }
+    str += "\n";
+  }
+  clip(str);
+  return true;
+}
+
+const clip = (text) => {
+  navigator.clipboard.writeText(text);
+}
+
+const fileToString = (contents) => {
+  let str = "";
+  console.log(contents);
+  console.log(contents.length);
+  for(let i = 0; i < contents.length; i++) {
+    str += contents[i].join("").trim();
+    str += "\n";
+  }
+  return str;
+}
+
+const saveRealFile = async (name) => {
+  if(realFileMap[name] === undefined) return;
+  const handler = realFileMap[name];
+  console.log("handler: " + handler);
+  const writeable = await handler.createWritable({type:"write"}); // only works in secure contexts
+  const data = fileToString(filemap[name]);
+  await writeable.write({type:"write", data:data });
+  await writeable.close();
+  console.log("file has beeen saved");
+}
+
 
