@@ -16,6 +16,17 @@ html {
   z-index : -100;
 }
 
+#userfolder {
+  position:fixed;
+  top:3%;
+  right:1%;
+  background-color:black;
+}
+
+#folderbtn {
+  display:none;
+}
+
 body {
   width:100%;
   height:100%;

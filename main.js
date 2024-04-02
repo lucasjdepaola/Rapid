@@ -1,8 +1,11 @@
+const leaderKey = " ";
 const text = document.getElementById("text");
+const userFolder = document.getElementById("folderbtn")
 const bg = document.getElementById("bg");
 const command = document.getElementById("command");
 let matrix = [[" "]];
-const filemap = {}; // keep track of all files
+let filemap = {}; // keep track of all files
+let userfiles;
 let currentFilename = "Untitled";
 const keys =
   "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()";
@@ -296,6 +299,13 @@ const rapid = (key) => {
         }
       } else if (key.key === "N") {
       }
+      else if(key.key === "g") {
+        buildAwaitStr = "g";
+        setAwait();
+      }
+      else if(key.key === leaderKey) {
+        setAwait();
+      }
     } else if (currentState === states.insert) { // insert()
       /* append letter to the current row and column which increments */
       if (key.ctrlKey) {
@@ -354,6 +364,7 @@ const rapid = (key) => {
       } else if (buildAwaitStr === "r") {
         replaceChar(key.key);
         setNormal();
+        buildAwaitStr = "";
       } else if (
         buildAwaitStr === "c" || buildAwaitStr === "d" || buildAwaitStr === "y"
       ) {
@@ -429,7 +440,21 @@ const rapid = (key) => {
           setNormal();
           buildAwaitStr = "";
         }
-      } else {
+      } else if(buildAwaitStr === leaderKey) {
+        if(key.key === "w") {
+          // save TODO interpretcommand(string) so commands can be bound
+        }
+        // else if(key.key === "")
+      } 
+      else if(buildAwaitStr === "g") {
+        if(key.key === "g") {
+          console.log("here");
+          coords.row = 0;
+          buildAwaitStr = "";
+          setNormal();
+        }
+      } 
+      else {
         setNormal(); // return to normal it is not in constraint
         buildAwaitStr = "";
       }
@@ -471,6 +496,36 @@ const rapid = (key) => {
     renderCommand();
   }
 };
+
+const importFolder = (file) => {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const newmatrix = e.target.result.split(/\r?\n/);
+    for (let i = 0; i < newmatrix.length; i++) {
+      newmatrix[i] = newmatrix[i].split("");
+      newmatrix[i].push(" ");
+    }
+    matrix = newmatrix;
+    // filemap[reader.target.file.name] = newmatrix;
+    unhighlightTab(currentFilename);
+    currentFilename = reader.fileName;
+    createFileButton(currentFilename);
+    updateFileName();
+    coords.col = 0;
+    coords.row = 0;
+    renderText();
+  };
+  reader.readAsText(file);
+  reader.fileName = file.name;
+}
+
+userFolder.addEventListener("change", (e) => {
+  filemap = {};
+  userfiles = e.target.files;
+  for(const file of userfiles) {
+    importFolder(file);
+  }
+});
 
 document.addEventListener("keydown", rapid);
 document.addEventListener("touchstart", () => {
