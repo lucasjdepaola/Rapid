@@ -22,7 +22,7 @@ html {
   right:1%;
   height:5%;
   width:10%;
-  background-color:black;
+  /* background-color:black; */
   transform: translateY(-50%);
   cursor:pointer;
   border : 2px solid white;

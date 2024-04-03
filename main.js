@@ -59,6 +59,7 @@ const canvas = {
   neohighlight: "rgba(48, 77, 117, .5)",
   whitetransparent: "rgba(255, 255, 255, .5)",
   highlightyellow: "rgba(252, 221, 57, .5)",
+  vimgrey: "#30363d"
 };
 const media = { // collection of potential background images
   none: "none",
@@ -188,7 +189,7 @@ const rapid = (key) => {
           updateLineNumber();
         }
       }
-      else if(/[0-9]/.test(key.key)) {
+      else if(/[1-9]/.test(key.key)) {
         /* numbers case */
         buildAwaitStr += key.key;
         setAwait();
@@ -467,7 +468,37 @@ const rapid = (key) => {
             buildAwaitStr = "";
           }
         }
-      } else if (buildAwaitStr === "j") {
+      } 
+      else if(/[ycd][ft]/.test(buildAwaitStr)) {
+        console.log('find state');
+        if(buildAwaitStr === "df") {
+          deleteFind(key.key);
+          setNormal();
+        }
+        else if(buildAwaitStr === "cf") {
+          deleteFind(key.key);
+          currentState = states.insert;
+        } 
+        else if(buildAwaitStr === "yf") {
+          deleteFind(key.key);
+          setNormal();
+        } 
+        else if(buildAwaitStr === "dt") {
+          deleteTo(key.key);
+          setNormal();
+        }
+        else if(buildAwaitStr === "ct") {
+          deleteTo(key.key);
+          currentState = states.insert;
+        }
+        else if(buildAwaitStr === "yt") {
+          deleteTo(key.key);
+          setNormal();
+        }
+        else setNormal(); // incase hanging
+        buildAwaitStr = "";
+      }
+      else if (buildAwaitStr === "j") {
         if (key.key === "k") {
           del(2);
           decrementCol(); // change dec to loop with int param val
@@ -1046,7 +1077,7 @@ const updateLineNumber = () => {
 
 const updateFileName = () => {
   document.getElementById(currentFilename + "_file").style.backgroundColor =
-    canvas.whitetransparent;
+    canvas.vimgrey;
   // document.getElementById(currentFilename + "_file").innerText = "  " + currentFilename + "  ";
 };
 
@@ -1422,3 +1453,20 @@ const matrixesAreEqual = (mOne, mTwo) => {
   return true;
 }
 
+const deleteFind = (key) => {
+  let start = coords.col;
+  for(let i = start; i < matrix[coords.row].length; i++) {
+    if(matrix[coords.row][i] === key) {
+      deleteInRange(start, i+1);
+    }
+  }
+}
+
+const deleteTo = (key) => {
+  let start = coords.col;
+  for(let i = start; i < matrix[coords.row].length; i++) {
+    if(matrix[coords.row][i] === key) {
+      deleteInRange(start, i);
+    }
+  }
+}
