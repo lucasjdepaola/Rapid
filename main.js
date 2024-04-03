@@ -531,15 +531,13 @@ const importRealFile = async(fileHandler) => {
   coords.row = 0;
   renderText();
 }
-
+let dirHandle;
 userFolder.addEventListener("click", async () => {
   filemap = {};
-  console.log("click");
   const options = {
     mode: "readwrite"
   };
-  const dirHandle = await window.showDirectoryPicker(options);
-  console.log(dirHandle)
+  dirHandle = await window.showDirectoryPicker(options);
   for await(const entry of dirHandle.values()) {
     if(entry.kind === "file") {
       //handle file
@@ -1370,7 +1368,13 @@ const fileToString = (contents) => {
 }
 
 const saveRealFile = async (name) => {
-  if(realFileMap[name] === undefined) return;
+  if(dirHandle === undefined) {
+    save(name); // soft save
+    return; // no directory
+  }
+  if(realFileMap[name] === undefined) {
+    realFileMap[name] = await dirHandle.getFileHandle(name, {create: true});
+  }
   const handler = realFileMap[name];
   console.log("handler: " + handler);
   const writeable = await handler.createWritable({type:"write"}); // only works in secure contexts
