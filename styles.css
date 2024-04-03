@@ -18,11 +18,22 @@ html {
 
 #userfolder {
   position:fixed;
-  top:3%;
+  top:1%;
   right:1%;
+  height:5%;
+  width:10%;
   background-color:black;
+  transform: translateY(-50%);
   cursor:pointer;
+  border : 2px solid white;
+  border-radius: 5px;
 }
+#foldertext {
+  position:fixed;
+  top:50%;
+  left:10%;
+}
+
 
 body {
   width:100%;

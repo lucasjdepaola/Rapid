@@ -186,12 +186,24 @@ const rapid = (key) => {
           incrementRow();
           updateLineNumber();
         }
-      } else if (key.key === "k") {
+      }
+      else if(key.key === "J") {
+        for(let i = 0; i < 10; i++) {
+          incrementRow();
+        }
+      }
+      else if (key.key === "k") {
         if (coords.row > 0) {
           decrementRow();
           updateLineNumber();
         }
-      } else if (key.key === "h") {
+      }
+      else if(key.key === "K") {
+        for(let i = 0; i < 10; i++) {
+          decrementRow();
+        }
+      }
+      else if (key.key === "h") {
         decrementCol();
         updatePrevCol();
       } else if (key.key === "l") {
@@ -1382,6 +1394,17 @@ const saveRealFile = async (name) => {
   await writeable.write({type:"write", data:data });
   await writeable.close();
   console.log("file has beeen saved");
+}
+
+const matrixesAreEqual = (mOne, mTwo) => {
+  if(mOne.length !== mTwo.length) return false;
+  for(let i = 0; i < mOne.length; i++) {
+    if(mOne[i].length !== mTwo.length) return false;
+    for(let j = 0; j < mOne[i].length; j++) {
+      if(mOne[i][j] !== mTwo[i][j]) return false;
+    }
+  }
+  return true;
 }
 
 
