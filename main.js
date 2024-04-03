@@ -152,6 +152,7 @@ const rapid = (key) => {
     } else if (key.key === "Escape") {
       setNormal();
       scopestate = false;
+      buildAwaitStr = ""; // incase there's a hanging state
     } else if (key.key === "Backspace") {
       if (key.ctrlKey) {
         ctrlBack();
@@ -743,7 +744,11 @@ const delBackspace = () => {
   if (coords.col === 0) {
     if (coords.row !== 0) coords.row--;
   } else {
-    matrix[coords.row].splice(--coords.col, 1);
+    const char = matrix[coords.row].splice(--coords.col, 1);
+    if(startmap[char] === peek()) {
+      // delete this one too
+      matrix[coords.row].splice(coords.col, 1);
+    }
   }
 };
 
@@ -1416,5 +1421,4 @@ const matrixesAreEqual = (mOne, mTwo) => {
   }
   return true;
 }
-
 
