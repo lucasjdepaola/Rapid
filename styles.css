@@ -18,9 +18,10 @@ html {
 
 #userfolder {
   position:fixed;
+  margin-top:1%;
   top:1%;
   right:1%;
-  height:5%;
+  height:3%;
   width:10%;
   /* background-color:black; */
   transform: translateY(-50%);

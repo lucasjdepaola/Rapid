@@ -150,7 +150,17 @@ const rapid = (key) => {
       } else {
         interpretCommand();
       }
-    } else if (key.key === "Escape") {
+    }
+    else if(key.key === "Tab") {
+      key.preventDefault();
+      if(currentState === states.insert) {
+        for(let i = 0; i < TABWIDTH.length; i++) {
+          appendText(" ");
+          console.log("appending");
+        }
+      }
+    }
+    else if (key.key === "Escape") {
       setNormal();
       scopestate = false;
       buildAwaitStr = ""; // incase there's a hanging state
