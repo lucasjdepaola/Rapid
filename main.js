@@ -180,12 +180,17 @@ const rapid = (key) => {
     }
   } else {
     /* regular key case */
-    if (currentState === states.normal) {
+    if (currentState === states.normal) { //norm()
       if (key.key === "j") {
         if (coords.row < matrix.length - 1) {
           incrementRow();
           updateLineNumber();
         }
+      }
+      else if(/[0-9]/.test(key.key)) {
+        /* numbers case */
+        buildAwaitStr += key.key;
+        setAwait();
       }
       else if(key.key === "J") {
         for(let i = 0; i < 10; i++) {
@@ -379,7 +384,11 @@ const rapid = (key) => {
         setFind(key.key);
         setNormal();
         buildAwaitStr = "";
-      } else if (buildAwaitStr === "t") {
+      }
+      else if(/[0-9]/.test(buildAwaitStr)) {
+        // still num state, maybe change number addition into its own variable
+      }
+      else if (buildAwaitStr === "t") {
         if (setFind(key.key)) {
           coords.col--; // t means before or to
         }
@@ -1380,6 +1389,7 @@ const fileToString = (contents) => {
 }
 
 const saveRealFile = async (name) => {
+  filemap[name] = matrix; // ?
   if(dirHandle === undefined) {
     save(name); // soft save
     return; // no directory
