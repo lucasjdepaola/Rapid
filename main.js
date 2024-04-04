@@ -397,9 +397,6 @@ const rapid = (key) => {
         setNormal();
         buildAwaitStr = "";
       }
-      else if(/[0-9]/.test(buildAwaitStr)) {
-        // still num state, maybe change number addition into its own variable
-      }
       else if (buildAwaitStr === "t") {
         if (setFind(key.key)) {
           coords.col--; // t means before or to
@@ -532,6 +529,19 @@ const rapid = (key) => {
           setNormal();
         }
       } 
+      else if(/[1-9]/.test(buildAwaitStr)) {
+        console.log("here yo");
+        if(/[0-9]/.test(key.key)) {
+          buildAwaitStr += key.key
+        } else {
+          let num = parseInt(buildAwaitStr);
+          buildAwaitStr = "";
+          setNormal();
+          for(let i = 0; i < num; i++) {
+            rapid(key);
+          }
+        }
+      }
       else {
         setNormal(); // return to normal it is not in constraint
         buildAwaitStr = "";
