@@ -58,7 +58,8 @@ const canvas = {
   lightpink: "rgba(255, 210, 249, .5)",
   neohighlight: "rgba(48, 77, 117, .5)",
   whitetransparent: "rgba(255, 255, 255, .5)",
-  highlightyellow: "rgba(252, 221, 57, .5)",
+  highlightyellow: "rgba(252, 221, 57, 1)",
+  highlightorange : "rgba(240, 136, 62, 1)",
   vimgrey: "#30363d"
 };
 const media = { // collection of potential background images
@@ -112,6 +113,22 @@ const TABWIDTH = "  ";
 const scopeElement = document.getElementById("scope");
 let scopeToggled = false;
 let scopeStr = "";
+let gameState = false; // might need to be higher
+let correctMatrix;
+let deleteHighlight = {
+  color: "red",
+  arr : [], // arr of coords
+}
+let changeHighlight = {
+  color: "yellow",
+  arr : [],
+}
+let appendHighlight = {
+  color: "green", // change to palatte
+}
+const gameModeTable = {
+  vertical : [["x", " "]] // unshift arrays of rand height
+}
 
 const rapid = (key) => {
   /* cases for alt key, control key, backspace, etc */
@@ -585,6 +602,7 @@ const rapid = (key) => {
   if (currentState === states.command) {
     renderCommand();
   }
+  if(gameState) checkGame();
 };
 
 const importRealFile = async(fileHandler) => {
@@ -677,6 +695,7 @@ const interpretCommand = () => {
   }
   else if(cmdstr === "game") {
     // game here
+    game();
   }
 };
 
@@ -705,7 +724,6 @@ const renderText = () => {
     // htmlstr += lineno < 10 ? "  " : lineno < 100 ? " " : "";
     // htmlstr += lineno++ + "    ";
     if (relativeLine === 0) {
-      console.log('case');
       htmlstr +=  Math.abs(lineno)  < 10 ? "  " : lineno < 100 ? " " : "";
       htmlstr += "<span style='color:gold;'>" + lineno + "</span>" +  "    ";
     } else {
@@ -789,6 +807,7 @@ const renderCommand = () => {
 };
 
 const del = (num) => {
+  if(matrix[coords.row].length === 1) return; // do not delete the space
   for (let i = 0; i < num; i++) {
     matrix[coords.row].splice(coords.col, 1);
   }
@@ -860,9 +879,9 @@ const incrementRow = () => {
 };
 
 const updateCol = () => {
-  // if(currentState !== states.insert && coords.col >= matrix[coords.row].length-1) decrementCol();
   if(matrix[coords.row] === undefined) matrix[coords.row] = [" "];
   if(coords.col > matrix[coords.row].length-1) coords.col = matrix[coords.row].length-1;
+  if(currentState !== states.insert && coords.col >= matrix[coords.row].length-1) decrementCol();
 }
 
 const decrementRow = () => {
@@ -1467,7 +1486,7 @@ const saveRealFile = async (name) => {
 const matrixesAreEqual = (mOne, mTwo) => {
   if(mOne.length !== mTwo.length) return false;
   for(let i = 0; i < mOne.length; i++) {
-    if(mOne[i].length !== mTwo.length) return false;
+    if(mOne[i].length !== mTwo[i].length) return false;
     for(let j = 0; j < mOne[i].length; j++) {
       if(mOne[i][j] !== mTwo[i][j]) return false;
     }
@@ -1491,4 +1510,40 @@ const deleteTo = (key) => {
       deleteInRange(start, i);
     }
   }
+}
+
+const rand = (max) => {
+  return Math.floor(Math.random() * max) + 1;
+}
+
+const start = (gameMatrix) => {
+  console.log(gameMatrix);
+  correctMatrix = [[" "]];
+  matrix = gameMatrix.slice(0);
+  for(let i = 0; i < rand(10); i++) {
+    matrix.unshift([" "]); // unshift new row
+    correctMatrix.unshift([" "]);
+  }
+  for(let i = 0; i < rand(10); i++) {
+    matrix.push([" "]);
+    correctMatrix.push([" "]);
+  }
+
+}
+
+const game = () => {
+  unhighlightTab();
+  currentFilename = "game";
+  createFileButton("game");
+  updateFileName();
+  gameState = true;
+  let gameMatrix = gameModeTable.vertical.slice(0);
+  correctMatrix = [[" "]];
+  start(gameMatrix);
+}
+
+const checkGame = () => {
+  if(matrixesAreEqual(matrix, correctMatrix)) {
+    start(gameModeTable.vertical.slice(0));// restart game
+  } else console.log(matrix + ", " + correctMatrix);
 }
