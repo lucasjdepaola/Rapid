@@ -165,7 +165,15 @@ const rapid = (key) => {
         // searchArr = []; // dont keep this, we want searches to stay on a successful case
         renderSearch();
         // TODO find function that sets cursor to the first highlight
-      } else {
+      } 
+      else if(currentState === states.scope) {
+        //bandaid TODO
+        interpretCommand("e " + priorityStr);
+        console.log(priorityStr);
+        toggleScope();
+        priorityStr = "";
+      }
+      else {
         interpretCommand();
       }
     }
@@ -648,8 +656,9 @@ document.addEventListener("touchstart", () => {
   document.getElementById("mobile").focus();
 });
 
-const interpretCommand = () => {
-  const cmdstr = commandArr.join("").trim();
+const interpretCommand = (str) => {
+  let cmdstr = commandArr.join("").trim();
+  if(str !== undefined) cmdstr = str;
   setNormal();
   commandArr = [];
   renderCommand(); // so the text goes away
@@ -1329,6 +1338,7 @@ const toggleScope = () => {
   if (scopeToggled) {
     scopeElement.style.display = "none";
     setNormal();
+    scopeStr = "";
   } else {
     scopeElement.style.display = "flex";
     currentState = states.scope;
@@ -1341,6 +1351,7 @@ const appendSearchScopeText = (key) => {
   document.getElementById("scopesearch").innerHTML = "🔎 " + scopeStr + "<span style='border-left:1px solid white;'></span>";
 };
 
+let priorityStr = "";
 const updateScope = () => {
   const names = document.getElementById("scopefilenames");
   const output = document.getElementById("scopefileoutput");
@@ -1350,6 +1361,7 @@ const updateScope = () => {
   for(const key of arr) {
     names.innerText += " " + key + "\n";
   }
+  priorityStr = arr[0];
   let outputstr = "\n";
   for(const row of filemap[arr[0]]) { // first priority of map (top)
     outputstr += " " + row.join("") + "\n";
