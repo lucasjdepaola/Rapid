@@ -351,11 +351,14 @@ const rapid = (key) => {
         leftArrow();
       } else if (key.key === "n") {
         if (searchCoords.length > 0) {
+          if (searchIndex < searchCoords.length - 1) searchIndex++;
           coords.row = searchCoords[searchIndex].row;
           coords.col = searchCoords[searchIndex].start;
-          if (searchIndex < searchCoords.length - 1) searchIndex++;
         }
       } else if (key.key === "N") {
+          if (searchIndex < searchCoords.length - 1) searchIndex--;
+          coords.row = searchCoords[searchIndex].row;
+          coords.col = searchCoords[searchIndex].start;
       }
       else if(key.key === "g") {
         buildAwaitStr = "g";
@@ -1529,33 +1532,39 @@ const rand = (max) => {
 }
 
 const start = (gameMatrix) => {
-  console.log(gameMatrix);
+  const RAND = 100;
   correctMatrix = [[" "]];
-  matrix = gameMatrix.slice(0);
-  for(let i = 0; i < rand(10); i++) {
+  matrix = gameMatrix;
+  for(let i = 0; i < rand(RAND); i++) {
     matrix.unshift([" "]); // unshift new row
     correctMatrix.unshift([" "]);
   }
-  for(let i = 0; i < rand(10); i++) {
-    matrix.push([" "]);
+  for(let i = 0; i < rand(RAND); i++) {
+    matrix.push([" "]); // push a pseudo line
     correctMatrix.push([" "]);
   }
-
 }
 
 const game = () => {
+  if(gameState) {
+    start(gameModeTable.vertical.slice(0));
+    return;
+  }
   unhighlightTab();
   currentFilename = "game";
   createFileButton("game");
   updateFileName();
   gameState = true;
   let gameMatrix = gameModeTable.vertical.slice(0);
+  console.log(gameModeTable.vertical.slice(0));
   correctMatrix = [[" "]];
   start(gameMatrix);
 }
 
 const checkGame = () => {
   if(matrixesAreEqual(matrix, correctMatrix)) {
-    start(gameModeTable.vertical.slice(0));// restart game
+    matrix = [[" "]];
+    start([["x", " "]]);// restart game
+    renderText();
   } else console.log(matrix + ", " + correctMatrix);
 }
