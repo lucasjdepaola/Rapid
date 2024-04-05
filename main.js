@@ -1542,7 +1542,15 @@ const start = (gameMatrix) => {
 
 const game = () => {
   if(gameState) {
-    start(gameModeTable.vertical.slice(0));
+    let gameMatrix = gameModeTable.vertical.slice(0);
+    console.log(gameModeTable.vertical.slice(0));
+    correctMatrix = [[" "]];
+    matrix = [[" "]];
+    for(let i = 0; i < 30; i++) {
+      matrix.push([" "]); // push a new row
+      correctMatrix.push([" "]);
+    }
+    start(gameMatrix);
     return;
   }
   unhighlightTab();
