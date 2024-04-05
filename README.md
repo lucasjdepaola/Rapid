@@ -13,3 +13,5 @@ Scope file-finding functionality (toggle Ctrl-f to access)
 ## Intention and reasoning behind this project
 
 With no feasible way to access vim-like motions in the browser, I decided to implement my own editor, with my own configuration baked in. Mystified at editors being megabytes (sometimes even gigabytes), I wanted to keep things minimal, and manually written. Now being able to use my editor (which can access the user file system) from anywhere, I feel that my goal is achieved. The next step is implementing a game command (now having the intuitive understanding and access to the live editor text) that will allow for the fastest ways to maneuver text to come out on top. This game command should be out within the next week or two.
+
+When trying to decipher vims source code, it's nearly impossible to find code that is important to the project without recursively clicking through countless directories. With this project, you can find code that is crucial to the projects infrastructure, all in one file. Anything shown on the editor is likely within this one file, making it easy to learn what goes on under the hood.
