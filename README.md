@@ -7,8 +7,12 @@ Use this editor via [this link](https://lucasdepaola.com/Rapid)
 
 ![Editor footage](https://i.imgur.com/NZlaRrQ.jpeg)
 
-Scope file-finding functionality (toggle Ctrl-f to access)
+## Scope file-finding functionality (toggle Ctrl-f to access)
 ![Scope footage](https://i.imgur.com/QB47BBH.jpeg)
+
+## Game functionality
+To practice relative line number jumps
+![Game footage](https://i.imgur.com/fPq1g88.gif)
 
 ## Intention and reasoning behind this project
 
