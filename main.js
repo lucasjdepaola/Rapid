@@ -1532,17 +1532,12 @@ const rand = (max) => {
 }
 
 const start = (gameMatrix) => {
-  const RAND = 100;
-  correctMatrix = [[" "]];
-  matrix = gameMatrix;
-  for(let i = 0; i < rand(RAND); i++) {
-    matrix.unshift([" "]); // unshift new row
-    correctMatrix.unshift([" "]);
-  }
-  for(let i = 0; i < rand(RAND); i++) {
-    matrix.push([" "]); // push a pseudo line
-    correctMatrix.push([" "]);
-  }
+  const RAND = 30;
+  /* the size should stay the same, it should be the x changing */
+  // matrix.unshift([" "]); // unshift new row
+  // correctMatrix.unshift([" "]); 
+  matrix[rand(RAND)] = gameMatrix[0]; // set gamematrix to a random row
+  console.log(matrix);
 }
 
 const game = () => {
@@ -1558,13 +1553,17 @@ const game = () => {
   let gameMatrix = gameModeTable.vertical.slice(0);
   console.log(gameModeTable.vertical.slice(0));
   correctMatrix = [[" "]];
+  matrix = [[" "]];
+  for(let i = 0; i < 30; i++) {
+    matrix.push([" "]); // push a new row
+    correctMatrix.push([" "]);
+  }
   start(gameMatrix);
 }
 
 const checkGame = () => {
   if(matrixesAreEqual(matrix, correctMatrix)) {
-    matrix = [[" "]];
     start([["x", " "]]);// restart game
     renderText();
-  } else console.log(matrix + ", " + correctMatrix);
+  }
 }
