@@ -781,14 +781,14 @@ const renderText = () => {
     // htmlstr += lineno++ + "    ";
     if (i === coords.row) { // if we're on the actual cursor, display a normal line
       htmlstr +=  Math.abs(lineno)  < 10 ? "  " : lineno < 100 ? " " : "";
-      htmlstr += "<span style='color:gold;'>" + lineno + "</span>" +  "    ";
+      htmlstr += "<span style='color:gold;'>" + lineno + "</span>" +  "   ";
     } else {
       htmlstr += Math.abs(relativeLine) < 10
         ? "  "
         : relativeLine < 100
         ? " "
         : "";
-      htmlstr += Math.abs(relativeLine) + "    ";
+      htmlstr += Math.abs(relativeLine) + "   ";
     }
     relativeLine--;
     lineno++;
@@ -818,8 +818,12 @@ const renderText = () => {
           currentlyHighlighting && capitalV &&
           inRange(i, visualcoords.from.row, visualcoords.to.row)
         ) { // in visual range
-          htmlstr += "<span style='background-color:" + HIGHLIGHTCOLOR + ";'>" +
-            matrix[i][j] + "</span>";
+          htmlstr += "<span style='background-color:" + HIGHLIGHTCOLOR + ";'>"; // build inner text
+          while(j < matrix[i].length && (coords.row !== i || coords.col !== j)) {
+            htmlstr += matrix[i][j++];
+          }
+          j--;
+          htmlstr += "</span>";
         } else if (
           currentlyHighlighting &&
           inRange(i, visualcoords.from.row, visualcoords.to.row) &&
@@ -890,6 +894,16 @@ const replaceChar = (key) => {
 
 document.addEventListener("click", (coords) => {
 }); // TODO implement a click cursor tracker mechanism
+
+document.addEventListener("wheel", (event) => {
+  if(event.deltaY > 0) {
+    incrementRow();
+  } else {
+    decrementRow();
+  }
+  updateLineNumber();
+  renderText();
+});
 
 document.body.addEventListener("dragover", (e) => {
   e.preventDefault();
