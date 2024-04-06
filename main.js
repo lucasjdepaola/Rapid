@@ -129,8 +129,13 @@ let appendHighlight = {
 const gameModeTable = {
   vertical : [["x", " "]] // unshift arrays of rand height
 }
+let chart = {
+  PAGESIZE : 50, // 50 is good enough to have some overlap (not the exact page size)
+  start : undefined,
+  end : undefined,
+}
 
-const rapid = (key) => {
+const rapid = (key, isEmulating) => {
   /* cases for alt key, control key, backspace, etc */
   if (key.key === " ") key.preventDefault();
   nKey = (key.key === "n" || key.key === "N") && currentState === states.normal;
@@ -564,6 +569,7 @@ const rapid = (key) => {
           buildAwaitStr += key.key
         } else {
           let num = parseInt(buildAwaitStr);
+          if(num > 10000) num = 10000; // not too high now
           buildAwaitStr = "";
           setNormal();
           for(let i = 0; i < num; i++) {
@@ -609,7 +615,7 @@ const rapid = (key) => {
   }
   if (currentlyHighlighting) updateVisualCoordinates();
   updateCol();
-  renderText();
+  if(isEmulating === undefined) renderText();
   if (currentState === states.command) {
     renderCommand();
   }
@@ -709,6 +715,9 @@ const interpretCommand = (str) => {
     // game here
     game();
   }
+  else if(splitcmd[0] === "game") {
+    // easy, medium, hard mode will be implemented
+  }
 };
 
 const save = (name) => {
@@ -721,21 +730,56 @@ const centerCursor = () => {
 let prevCursortop = 0;
 const scrollRelToCursor = () => {
   //TODO work on this
+  if(matrix.length === 1) return;
   const rect = document.getElementById("livecursor");
   const wrapper = document.getElementById("textwrapper");
   const top = rect.offsetTop + (wrapper.offsetTop);
   wrapper.scrollTo(0, top - (window.innerHeight / 2));
 };
 
+/* to calculate the offset of a page */
+/* this is how to optimize page rendering */
+const updateOffsetChart = () => {
+  if(matrix.length < chart.PAGESIZE) { // just render the entire page, no optimization
+    chart.start = 0;
+    chart.end = matrix.length;
+  }
+  else if(coords.row < chart.PAGESIZE/2 && matrix.length >= chart.PAGESIZE) { // this is where we have a lot of text, but the cursor is at the top
+    // contains err
+    chart.start = 0;
+    chart.end = coords.row + chart.PAGESIZE;
+    if(chart.end > matrix.length) chart.end = matrix.length;
+  }
+  else if(matrix.length - coords.row < chart.PAGESIZE/2) { // this means that we can't really center the cursor since it's at the end of the page
+    chart.start = matrix.length - 50;
+    chart.end = matrix.length;
+    if(chart.end > matrix.length) chart.end = matrix.length;
+    // centerCursor();
+  }
+  else {
+    // I dont think this case should ever hit
+    chart.start = coords.row - chart.PAGESIZE/2;
+    chart.end = coords.row + chart.PAGESIZE/2;
+    // centerCursor();
+  }
+  if(chart.start < 0 || chart.end > matrix.length) {
+    console.log("this is not a good error");
+  }
+  console.log("cull range is " +  (chart.end - chart.start) + ", which should be close to 50 total lines rendered");
+  return chart;
+}
+
 const renderText = () => {
-  let lineno = 0;
+  /* virtual scroll text, using smart optimization to let the cursor always be centered */
+  updateOffsetChart(); // get the page offset and coordinate range, we only render 50 lines of code total on the front end
+  let lineno = chart.start;
   let htmlstr = "";
-  let relativeLine = coords.row;
+  let relativeLine = coords.row-chart.start; // has to be the cursor
   let searchHighlightIndex = 0;
-  for (let i = 0; i < matrix.length; i++) {
+  for (let i = chart.start; i < chart.end; i++) {
     // htmlstr += lineno < 10 ? "  " : lineno < 100 ? " " : "";
     // htmlstr += lineno++ + "    ";
-    if (relativeLine === 0) {
+    if (i === coords.row) { // if we're on the actual cursor, display a normal line
       htmlstr +=  Math.abs(lineno)  < 10 ? "  " : lineno < 100 ? " " : "";
       htmlstr += "<span style='color:gold;'>" + lineno + "</span>" +  "    ";
     } else {
@@ -808,6 +852,10 @@ const renderText = () => {
   centerCursor();
 };
 renderText();
+
+const smartRenderText = () => {
+
+}
 
 const renderCommand = () => {
   if (currentState !== states.command) {
@@ -1116,7 +1164,7 @@ const emulateKeys = (keys) => {
     rapid({
       key: key,
       ctrlKey: false,
-    });
+    }, true);
   }
 };
 
@@ -1536,7 +1584,9 @@ const start = (gameMatrix) => {
   /* the size should stay the same, it should be the x changing */
   // matrix.unshift([" "]); // unshift new row
   // correctMatrix.unshift([" "]); 
-  matrix[rand(RAND)] = gameMatrix[0]; // set gamematrix to a random row
+  let randomNo = rand(RAND);
+  while(randomNo === coords.row) randomNo = rand(RAND);
+  matrix[randomNo] = gameMatrix[0]; // set gamematrix to a random row
   console.log(matrix);
 }
 
