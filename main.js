@@ -31,6 +31,7 @@ let currentlyHighlighting = false;
 let capitalV = false;
 let vimcopybuffer = ""; // this is what keeps track of the vim buffer when yanking or deleting
 let buildAwaitStr = ""; // to build the entire motion, such as fa, diw, ciw, d$
+let lastAwait = ""; // for '.' in normal mode
 let searchArr = [];
 let searchCoords = [];
 let commentStyle = "//"; // for now, can make dynamic
@@ -194,7 +195,7 @@ const rapid = (key, isEmulating) => {
     else if (key.key === "Escape") {
       setNormal();
       scopestate = false;
-      buildAwaitStr = ""; // incase there's a hanging state
+      clearAwait();
     } else if (key.key === "Backspace") {
       if (key.ctrlKey) {
         ctrlBack();
@@ -380,6 +381,9 @@ const rapid = (key, isEmulating) => {
       else if(key.key === "D") {
         deleteInRange(coords.col, matrix[coords.row].length-1);
       }
+      else if(key.key === ".") {// last command
+        emulateKeys(lastAwait);
+      }
     } else if (currentState === states.insert) { // insert()
       /* append letter to the current row and column which increments */
       if (key.ctrlKey) {
@@ -411,7 +415,9 @@ const rapid = (key, isEmulating) => {
         } else {
           appendText(key.key);
         }
-        buildAwaitStr = "";
+        let temp = lastAwait;
+        clearAwait();
+        lastAwait = temp;
       } else if (cmpregex.test(key.key)) {
         appendText(key.key);
         appendText(startmap[key.key]);
@@ -427,20 +433,23 @@ const rapid = (key, isEmulating) => {
       /* awaiting states such as f( diw dfl etc */
       console.log(buildAwaitStr + ", " + key.key);
       if (buildAwaitStr === "f") {
+        buildAwaitStr += key.key;
         setFind(key.key);
         setNormal();
-        buildAwaitStr = "";
+        clearAwait();
       }
       else if (buildAwaitStr === "t") {
+        buildAwaitStr += key.key;
         if (setFind(key.key)) {
           coords.col--; // t means before or to
         }
         setNormal();
-        buildAwaitStr = "";
+        clearAwait();
       } else if (buildAwaitStr === "r") {
+        buildAwaitStr += key.key;
         replaceChar(key.key);
         setNormal();
-        buildAwaitStr = "";
+        clearAwait();
       } else if (
         buildAwaitStr === "c" || buildAwaitStr === "d" || buildAwaitStr === "y"
       ) {
@@ -450,12 +459,14 @@ const rapid = (key, isEmulating) => {
         ) {
           buildAwaitStr += key.key;
         } else if (key.key === "d") {
+          buildAwaitStr += key.key;
           deleteLine();
-          buildAwaitStr = "";
+          clearAwait();
           setNormal();
         } else if (key.key === "c") {
+          buildAwaitStr += key.key;
           deleteLine();
-          buildAwaitStr = "";
+          clearAwait();
           currentState = states.insert;
         }
         else if(key.key === "k") {
@@ -465,10 +476,11 @@ const rapid = (key, isEmulating) => {
             setNormal();
           } else if(buildAwaitStr === "ck"){
             //ck
+            buildAwaitStr += key.key;
             deleteRowAndAbove();
             currentState = states.insert;
           }
-          buildAwaitStr = "";
+          clearAwait();
         }
         else if(key.key === "j") {
           buildAwaitStr += "j";
@@ -480,7 +492,7 @@ const rapid = (key, isEmulating) => {
             deleteRowAndBelow();
             currentState = states.insert;
           }
-          buildAwaitStr = "";
+          clearAwait();
         }
       } else if (
         buildAwaitStr === "di" || buildAwaitStr === "ci" ||
@@ -491,11 +503,11 @@ const rapid = (key, isEmulating) => {
           //fully built motion
           if (buildAwaitStr === "diw") {
             diw();
-            buildAwaitStr = "";
+            clearAwait();
             setNormal();
           } else if (buildAwaitStr === "ciw") {
             ciw();
-            buildAwaitStr = "";
+            clearAwait();
             currentState = states.insert;
           } else if (/[()\[\]{}\"'<>]/.test(key.key)) {
             const motion = buildAwaitStr[0] === "d"
@@ -506,7 +518,7 @@ const rapid = (key, isEmulating) => {
               ? motions.visual
               : motions.yank;
             motionInChar(key.key, motion);
-            buildAwaitStr = "";
+            clearAwait();
           }
         }
       } 
@@ -537,14 +549,14 @@ const rapid = (key, isEmulating) => {
           setNormal();
         }
         else setNormal(); // incase hanging
-        buildAwaitStr = "";
+        clearAwait();
       }
       else if (buildAwaitStr === "j") {
         if (key.key === "k") {
           del(2);
           decrementCol(); // change dec to loop with int param val
           setNormal();
-          buildAwaitStr = "";
+          clearAwait();
         }
       } else if(buildAwaitStr === leaderKey) {
         if(key.key === "w") {
@@ -552,14 +564,20 @@ const rapid = (key, isEmulating) => {
           console.log("saving real file");
           saveRealFile(currentFilename);
           setNormal();
-          buildAwaitStr = "";
+          clearAwait();
+        }
+        else if(key.key === "/") {
+          //uncomment/comment lines
+          toggleComment();
+          setNormal();
+          clearAwait();
         }
         // else if(key.key === "")
       } 
       else if(buildAwaitStr === "g") {
         if(key.key === "g") {
           coords.row = 0;
-          buildAwaitStr = "";
+          clearAwait();
           setNormal();
         }
       } 
@@ -570,7 +588,7 @@ const rapid = (key, isEmulating) => {
         } else {
           let num = parseInt(buildAwaitStr);
           if(num > 10000) num = 10000; // not too high now
-          buildAwaitStr = "";
+          clearAwait();
           setNormal();
           for(let i = 0; i < num; i++) {
             rapid(key);
@@ -579,7 +597,7 @@ const rapid = (key, isEmulating) => {
       }
       else {
         setNormal(); // return to normal it is not in constraint
-        buildAwaitStr = "";
+        clearAwait();
       }
     } else if (currentState === states.search) {
       searchCoords = [];
@@ -1594,7 +1612,7 @@ const rand = (max) => {
 }
 
 const start = (gameMatrix) => {
-  const RAND = 30;
+  const RAND = 27;
   /* the size should stay the same, it should be the x changing */
   // matrix.unshift([" "]); // unshift new row
   // correctMatrix.unshift([" "]); 
@@ -1610,7 +1628,7 @@ const game = () => {
     console.log(gameModeTable.vertical.slice(0));
     correctMatrix = [[" "]];
     matrix = [[" "]];
-    for(let i = 0; i < 30; i++) {
+    for(let i = 0; i < 27; i++) {
       matrix.push([" "]); // push a new row
       correctMatrix.push([" "]);
     }
@@ -1626,7 +1644,7 @@ const game = () => {
   console.log(gameModeTable.vertical.slice(0));
   correctMatrix = [[" "]];
   matrix = [[" "]];
-  for(let i = 0; i < 30; i++) {
+  for(let i = 0; i < 27; i++) {
     matrix.push([" "]); // push a new row
     correctMatrix.push([" "]);
   }
@@ -1637,5 +1655,27 @@ const checkGame = () => {
   if(matrixesAreEqual(matrix, correctMatrix)) {
     start([["x", " "]]);// restart game
     renderText();
+  }
+}
+
+const getFileExtension = (fileName) => {
+  const _arr = fileName.split(".");
+  return _arr[_arr.length-1];
+}
+
+const clearAwait = () => {
+  lastAwait = buildAwaitStr;
+  buildAwaitStr = "";
+}
+
+const toggleComment = () => {
+  if(currentlyHighlighting) {
+    // for(let i = 0; i < )
+  } else {
+    if(matrix[coords.row][0] === "/" && matrix[coords.row][1] === "/") {
+      matrix[coords.row].splice(0, 2); // delete comment
+    } else {
+      matrix[coords.row].unshift("/", "/"); // comment
+    }
   }
 }
