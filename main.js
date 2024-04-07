@@ -719,8 +719,9 @@ const interpretCommand = (str) => {
     if (splitcmd.length === 2) {
       currentFilename = splitcmd[1];
       updateFileName();
+    } else {
+      saveRealFile(currentFilename);
     }
-    save(currentFilename); // save current file
   } else if (splitcmd[0] === "background") {
     if (media[splitcmd[1]] !== undefined) {
       bg.style.backgroundImage = "url(" + media[splitcmd[1]] + ")";
@@ -1572,9 +1573,14 @@ const fileToString = (contents) => {
   console.log(contents);
   console.log(contents.length);
   for(let i = 0; i < contents.length; i++) {
-    str += contents[i].join("").trim();
-    str += "\n";
+    // str += contents[i].join("").trim();
+    // str += "\n";
+    let temp = contents[i].join("");
+    temp = temp.replace(/ $/, "\n");
+    console.log(temp);
+    str += temp;
   }
+  console.log(str);
   return str;
 }
 
