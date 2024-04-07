@@ -135,6 +135,15 @@ let chart = {
   start : undefined,
   end : undefined,
 }
+const unsafeMap = { // this is for user inputting html tags, XSS doesn't really matter, but displaying characters properly does
+  "&" : "&amp",
+  "<" : "&lt;",
+  ">" : "&gt;",
+  '"' : "&quot;",
+  "'" : "&#39;",
+};
+const XSSRegex = /[<>'"&]/; // regex to detect unsafe characters
+
 
 const rapid = (key, isEmulating) => {
   /* cases for alt key, control key, backspace, etc */
@@ -787,6 +796,13 @@ const updateOffsetChart = () => {
   return chart;
 }
 
+const updateRenderChar = (char) => {
+  let c = char;
+  if(XSSRegex.test(char)) 
+    c = unsafeMap[char]; // if it's an unsafe character, replace it with the safe character
+  return c;
+}
+
 const renderText = () => {
   /* virtual scroll text, using smart optimization to let the cursor always be centered */
   updateOffsetChart(); // get the page offset and coordinate range, we only render 50 lines of code total on the front end
@@ -812,6 +828,7 @@ const renderText = () => {
     lineno++;
     for (let j = 0; j < matrix[i].length; j++) {
       if (matrix[i][j] !== undefined) {
+        let renderChar = updateRenderChar(matrix[i][j]);
         if (coords.row === i && coords.col === j) {
           let span = "<span";
           if (currentState === states.insert) {
@@ -830,7 +847,7 @@ const renderText = () => {
             span +=
               " id='livecursor' style='" + cursorStyle + "'";
           }
-          span += ">" + matrix[i][j] + "</span>";
+          span += ">" + renderChar + "</span>";
           htmlstr += span;
         } else if (
           currentlyHighlighting && capitalV &&
@@ -838,7 +855,8 @@ const renderText = () => {
         ) { // in visual range
           htmlstr += "<span style='background-color:" + HIGHLIGHTCOLOR + ";'>"; // build inner text
           while(j < matrix[i].length && (coords.row !== i || coords.col !== j)) {
-            htmlstr += matrix[i][j++];
+            htmlstr += renderChar;
+            renderChar = updateRenderChar(matrix[i][++j]);
           }
           j--;
           htmlstr += "</span>";
@@ -848,7 +866,7 @@ const renderText = () => {
           inRange(j, visualcoords.from.col, visualcoords.to.col)
         ) {
           htmlstr += "<span style='background-color:" + HIGHLIGHTCOLOR + ";'>" +
-            matrix[i][j] + "</span>";
+            renderChar + "</span>";
         } else if (
           searchCoords.length > 0 &&
           (currentState === states.search || nKey) &&
@@ -858,12 +876,12 @@ const renderText = () => {
           j <= searchCoords[searchHighlightIndex].end
         ) { // render search
           htmlstr += "<span style='background-color:" + canvas.highlightyellow +
-            ";'>" + matrix[i][j] + "</span>";
+            ";'>" + renderChar + "</span>";
           if (searchCoords[searchHighlightIndex].end === j) {
             searchHighlightIndex++;
           }
         } else {
-          htmlstr += matrix[i][j];
+          htmlstr += renderChar;
         }
       }
     }
