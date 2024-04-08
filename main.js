@@ -1812,6 +1812,12 @@ const createTrail = () => {
     context.clearRect(0, 0, width, height);
     calculatePosition();
 
+    if(currentState === states.normal) {
+      sizeX = 9.3;
+    }
+    else if(currentState === states.insert) {
+      sizeX = 1;
+    }
     drawLines();
   }
   return {
