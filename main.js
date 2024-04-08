@@ -893,6 +893,10 @@ const renderText = () => {
   }
   text.innerHTML = htmlstr;
   dispatchCursor(); // vide render
+/* CREDIT GOES TO  https://github.com/qwreey/dotfiles/blob/master/vscode/trailCursorEffect/index.js
+*  for part of the code for the animation, which also came from the uselessweb website
+*  although, it still took 2 hours to integrate chunks of the code into this site, as it was native to vscode prior
+* */
   // render with id here
   centerCursor();
 };
@@ -1722,7 +1726,7 @@ const pollingRate = 500;
 
 //heavily inspired from https://github.com/qwreey/dotfiles/blob/master/vscode/trailCursorEffect/index.js
 const createTrail = () => {
-  const totalParticles = 5;
+  const totalParticles = 4;
   let particlesColor = "white"; // cursor color here
   const style = cursors.block; // can change later
   const context = cvs.getContext("2d");
@@ -1739,6 +1743,7 @@ const createTrail = () => {
     cvs.width = x;
     cvs.height = y;
   }
+  updateSize(width, height);
 
   class Vec2 {
     constructor(x, y) {
