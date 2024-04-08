@@ -8,6 +8,7 @@ let filemap = {}; // keep track of all files
 let realFileMap = {}; // for actual files
 let userfiles;
 let currentFilename = "Untitled";
+let lastCursorPos = {x:0, y:0};
 const keys =
   "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()";
 const states = {
@@ -591,7 +592,6 @@ const rapid = (key, isEmulating) => {
         }
       } 
       else if(/[1-9]/.test(buildAwaitStr)) {
-        console.log("here yo");
         if(/[0-9]/.test(key.key)) {
           buildAwaitStr += key.key
         } else {
@@ -793,7 +793,6 @@ const updateOffsetChart = () => {
   if(chart.start < 0 || chart.end > matrix.length) {
     console.log("this is not a good error");
   }
-  console.log("cull range is " +  (chart.end - chart.start) + ", which should be close to 50 total lines rendered");
   return chart;
 }
 
@@ -806,6 +805,7 @@ const updateRenderChar = (char) => {
 
 const renderText = () => {
   /* virtual scroll text, using smart optimization to let the cursor always be centered */
+  updateLastCursor(); // to create the following animations
   updateOffsetChart(); // get the page offset and coordinate range, we only render 50 lines of code total on the front end
   let lineno = chart.start;
   let htmlstr = "";
@@ -831,6 +831,9 @@ const renderText = () => {
       if (matrix[i][j] !== undefined) {
         let renderChar = updateRenderChar(matrix[i][j]);
         if (coords.row === i && coords.col === j) {
+          /* CURSOR CHAR */
+          // render it here
+
           let span = "<span";
           if (currentState === states.insert) {
             span += " id='livecursor' style='border-left: 1px solid white;'";
@@ -889,13 +892,22 @@ const renderText = () => {
     htmlstr += "<br>";
   }
   text.innerHTML = htmlstr;
+  dispatchCursor(); // vide render
   // render with id here
   centerCursor();
 };
-renderText();
 
-const smartRenderText = () => {
+const updateLastCursor = () => {
+  let csr = document.getElementById("livecursor");
+  if(csr === null) return; // no last cursor
+  let rect = csr.getBoundingClientRect();
+  lastCursorPos.x = rect.x;
+  lastCursorPos.y = rect.y;
+}
 
+const dispatchCursor = () => {
+  let rect = document.getElementById("livecursor").getBoundingClientRect();
+  videHandler.move(rect.x, rect.y);
 }
 
 const renderCommand = () => {
@@ -1703,3 +1715,123 @@ const toggleComment = () => {
     }
   }
 }
+
+let cvs;
+let cursorIsInit = false;
+const pollingRate = 500;
+
+//heavily inspired from https://github.com/qwreey/dotfiles/blob/master/vscode/trailCursorEffect/index.js
+const createTrail = () => {
+  const totalParticles = 5;
+  let particlesColor = "white"; // cursor color here
+  const style = cursors.block; // can change later
+  const context = cvs.getContext("2d");
+  let cursor = { x: 0, y: 0 }; // coords here
+  let particles = [];
+  let width = document.body.clientWidth;
+  let height = document.body.clientHeight;
+  let sizeX = document.getElementById("livecursor")?.getBoundingClientRect().width | 9.3;
+  // let sizeY = sizeX*2.2;
+  let sizeY = document.getElementById("livecursor")?.getBoundingClientRect().width | 17;
+  const updateSize = (x,y) => {
+    width = x;
+    height = y;
+    cvs.width = x;
+    cvs.height = y;
+  }
+
+  class Vec2 {
+    constructor(x, y) {
+      this.position = {x : x, y : y};
+    }
+  }
+
+  const addParticle = (x, y, image) => {
+    particles.push(new Vec2(x, y, image))
+  }
+
+  const calculatePosition = () => {
+    let x = cursor.x,y = cursor.y;
+
+    for (const particleIndex in particles) {
+      const nextParticlePos = (particles[+particleIndex + 1] || particles[0]).position
+      const particlePos = particles[+particleIndex].position
+
+      particlePos.x = x;
+      particlePos.y = y;
+      
+      x += (nextParticlePos.x - particlePos.x) * 0.42
+      y += (nextParticlePos.y - particlePos.y) * 0.35
+    }
+  }
+
+  const move = (x, y) => {
+    console.log("x is " + x + ", y is " + y);
+    x = x + sizeX/2;
+    cursor.x = x;
+    cursor.y = y;
+    if (cursorIsInit === false) {
+      cursorIsInit = true
+      for (let i = 0; i < totalParticles; i++) {
+        addParticle(x, y);
+      }
+    }
+  }
+
+  const drawLines = () => {
+    context.beginPath();
+    context.lineJoin = "round";
+    context.strokeStyle = particlesColor;
+    const lineWidth = Math.min(sizeX,sizeY);
+    context.lineWidth = lineWidth;
+
+    let ymut = (sizeY-lineWidth)/3
+    for (let yoffset=0;yoffset<=3;yoffset++) {
+      let offset = yoffset*ymut
+      for (const particleIndex in particles) {
+        const pos = particles[particleIndex].position
+        if (particleIndex == 0) {
+          context.moveTo(pos.x, pos.y + offset + lineWidth/2)
+        } else {
+          context.lineTo(pos.x, pos.y + offset + lineWidth/2)
+        }
+      }
+    }
+    context.stroke();
+  }
+
+  const updateParticles = () => {
+    if (!cursorIsInit) return;
+    const rect = document.getElementById("livecursor").getBoundingClientRect();
+
+    context.clearRect(0, 0, width, height);
+    calculatePosition();
+
+    drawLines();
+  }
+  return {
+    updateParticles: updateParticles,
+    move: move,
+    updateSize: updateSize,
+  }
+}
+
+const updateLoop = () => {
+  videHandler.updateParticles();
+  requestAnimationFrame(updateLoop)
+}
+
+const initVide = () => {
+  // create cursor canvas (prioritized blank canvas that draws cursor animations)
+  cvs = document.createElement("canvas");
+  cvs.style.position = "absolute";
+  cvs.style.pointerEvents = "none";
+  cvs.style.top = "0px";
+  cvs.style.left = "0px";
+  cvs.style.zIndex = "1000";
+  document.body.appendChild(cvs);
+}
+initVide();
+const videHandler = createTrail();
+updateLoop();
+renderText();
