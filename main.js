@@ -666,6 +666,7 @@ const rapid = (key, isEmulating) => {
   }
   if (currentlyHighlighting) updateVisualCoordinates();
   updateCol();
+  updateBar();
   if(isEmulating === undefined) renderText();
   if (currentState === states.command) {
     renderCommand();
@@ -1595,6 +1596,31 @@ const setAwait = () => {
 const setNormal = () => {
   currentState = states.normal;
   currentCursor = cursors.block;
+}
+
+const updateBar = () => {
+  checkState();
+  updateLineAndCol();
+}
+
+const updateLineAndCol = () => {
+  document.getElementById("currentrow").innerText = "line " + coords.row;
+  document.getElementById("currentcol").innerText = " Col " + coords.col;
+}
+
+const checkState = () => {
+  if(currentlyHighlighting) {
+    document.getElementById("currentstate").innerText = " VISUAL ";
+    document.getElementById("currentstate").style.backgroundColor = "purple";
+  }
+  else if(currentState === states.normal) {
+    document.getElementById("currentstate").innerText = " NORMAL ";
+    document.getElementById("currentstate").style.backgroundColor = "red";
+  }
+  else if(currentState === states.insert) {
+    document.getElementById("currentstate").innerText = " INSERT ";
+    document.getElementById("currentstate").style.backgroundColor = "#dfff00";
+  }
 }
 
 const replace = (string, replaceString) => { // replace globally
