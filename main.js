@@ -63,7 +63,10 @@ const canvas = {
   whitetransparent: "rgba(255, 255, 255, .5)",
   highlightyellow: "rgba(252, 221, 57, 1)",
   highlightorange : "rgba(240, 136, 62, 1)",
-  vimgrey: "#30363d"
+  vimgrey: "#30363d",
+  visualpurple : "#5a24b1",
+  insertblue : "#0b9dff",
+  orangeprogress : "#ffa657",
 };
 const media = { // collection of potential background images
   none: "none",
@@ -146,6 +149,7 @@ const unsafeMap = { // this is for user inputting html tags, XSS doesn't really 
 };
 const XSSRegex = /[<>'"&]/; // regex to detect unsafe characters
 let smooth = false;
+const stopDeleteRegex = /[ \[\]\(\)"'{}\.\-=]/;
 
 
 const rapid = (key, isEmulating) => {
@@ -1226,17 +1230,19 @@ const appendStringAsText = (string) => {
   }
 }
 
+const isStopDelete = (strchar) => { return stopDeleteRegex.test(strchar); };
+
 const diw = () => {
   let start;
   let end;
   for (let i = coords.col; i < matrix[coords.row].length; i++) {
-    if (matrix[coords.row][i] === " ") {
+    if (isStopDelete(matrix[coords.row][i])) {
       end = i;
       break;
     }
   }
   for (let i = coords.col - 1; i >= 0; i--) { // iterate over the lesser
-    if (matrix[coords.row][i] === " ") {
+    if (isStopDelete(matrix[coords.row][i])) {
       start = i + 1;
       break;
     }
@@ -1283,6 +1289,7 @@ const updateFileName = () => {
   document.getElementById(currentFilename + "_file").style.backgroundColor =
     canvas.vimgrey;
   // document.getElementById(currentFilename + "_file").innerText = "  " + currentFilename + "  ";
+  document.getElementById("currentlyediting").innerText =" 📁 " + currentFilename + "   ";
 };
 
 const updatePrevCol = () => {
@@ -1295,7 +1302,7 @@ const scrollDown = (lines) => {
 const ctrlBack = () => {
   let count = 0;
   for (let i = coords.col; i >= 0; i--) {
-    if (matrix[coords.row][i] === " " && i < coords.col - 1) {
+    if (isStopDelete(matrix[coords.row][i]) && i < coords.col - 1) {
       matrix[coords.row].splice(i + 1, count - 1);
       coords.col -= count - 1;
       return;
@@ -1601,6 +1608,7 @@ const setNormal = () => {
 const updateBar = () => {
   checkState();
   updateLineAndCol();
+  updatePercent();
 }
 
 const updateLineAndCol = () => {
@@ -1608,10 +1616,22 @@ const updateLineAndCol = () => {
   document.getElementById("currentcol").innerText = " Col " + coords.col;
 }
 
+const updatePercent = () => {
+  console.log(coords.row + ", " + matrix.length);
+  let gradientPercent = Math.floor(coords.row / (matrix.length - 1) * 100);
+  if(matrix.length - 1 === 0) gradientPercent = 0;
+  console.log(gradientPercent);
+  let htmlStr = "<span>" + gradientPercent + "%</span>";
+  const style = 
+  htmlStr += "<span style='background:linear-gradient(180deg, rgba(0,0,0,0) '+ 100-gradientPercent + '%, rgba(255,255,255,1) ' + gradientPercent + '%)'> </span>";
+  document.getElementById("rowpercent").innerHTML = htmlStr;
+}
+
+
 const checkState = () => {
   if(currentlyHighlighting) {
     document.getElementById("currentstate").innerText = " VISUAL ";
-    document.getElementById("currentstate").style.backgroundColor = "purple";
+    document.getElementById("currentstate").style.backgroundColor = canvas.visualpurple;
   }
   else if(currentState === states.normal) {
     document.getElementById("currentstate").innerText = " NORMAL ";
@@ -1619,7 +1639,7 @@ const checkState = () => {
   }
   else if(currentState === states.insert) {
     document.getElementById("currentstate").innerText = " INSERT ";
-    document.getElementById("currentstate").style.backgroundColor = "#dfff00";
+    document.getElementById("currentstate").style.backgroundColor = canvas.insertblue;
   }
 }
 

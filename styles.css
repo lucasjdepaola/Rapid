@@ -43,7 +43,8 @@ body {
   padding:0;
   white-space:pre;
   color:white;
-  font-family:"comicmono";
+  /* font-family:"comicmono"; */
+  font-family:"nfm";
   background-color:rgba(48, 54, 61, .8);
   overflow:hidden;
   line-height:1.3;
@@ -66,9 +67,9 @@ body {
 }
 #currentstate {
   /* padding-left:1%; */
-  background-color: #dfff00;
+  background-color: #0b9dff;
   border-radius:10px;
-  color:black;
+  color:white;
 }
 #currentlyediting {
   color: #63ac8d;
@@ -78,6 +79,8 @@ body {
   height:100%;
   vertical-align:middle;
   height:100%;
+}
+#rowpercent {
 }
 #text {
   position:relative;
@@ -114,4 +117,9 @@ body {
 @font-face {
   font-family:"comicmono";
   src: url("./fonts/ComicMono.ttf");
+}
+
+@font-face {
+  font-family:"nfm";
+  src: url("./fonts/nfm.ttf");
 }
