@@ -1,3 +1,4 @@
+// TODO transfer cursor from text to command line when entering a command or searching, keep the cursor normal
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
@@ -954,7 +955,7 @@ const renderCommand = () => {
     return;
   }
   command.innerHTML = "$ " + commandArr.join("") +
-    "<span style='border-left:1px solid white;'> </span>";
+    "<span id='livecursor' style='border-left:1px solid white;'> </span>";
 };
 
 const del = (num) => {
