@@ -3,6 +3,7 @@ const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
 const bg = document.getElementById("bg");
 const command = document.getElementById("command");
+const bottombar = document.getElementById("bottombar"); // bottom ui bar
 let matrix = [[" "]];
 let filemap = {}; // keep track of all files
 let realFileMap = {}; // for actual files
@@ -144,6 +145,7 @@ const unsafeMap = { // this is for user inputting html tags, XSS doesn't really 
   "'" : "&#39;",
 };
 const XSSRegex = /[<>'"&]/; // regex to detect unsafe characters
+let smooth = false;
 
 
 const rapid = (key, isEmulating) => {
@@ -422,7 +424,36 @@ const rapid = (key, isEmulating) => {
           setNormal();
           decrementCol();
           del(1);
-        } else {
+        } 
+        else if(key.key === "s") { // console.log()
+          decrementCol();
+          del(1);
+          appendStringAsText('console.log("line ' + coords.row + '" + );');
+          coords.col -= 2; // go back in paren
+          clearAwait();
+        }
+        else if(key.key === "c") {
+          decrementCol();
+          del(1);
+          appendStringAsText('printf("line ' + coords.row + ' ");');
+          coords.col -= 3; // go back in paren
+          clearAwait();
+        }
+        else if(key.key === "v") {
+          decrementCol();
+          del(1);
+          appendStringAsText('System.out.println("line ' + coords.row + '" + );');
+          coords.col -= 2; // go back in paren
+          clearAwait();
+        }
+        else if(key.key === "p") {
+          decrementCol();
+          del(1);
+          appendStringAsText('print("line ' + coords.row + '" + );');
+          coords.col -= 2; // go back in paren
+          clearAwait();
+        }
+        else {
           appendText(key.key);
         }
         let temp = lastAwait;
@@ -561,14 +592,7 @@ const rapid = (key, isEmulating) => {
         else setNormal(); // incase hanging
         clearAwait();
       }
-      else if (buildAwaitStr === "j") {
-        if (key.key === "k") {
-          del(2);
-          decrementCol(); // change dec to loop with int param val
-          setNormal();
-          clearAwait();
-        }
-      } else if(buildAwaitStr === leaderKey) {
+      else if(buildAwaitStr === leaderKey) {
         if(key.key === "w") {
           // save TODO interpretcommand(string) so commands can be bound
           console.log("saving real file");
@@ -746,6 +770,9 @@ const interpretCommand = (str) => {
   else if(splitcmd[0] === "game") {
     // easy, medium, hard mode will be implemented
   }
+  else if(cmdstr === "smooth") {
+    initVide();
+  }
 };
 
 const save = (name) => {
@@ -892,7 +919,9 @@ const renderText = () => {
     htmlstr += "<br>";
   }
   text.innerHTML = htmlstr;
-  dispatchCursor(); // vide render
+  if(smooth) {
+    dispatchCursor(); // vide render
+  }
 /* CREDIT GOES TO  https://github.com/qwreey/dotfiles/blob/master/vscode/trailCursorEffect/index.js
 *  for part of the code for the animation, which also came from the uselessweb website
 *  although, it still took 2 hours to integrate chunks of the code into this site, as it was native to vscode prior
@@ -1189,6 +1218,12 @@ const pasteBuffer = () => {
 const appendText = (key) => {
   matrix[coords.row].splice(coords.col++, 0, key);
 };
+
+const appendStringAsText = (string) => {
+  for(const e of string) {
+    appendText(e + "");
+  }
+}
 
 const diw = () => {
   let start;
@@ -1724,7 +1759,8 @@ let cvs;
 let cursorIsInit = false;
 const pollingRate = 500;
 
-//heavily inspired from https://github.com/qwreey/dotfiles/blob/master/vscode/trailCursorEffect/index.js
+// heavily inspired from https://github.com/qwreey/dotfiles/blob/master/vscode/trailCursorEffect/index.js
+// https://github.com/tholman/cursor-effects the useless web
 const createTrail = () => {
   const totalParticles = 4;
   let particlesColor = "white"; // cursor color here
@@ -1734,9 +1770,9 @@ const createTrail = () => {
   let particles = [];
   let width = document.body.clientWidth;
   let height = document.body.clientHeight;
-  let sizeX = document.getElementById("livecursor")?.getBoundingClientRect().width | 9.3;
+  let sizeX = 9.3;
   // let sizeY = sizeX*2.2;
-  let sizeY = document.getElementById("livecursor")?.getBoundingClientRect().width | 17;
+  let sizeY = 17;
   const updateSize = (x,y) => {
     width = x;
     height = y;
@@ -1832,6 +1868,7 @@ const updateLoop = () => {
   requestAnimationFrame(updateLoop)
 }
 
+let videHandler;
 const initVide = () => {
   // create cursor canvas (prioritized blank canvas that draws cursor animations)
   cvs = document.createElement("canvas");
@@ -1841,8 +1878,9 @@ const initVide = () => {
   cvs.style.left = "0px";
   cvs.style.zIndex = "1000";
   document.body.appendChild(cvs);
+  videHandler = createTrail();
+  smooth = true;
+  updateLoop();
+
 }
-initVide();
-const videHandler = createTrail();
-updateLoop();
 renderText();
