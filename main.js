@@ -150,7 +150,7 @@ const unsafeMap = { // this is for user inputting html tags, XSS doesn't really 
 };
 const XSSRegex = /[<>'"&]/; // regex to detect unsafe characters
 let smooth = false;
-const stopDeleteRegex = /[ \[\]\(\)"'{}\.\-=]/;
+const stopDeleteRegex = /[ \[\]\(\)"'{}\.\-=\+]/;
 
 
 const rapid = (key, isEmulating) => {
@@ -198,6 +198,9 @@ const rapid = (key, isEmulating) => {
       }
       else if(currentState === states.normal && currentlyHighlighting) {
         browserSearch(getHighlightedText());
+      }
+      else if(exploring) {
+        Explore(workingDirectory[coords.row]); // we select the array based on what row the user is on
       }
       else {
         interpretCommand();
@@ -571,6 +574,7 @@ const rapid = (key, isEmulating) => {
               : motions.yank;
             motionInChar(key.key, motion);
             clearAwait();
+            setNormal();
           }
         }
       } 
@@ -710,6 +714,7 @@ userFolder.addEventListener("click", async () => {
     mode: "readwrite"
   };
   dirHandle = await window.showDirectoryPicker(options);
+  //TODO make recursive for recursive directories
   for await(const entry of dirHandle.values()) {
     if(entry.kind === "file") {
       //handle file
@@ -718,10 +723,55 @@ userFolder.addEventListener("click", async () => {
       await importRealFile(entry);
     }
     else if(entry.kind === "directory") {
-      console.log("cannot handle directories yet");
+      console.log("logging the directory handle");
+      console.log(entry);
     }
   }
 });
+
+const getSubFiles = async(dirHandle, parents) => {
+  let file = {name : "", filehandle : ""};
+  const filearr = [];
+  for await(const entry of dirHandle.values()) {
+    if(entry.kind === "file") {
+      //handle file
+      realFileMap[entry.name] = entry;
+      console.log("file" + entry);
+      await importRealFile(entry);
+    }
+    else if(entry.kind === "directory") {
+      console.log("logging the directory handle");
+      console.log(entry);
+      getSubFiles(entry, parents + "/" + entry.name);
+    }
+  }
+  return filearr;
+}
+
+const lsDirs = async(dirHandle) => {
+  const dirs = [];
+  for await(const entry of dirHandle.values()) {
+    if(entry.kind === "directory") {
+      console.log("logging the directory handle");
+      console.log(entry);
+      dirs.push(entry);
+    }
+  }
+  return dirs;
+}
+
+const lsRecursive = async(dirHandle) => {
+  const dirs = [];
+  for await(const entry of dirHandle.values()) {
+    if(entry.kind === "directory") {
+      console.log("logging the directory handle");
+      console.log(entry);
+      dirs.push(entry);
+      dirs.push(...lsRecursive(entry)); // recurse
+    }
+  }
+  return dirs;
+}
 
 document.addEventListener("keydown", rapid);
 document.addEventListener("touchstart", () => {
@@ -784,6 +834,9 @@ const interpretCommand = (str) => {
   }
   else if(cmdstr === "smooth") {
     initVide();
+  }
+  else if(cmdstr.toLowerCase() === "explore") {
+    Explore(dirHandle); // browser vim files, could be real files based on the directory, which would be more viable
   }
 };
 
@@ -1624,13 +1677,13 @@ const updateLineAndCol = () => {
 }
 
 const updatePercent = () => {
-  console.log(coords.row + ", " + matrix.length);
   let gradientPercent = Math.floor(coords.row / (matrix.length - 1) * 100);
   if(matrix.length - 1 === 0) gradientPercent = 0;
-  console.log(gradientPercent);
-  let htmlStr = "<span>" + gradientPercent + "%</span>";
-  const style = 
-  htmlStr += "<span style='background:linear-gradient(180deg, rgba(0,0,0,0) '+ 100-gradientPercent + '%, rgba(255,255,255,1) ' + gradientPercent + '%)'> </span>";
+  let htmlStr = "";
+  const style = 'background:linear-gradient(180deg, rgba(0,0,0,0) '+ (100 - gradientPercent) + '%, rgba(255,166,87,1)' + gradientPercent + '%);';
+  htmlStr += "<span style='" + style + "'" + "> </span>";
+  htmlStr += "<span>" + gradientPercent + "%</span>";
+  // cursorStyle = "background:linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(255,255,255,1) 50%);color:black;";
   document.getElementById("rowpercent").innerHTML = htmlStr;
 }
 
@@ -1969,8 +2022,8 @@ const googleQuery = (str) => {
 const browserSearch = (str) => {
   document.getElementById("browserinstance").style.display = "flex";
   let url;
-  if(str.includes("https://")) {
-
+  if(str.includes(".")) {
+    url = "https://" + str.trim();
   }
   else {
     console.log(str)
@@ -1983,6 +2036,39 @@ const browserSearch = (str) => {
 
 const quitAllDivs = () => {
   document.getElementById("browserinstance").style.display = "none";
+}
+
+let exploring = false;
+let workingDirectory;
+let parentDir;
+const Explore = async(dir) => {
+  if(dir.kind === "file") {
+    exploring = false;
+    interpretCommand("e " + dir.name); // open the selected file
+  }
+  // vim explore
+  exploring = true;
+  interpretCommand("e Explore"); // go to new file
+  if(dirHandle !== undefined) {
+    matrix = [[" "]];
+    workingDirectory = await lsDirs(dir);
+    if(parentDir !== undefined) {
+      matrix[0] = [".", ".", " "];
+      workingDirectory.unshift(parentDir); // add parent as first
+    }
+    let count = 0;
+    for(const e of workingDirectory) {
+      console.log(e.name);
+      for(let i = 0; i < e.name.length; i++) {
+        if(matrix[count] === undefined) matrix[count] = [" "];
+        matrix[count][i] = e.name[i];
+      }
+      matrix[count].push(..." (directory) ".split(""));
+      count++;
+    }
+  }
+  parentDir = dir;
+  renderText();
 }
 
 renderText();
