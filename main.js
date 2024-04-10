@@ -196,6 +196,9 @@ const rapid = (key, isEmulating) => {
         toggleScope();
         priorityStr = "";
       }
+      else if(currentState === states.normal && currentlyHighlighting) {
+        browserSearch(getHighlightedText());
+      }
       else {
         interpretCommand();
       }
@@ -400,6 +403,9 @@ const rapid = (key, isEmulating) => {
       }
       else if(key.key === ".") {// last command
         emulateKeys(lastAwait);
+      }
+      else if(key.key === "q") {
+        quitAllDivs();
       }
     } else if (currentState === states.insert) { // insert()
       /* append letter to the current row and column which increments */
@@ -1930,4 +1936,53 @@ const initVide = () => {
   updateLoop();
 
 }
+
+//useful for visual range commands
+const getHighlightedText = () => {
+  const minRow = Math.min(visualcoords.from.row, visualcoords.to.row);
+  const maxRow = Math.max(visualcoords.from.row, visualcoords.to.row);
+  let str = "";
+  // row for now
+  for(let i = minRow; i <= maxRow; i++) {
+    for(let j = 0; j < matrix[i].length; j++) {
+      str += matrix[i][j];
+    }
+  }
+  console.log(str);
+  return str;
+}
+
+const browserInstance = document.getElementById("browserinstance");
+const browser = () => {
+  //https://www.google.com/search?q=test
+  //https://www.google.com/webhp?igu=1
+
+
+}
+
+/* given a string, return a google link query */
+const googleQuery = (str) => {
+  // return "https://www.google.com/search?q=" + str.replaceAll(" ", "+");
+  return "https://www.google.com/search?q=" + str.replaceAll(" ", "+") + "&igu=1";
+}
+
+const browserSearch = (str) => {
+  document.getElementById("browserinstance").style.display = "flex";
+  let url;
+  if(str.includes("https://")) {
+
+  }
+  else {
+    console.log(str)
+    url = googleQuery(str);
+  }
+  console.log(url);
+  document.getElementById("browseriframe").src = url;
+  console.log(url);
+}
+
+const quitAllDivs = () => {
+  document.getElementById("browserinstance").style.display = "none";
+}
+
 renderText();
