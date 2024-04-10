@@ -574,7 +574,6 @@ const rapid = (key, isEmulating) => {
               : motions.yank;
             motionInChar(key.key, motion);
             clearAwait();
-            setNormal();
           }
         }
       } 
