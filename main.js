@@ -1679,7 +1679,10 @@ const updatePercent = () => {
   let gradientPercent = Math.floor(coords.row / (matrix.length - 1) * 100);
   if(matrix.length - 1 === 0) gradientPercent = 0;
   let htmlStr = "";
-  const style = 'background:linear-gradient(180deg, rgba(0,0,0,0) '+ (100 - gradientPercent) + '%, rgba(255,166,87,1)' + gradientPercent + '%);';
+  const style = 'background:linear-gradient(180deg, rgba(0,0,0,0) '+ (100 - gradientPercent) + '%, rgba(255,166,87,1) 0 ' + gradientPercent + '%);';
+  console.log(100 - gradientPercent);
+  console.log(gradientPercent);
+  console.log(((100-gradientPercent) + gradientPercent) + ", should equal 100")
   htmlStr += "<span style='" + style + "'" + "> </span>";
   htmlStr += "<span>" + gradientPercent + "%</span>";
   // cursorStyle = "background:linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(255,255,255,1) 50%);color:black;";
