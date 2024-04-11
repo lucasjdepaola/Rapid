@@ -152,9 +152,11 @@ const XSSRegex = /[<>'"&]/; // regex to detect unsafe characters
 let smooth = false;
 const stopDeleteRegex = /[ \[\]\(\)"'{}\.\-=\+]/;
 
+const assertExploring = () => { exploring = currentFilename === "Explore" };
 
 const rapid = (key, isEmulating) => {
   /* cases for alt key, control key, backspace, etc */
+  assertExploring();
   if (key.key === " ") key.preventDefault();
   nKey = (key.key === "n" || key.key === "N") && currentState === states.normal;
   if (key.key.length > 1) {
@@ -200,7 +202,7 @@ const rapid = (key, isEmulating) => {
         browserSearch(getHighlightedText());
       }
       else if(exploring) {
-        Explore(workingDirectory[coords.row]); // we select the array based on what row the user is on
+        select(workingDirectory[coords.row]); // we select the array based on what row the user is on
       }
       else {
         interpretCommand();
@@ -728,7 +730,7 @@ userFolder.addEventListener("click", async () => {
   }
 });
 
-const getSubFiles = async(dirHandle, parents) => {
+const getSubFiles = async(dirHandle) => {
   let file = {name : "", filehandle : ""};
   const filearr = [];
   for await(const entry of dirHandle.values()) {
@@ -753,6 +755,27 @@ const lsDirs = async(dirHandle) => {
     if(entry.kind === "directory") {
       console.log("logging the directory handle");
       console.log(entry);
+      dirs.push(entry);
+    }
+  }
+  return dirs;
+}
+
+const ls = async(dirHandle) => {
+  if(dirHandle.kind === "file") {
+    console.log("this should not happen");
+  }
+  const dirs = [];
+  for await(const entry of dirHandle.values()) {
+    if(entry.kind === "directory") {
+      console.log("logging the directory handle");
+      console.log(entry);
+      dirs.push(entry);
+    }
+  }
+
+  for await(const entry of dirHandle.values()) {
+    if(entry.kind === "file") {
       dirs.push(entry);
     }
   }
@@ -836,6 +859,9 @@ const interpretCommand = (str) => {
   }
   else if(cmdstr.toLowerCase() === "explore") {
     Explore(dirHandle); // browser vim files, could be real files based on the directory, which would be more viable
+  }
+  else if(cmdstr === "source") {
+    sourceConfig();
   }
 };
 
@@ -1680,10 +1706,7 @@ const updatePercent = () => {
   if(matrix.length - 1 === 0) gradientPercent = 0;
   let htmlStr = "";
   const style = 'background:linear-gradient(180deg, rgba(0,0,0,0) '+ (100 - gradientPercent) + '%, rgba(255,166,87,1) 0 ' + gradientPercent + '%);';
-  console.log(100 - gradientPercent);
-  console.log(gradientPercent);
-  console.log(((100-gradientPercent) + gradientPercent) + ", should equal 100")
-  htmlStr += "<span style='" + style + "'" + "> </span>";
+  htmlStr += "<span style='" + style + "'" + ">  </span>";
   htmlStr += "<span>" + gradientPercent + "%</span>";
   // cursorStyle = "background:linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(255,255,255,1) 50%);color:black;";
   document.getElementById("rowpercent").innerHTML = htmlStr;
@@ -2042,35 +2065,68 @@ const quitAllDivs = () => {
 
 let exploring = false;
 let workingDirectory;
-let parentDir;
 const Explore = async(dir) => {
+  console.log(dir);
+  console.log(dir.name);
+  if(dir === undefined) return;
   if(dir.kind === "file") {
+    console.log(dir);
+    // handle file selection
+    importRealFile(dir)
     exploring = false;
-    interpretCommand("e " + dir.name); // open the selected file
   }
   // vim explore
   exploring = true;
   interpretCommand("e Explore"); // go to new file
   if(dirHandle !== undefined) {
     matrix = [[" "]];
-    workingDirectory = await lsDirs(dir);
-    if(parentDir !== undefined) {
+    workingDirectory = await ls(dir);
+    // TODO fix bug in here
+    let hasParent = dir.parent !== undefined;
+    if(hasParent) {
       matrix[0] = [".", ".", " "];
-      workingDirectory.unshift(parentDir); // add parent as first
+      workingDirectory.unshift(dir.parent); // add parent as first
     }
     let count = 0;
     for(const e of workingDirectory) {
-      console.log(e.name);
+      if(count === 0 && hasParent) {
+        count++;
+        continue;
+      }
+      e.parent = dir; // asserting that the parent is defined
       for(let i = 0; i < e.name.length; i++) {
         if(matrix[count] === undefined) matrix[count] = [" "];
         matrix[count][i] = e.name[i];
       }
-      matrix[count].push(..." (directory) ".split(""));
+      if(e.kind === "directory") {
+        matrix[count].push(..." (directory) ".split(""));
+      }
+      else {
+        matrix[count].push(" ");
+      }
       count++;
     }
   }
-  parentDir = dir;
   renderText();
+}
+
+const select = async(fileOrDir) => {
+  if(fileOrDir.kind === "file") {
+    if(filemap[fileOrDir.name] !== undefined) {
+      interpretCommand("e " + fileOrDir.name);
+      exploring = false; // stop exploring
+    } else {
+      importRealFile(fileOrDir);
+    }
+  } else {
+    Explore(fileOrDir); // continue to normal exploring
+  }
+}
+
+const sourceConfig = () => {
+  for(let i = 0; i < matrix.length; i++) {
+    interpretCommand(matrix[i].join("").replace(/ $/, ""));
+  }
 }
 
 renderText();
