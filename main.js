@@ -1,3 +1,4 @@
+// TODO cache local config
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
