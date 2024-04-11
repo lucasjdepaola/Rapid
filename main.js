@@ -1,4 +1,3 @@
-// TODO cache local config
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
@@ -195,7 +194,6 @@ const rapid = (key, isEmulating) => {
       else if(currentState === states.scope) {
         //bandaid TODO
         interpretCommand("e " + priorityStr);
-        console.log(priorityStr);
         toggleScope();
         priorityStr = "";
       }
@@ -214,7 +212,6 @@ const rapid = (key, isEmulating) => {
       if(currentState === states.insert) {
         for(let i = 0; i < TABWIDTH.length; i++) {
           appendText(" ");
-          console.log("appending");
         }
       }
     }
@@ -442,7 +439,7 @@ const rapid = (key, isEmulating) => {
           decrementCol();
           del(1);
         } 
-        else if(key.key === "s") { // console.log()
+        else if(key.key === "s") {
           decrementCol();
           del(1);
           appendStringAsText('console.log("line ' + coords.row + '" + );');
@@ -489,7 +486,6 @@ const rapid = (key, isEmulating) => {
       }
     } else if (currentState === states.awaitKey) {
       /* awaiting states such as f( diw dfl etc */
-      console.log(buildAwaitStr + ", " + key.key);
       if (buildAwaitStr === "f") {
         buildAwaitStr += key.key;
         setFind(key.key);
@@ -581,7 +577,6 @@ const rapid = (key, isEmulating) => {
         }
       } 
       else if(/[ycd][ft]/.test(buildAwaitStr)) {
-        console.log('find state');
         if(buildAwaitStr === "df") {
           deleteFind(key.key);
           setNormal();
@@ -612,7 +607,6 @@ const rapid = (key, isEmulating) => {
       else if(buildAwaitStr === leaderKey) {
         if(key.key === "w") {
           // save TODO interpretcommand(string) so commands can be bound
-          console.log("saving real file");
           saveRealFile(currentFilename);
           setNormal();
           clearAwait();
@@ -721,12 +715,9 @@ userFolder.addEventListener("click", async () => {
     if(entry.kind === "file") {
       //handle file
       realFileMap[entry.name] = entry;
-      console.log("file" + entry);
       await importRealFile(entry);
     }
     else if(entry.kind === "directory") {
-      console.log("logging the directory handle");
-      console.log(entry);
     }
   }
 });
@@ -738,12 +729,9 @@ const getSubFiles = async(dirHandle) => {
     if(entry.kind === "file") {
       //handle file
       realFileMap[entry.name] = entry;
-      console.log("file" + entry);
       await importRealFile(entry);
     }
     else if(entry.kind === "directory") {
-      console.log("logging the directory handle");
-      console.log(entry);
       getSubFiles(entry, parents + "/" + entry.name);
     }
   }
@@ -754,8 +742,6 @@ const lsDirs = async(dirHandle) => {
   const dirs = [];
   for await(const entry of dirHandle.values()) {
     if(entry.kind === "directory") {
-      console.log("logging the directory handle");
-      console.log(entry);
       dirs.push(entry);
     }
   }
@@ -764,13 +750,10 @@ const lsDirs = async(dirHandle) => {
 
 const ls = async(dirHandle) => {
   if(dirHandle.kind === "file") {
-    console.log("this should not happen");
   }
   const dirs = [];
   for await(const entry of dirHandle.values()) {
     if(entry.kind === "directory") {
-      console.log("logging the directory handle");
-      console.log(entry);
       dirs.push(entry);
     }
   }
@@ -787,8 +770,6 @@ const lsRecursive = async(dirHandle) => {
   const dirs = [];
   for await(const entry of dirHandle.values()) {
     if(entry.kind === "directory") {
-      console.log("logging the directory handle");
-      console.log(entry);
       dirs.push(entry);
       dirs.push(...lsRecursive(entry)); // recurse
     }
@@ -909,7 +890,6 @@ const updateOffsetChart = () => {
     // centerCursor();
   }
   if(chart.start < 0 || chart.end > matrix.length) {
-    console.log("this is not a good error");
   }
   return chart;
 }
@@ -1192,7 +1172,6 @@ const search = () => {
   try {
     searchRegex = new RegExp(searchArr.join(""), "i");
   } catch (error) {
-    console.log("regular expression error below, user related, not code");
     console.log(error);
   }
   for (let i = 0; i < matrix.length; i++) {
@@ -1753,17 +1732,13 @@ const clip = (text) => {
 
 const fileToString = (contents) => {
   let str = "";
-  console.log(contents);
-  console.log(contents.length);
   for(let i = 0; i < contents.length; i++) {
     // str += contents[i].join("").trim();
     // str += "\n";
     let temp = contents[i].join("");
     temp = temp.replace(/ $/, "\n");
-    console.log(temp);
     str += temp;
   }
-  console.log(str);
   return str;
 }
 
@@ -1777,12 +1752,10 @@ const saveRealFile = async (name) => {
     realFileMap[name] = await dirHandle.getFileHandle(name, {create: true});
   }
   const handler = realFileMap[name];
-  console.log("handler: " + handler);
   const writeable = await handler.createWritable({type:"write"}); // only works in secure contexts
   const data = fileToString(filemap[name]);
   await writeable.write({type:"write", data:data });
   await writeable.close();
-  console.log("file has beeen saved");
 }
 
 const matrixesAreEqual = (mOne, mTwo) => {
@@ -1826,13 +1799,11 @@ const start = (gameMatrix) => {
   let randomNo = rand(RAND);
   while(randomNo === coords.row) randomNo = rand(RAND);
   matrix[randomNo] = gameMatrix[0]; // set gamematrix to a random row
-  console.log(matrix);
 }
 
 const game = () => {
   if(gameState) {
     let gameMatrix = gameModeTable.vertical.slice(0);
-    console.log(gameModeTable.vertical.slice(0));
     correctMatrix = [[" "]];
     matrix = [[" "]];
     for(let i = 0; i < 27; i++) {
@@ -1848,7 +1819,6 @@ const game = () => {
   updateFileName();
   gameState = true;
   let gameMatrix = gameModeTable.vertical.slice(0);
-  console.log(gameModeTable.vertical.slice(0));
   correctMatrix = [[" "]];
   matrix = [[" "]];
   for(let i = 0; i < 27; i++) {
@@ -1939,7 +1909,6 @@ const createTrail = () => {
   }
 
   const move = (x, y) => {
-    console.log("x is " + x + ", y is " + y);
     x = x + sizeX/2;
     cursor.x = x;
     cursor.y = y;
@@ -2027,7 +1996,6 @@ const getHighlightedText = () => {
       str += matrix[i][j];
     }
   }
-  console.log(str);
   return str;
 }
 
@@ -2052,12 +2020,9 @@ const browserSearch = (str) => {
     url = "https://" + str.trim();
   }
   else {
-    console.log(str)
     url = googleQuery(str);
   }
-  console.log(url);
   document.getElementById("browseriframe").src = url;
-  console.log(url);
 }
 
 const quitAllDivs = () => {
@@ -2067,11 +2032,8 @@ const quitAllDivs = () => {
 let exploring = false;
 let workingDirectory;
 const Explore = async(dir) => {
-  console.log(dir);
-  console.log(dir.name);
   if(dir === undefined) return;
   if(dir.kind === "file") {
-    console.log(dir);
     // handle file selection
     importRealFile(dir)
     exploring = false;
