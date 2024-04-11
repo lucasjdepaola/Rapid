@@ -1,4 +1,3 @@
-// TODO transfer cursor from text to command line when entering a command or searching, keep the cursor normal
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
@@ -68,6 +67,7 @@ const canvas = {
   visualpurple : "#5a24b1",
   insertblue : "#0b9dff",
   orangeprogress : "#ffa657",
+  normalColor : "#ffa657"
 };
 const media = { // collection of potential background images
   none: "none",
@@ -1720,7 +1720,7 @@ const checkState = () => {
   }
   else if(currentState === states.normal) {
     document.getElementById("currentstate").innerText = " NORMAL ";
-    document.getElementById("currentstate").style.backgroundColor = "red";
+    document.getElementById("currentstate").style.backgroundColor = canvas.normalColor;
   }
   else if(currentState === states.insert) {
     document.getElementById("currentstate").innerText = " INSERT ";
