@@ -334,7 +334,10 @@ const rapid = (key, isEmulating) => {
       } else if (key.key === "b") {
         moveb();
       } else if (key.key === "e") {
-        movee();
+        if(key.ctrlKey) {
+          key.preventDefault();
+          Explore(dirHandle); // ctrl E is going to explore
+        } else movee();
       } else if (key.key === "v") {
         visualcoords.from.row = coords.row;
         visualcoords.from.col = coords.col;
