@@ -157,6 +157,9 @@ body {
   border:none;
   background-color:#d9d9db;
 }
+#keybuffer {
+  color : #0fff50;
+}
 
 @font-face {
   font-family:"comicmono";

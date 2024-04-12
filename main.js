@@ -2114,23 +2114,21 @@ const sourceConfig = () => {
 const keyBufferInterval = () => {
   // TODO find a way to count seconds down in order to decrement buffer
   const INTERVALTIME = 50;
-  const date = new Date().getTime();
   setInterval(() => {
     for(let i = 0; i < keyBufferArr.length; i++) {
       if(keyBufferArr[i].time < 0) {// key time is up
-        if(keyBufferArr.length === 1) keyBufferArr.pop();
-        else 
-          keyBufferArr.splice(i, 1);
+        keyBufferArr.splice(i, 1);
       } else {
         keyBufferArr[i].time -= (INTERVALTIME/1000);
       }
     }
-    displayKeys(Math.round(keyBufferArr.length / (keyBufferArr[0].time | 5)));
+    displayKeys(Math.round(keyBufferArr.length / KEYTIME));
   }, INTERVALTIME);
 }
 
 const displayKeys = (kps) => {
-  // display keys here
+  if(keyBufferArr.length <= 1)
+    document.getElementById("keybuffer").innerText = "";
   const buffmap = keyBufferArr.map((e) => { return e.key});
   document.getElementById("keybuffer").innerText = "kps:" + kps + ", " + buffmap.join("");
 }
@@ -2138,7 +2136,7 @@ const displayKeys = (kps) => {
   /* keybuffer which displays user keypresses for a short amount of time */
   /* aims to emulate screenkeys, for better understanding of vim actions */
 let keyBufferArr = [];
-const KEYTIME = 5; // 5 seconds
+const KEYTIME = 3; // seconds
 let keyBufferIsOn = false; // call function when the buffer is on
 let keyBufferIntervalIsOn = false;
 const keyBuffer = (key) => {
