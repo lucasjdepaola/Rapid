@@ -1,3 +1,5 @@
+// TODO local html file preview inside of an iframe
+// TODO numbers on actual keys of current line, could make for an insane line jump
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
@@ -689,6 +691,7 @@ const rapid = (key, isEmulating) => {
     renderCommand();
   }
   if(gameState) checkGame();
+  if(keyBufferIsOn) keyBuffer(key);
 };
 
 const importRealFile = async(fileHandler) => {
@@ -857,6 +860,9 @@ const interpretCommand = (str) => {
   }
   else if(cmdstr === "file") {
     pickFiles();
+  }
+  else if(cmdstr === "displaykeys") {
+    keyBufferIsOn = !keyBufferIsOn; // toggle
   }
 };
 
@@ -2103,6 +2109,62 @@ const sourceConfig = () => {
   for(let i = 0; i < matrix.length; i++) {
     interpretCommand(matrix[i].join("").replace(/ $/, ""));
   }
+}
+
+const keyBufferInterval = () => {
+  // TODO find a way to count seconds down in order to decrement buffer
+  const INTERVALTIME = 50;
+  const date = new Date().getTime();
+  setInterval(() => {
+    for(let i = 0; i < keyBufferArr.length; i++) {
+      if(keyBufferArr[i].time < 0) {// key time is up
+        if(keyBufferArr.length === 1) keyBufferArr.pop();
+        else 
+          keyBufferArr.splice(i, 1);
+      } else {
+        keyBufferArr[i].time -= (INTERVALTIME/1000);
+      }
+    }
+    displayKeys(Math.round(keyBufferArr.length / (keyBufferArr[0].time | 5)));
+  }, INTERVALTIME);
+}
+
+const displayKeys = (kps) => {
+  // display keys here
+  const buffmap = keyBufferArr.map((e) => { return e.key});
+  document.getElementById("keybuffer").innerText = "kps:" + kps + ", " + buffmap.join("");
+}
+
+  /* keybuffer which displays user keypresses for a short amount of time */
+  /* aims to emulate screenkeys, for better understanding of vim actions */
+let keyBufferArr = [];
+const KEYTIME = 5; // 5 seconds
+let keyBufferIsOn = false; // call function when the buffer is on
+let keyBufferIntervalIsOn = false;
+const keyBuffer = (key) => {
+  if(!keyBufferIsOn) {
+    return;
+  };
+  if(!keyBufferIntervalIsOn) {
+    keyBufferInterval();
+    keyBufferIntervalIsOn = true;
+  }
+  let keyStr = key.key;
+  if(key.ctrlKey) keyStr = "Ctrl-" + key.key;
+  if(key.key ==="Shift") {
+    return;
+  }
+  else if(key.key === "Control") return;
+  else if(key.key === "Backspace") keyStr = "<backspace>";
+  else if(key.key === "Enter") keyStr = "<enter>";
+  // assume that key is called for every key press regardless
+  keyBufferArr.push({key:keyStr, time : KEYTIME});
+}
+
+
+/* previews a users local html file for live coding while editing the file */
+const localIframePreviewHTML = () => {
+
 }
 
 renderText();
