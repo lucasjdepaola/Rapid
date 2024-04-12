@@ -643,7 +643,7 @@ const rapid = (key, isEmulating) => {
           clearAwait();
           setNormal();
           for(let i = 0; i < num; i++) {
-            rapid(key);
+            rapid(key, true);
           }
         }
       }
@@ -691,7 +691,7 @@ const rapid = (key, isEmulating) => {
     renderCommand();
   }
   if(gameState) checkGame();
-  if(keyBufferIsOn) keyBuffer(key);
+  if(keyBufferIsOn && isEmulating === undefined) keyBuffer(key);
 };
 
 const importRealFile = async(fileHandler) => {
