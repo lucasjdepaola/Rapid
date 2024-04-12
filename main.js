@@ -409,6 +409,9 @@ const rapid = (key, isEmulating) => {
       }
       else if(key.key === "q") {
         quitAllDivs();
+        if(exploring) {
+          exploring = false;
+        }
       }
     } else if (currentState === states.insert) { // insert()
       /* append letter to the current row and column which increments */
@@ -705,6 +708,10 @@ const importRealFile = async(fileHandler) => {
 }
 let dirHandle;
 userFolder.addEventListener("click", async () => {
+  pickFiles();
+});
+
+const pickFiles = async() => {
   filemap = {};
   const options = {
     mode: "readwrite"
@@ -720,7 +727,7 @@ userFolder.addEventListener("click", async () => {
     else if(entry.kind === "directory") {
     }
   }
-});
+}
 
 const getSubFiles = async(dirHandle) => {
   let file = {name : "", filehandle : ""};
@@ -844,6 +851,9 @@ const interpretCommand = (str) => {
   }
   else if(cmdstr === "source") {
     sourceConfig();
+  }
+  else if(cmdstr === "file") {
+    pickFiles();
   }
 };
 
