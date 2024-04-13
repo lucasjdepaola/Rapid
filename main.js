@@ -12,6 +12,7 @@ let realFileMap = {}; // for actual files
 let userfiles;
 let currentFilename = "Untitled";
 let lastCursorPos = {x:0, y:0};
+let smartLine = true; // change back to false
 const keys =
   "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()";
 const states = {
@@ -864,6 +865,10 @@ const interpretCommand = (str) => {
   else if(cmdstr === "displaykeys") {
     keyBufferIsOn = !keyBufferIsOn; // toggle
   }
+  else if(cmdstr === "smartline") {
+    // smart line function to display tiny numbers per char
+    smartLine = !smartLine;
+  }
 };
 
 const save = (name) => {
@@ -947,6 +952,9 @@ const renderText = () => {
     for (let j = 0; j < matrix[i].length; j++) {
       if (matrix[i][j] !== undefined) {
         let renderChar = updateRenderChar(matrix[i][j]);
+        if(coords.row === i && coords.col === 0) { // first index of the row we're on
+          // htmlstr += "<span style='position:fixed;background-color:grey;width:100%;z-index:-10;height:1em;'></span>";
+        }
         if (coords.row === i && coords.col === j) {
           /* CURSOR CHAR */
           // render it here
@@ -1002,7 +1010,15 @@ const renderText = () => {
             searchHighlightIndex++;
           }
         } else {
-          htmlstr += renderChar;
+          if(smartLine && coords.row === i && coords.col !== j) {
+            // we're in the row, but not cursor
+            // SMART()
+            const style = "";
+            let span = "<span style='" + style + "'>" + renderChar + "</span>";
+            htmlstr += span;
+          } else {
+            htmlstr += renderChar;
+          }
         }
       }
     }
