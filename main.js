@@ -1,5 +1,5 @@
 // TODO local html file preview inside of an iframe
-// TODO numbers on actual keys of current line, could make for an insane line jump
+// TODO add comma to regex of ciw, diw
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
@@ -154,7 +154,7 @@ const unsafeMap = { // this is for user inputting html tags, XSS doesn't really 
 };
 const XSSRegex = /[<>'"&]/; // regex to detect unsafe characters
 let smooth = false;
-const stopDeleteRegex = /[ \[\]\(\)"'{}\.\-=\+]/;
+const stopDeleteRegex = /[ \[\]\(\)"'{}\.\-=\+,]/;
 
 const assertExploring = () => { exploring = currentFilename === "Explore" };
 
