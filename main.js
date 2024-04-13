@@ -70,7 +70,8 @@ const canvas = {
   visualpurple : "#5a24b1",
   insertblue : "#0b9dff",
   orangeprogress : "#ffa657",
-  normalColor : "#ffa657"
+  normalColor : "#ffa657",
+  smartColor : "#ffa657",
 };
 const media = { // collection of potential background images
   none: "none",
@@ -1010,11 +1011,12 @@ const renderText = () => {
             searchHighlightIndex++;
           }
         } else {
-          if(smartLine && coords.row === i && coords.col !== j) {
+          if(smartLine && coords.row === i && coords.col !== j && matrix[i][j] !== " " && j % 2 === 0) {
             // we're in the row, but not cursor
             // SMART()
-            const style = "";
-            let span = "<span style='" + style + "'>" + renderChar + "</span>";
+            const style = "top:70%;left:10%;position:absolute;font-size:10px;color:" + canvas.smartColor + ";";
+            // const style = "top:10px;position:relative;font-size:9px;color:" + canvas.smartColor + ";";
+            let span = "<span style='position:relative;'>" + renderChar + "<span style='" + style + "'>" + Math.abs(j-coords.col) + "</span></span>";
             htmlstr += span;
           } else {
             htmlstr += renderChar;
