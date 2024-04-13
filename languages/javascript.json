@@ -1,8 +1,11 @@
-{
-  "for" : "red",
-  "let" : "red",
-  "const" : "red",
-  "if" : "red",
-  "while" : "red",
-  "return" : "red"
+{ 
+  "keywords" : {
+    "for" : "native",
+    "let" : "native",
+    "const" : "native",
+    "if" : "native",
+    "while" : "native",
+    "return" : "native"
+  },
+  "extension" : "js"
 }

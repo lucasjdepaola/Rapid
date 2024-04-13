@@ -2165,4 +2165,39 @@ const localIframePreviewHTML = () => {
 
 }
 
+/* lex the page range of the render, to give syntax highlighting on the front end */
+const lex = (keyWords) => {
+  updateOffsetChart();
+  let accumStr = ""; // string used to accumulate a current token being built
+  const tokenArr = [];
+  const lexParseRegex = /[\[\]\(\)%!#*^;\.]/; // everything that can parse a word that also needs to be added
+  for(let i = chart.start; i < chart.end; i++) {
+    for(let j = 0; j < matrix[i].length; j++) {
+      const char = matrix[i][j];
+      if(lexParseRegex.test(char)) {
+        tokenArr.push(keyWords[char]); // push the char that fits a token
+        if(accumStr in keyWords)
+          tokenArr.push(keyWords[accumStr]);
+        accumStr = ""; // since the character parses the string
+      }
+      else if(char === " ") {
+        if(accumStr in keyWords) {
+          tokenArr.push(keyWords[accumStr]); // push the token if it exists
+          accumStr = "";
+        }
+      } else {
+        accumStr += char;
+      }
+    }
+  }
+
+}
+
+let highlightArr = []; // all the coordinates which are highlighted
+const syntaxHighlightFile = () => {
+  const extension = getFileExtension(currentFilename);
+  const keyWords = somemap[extension];
+  const lexedTokens = lex(keyWords);
+}
+
 renderText();
