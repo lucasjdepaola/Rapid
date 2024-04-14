@@ -5,7 +5,8 @@ const JSTree = {
     "const": "native",
     "if": "native",
     "while": "native",
-    "return": "native"
+    "return": "native",
+    "this": "native"
   },
   "extension": "js"
 }

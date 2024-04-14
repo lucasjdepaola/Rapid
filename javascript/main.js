@@ -878,6 +878,14 @@ const interpretCommand = (str) => {
   }
   else if (/[0-9]+/.test(cmdstr)) {
     coords.row = parseInt(cmdstr); // if the string is a number, then go to that line number
+    if (coords.row >= matrix.length) coords.row = matrix.length - 1; // edge case
+  }
+  else if (/[0-9].+:[0-9]+/.test(cmdstr)) { // case of it being line:col
+    const spl = cmdstr.split(":");
+    coords.row = parseInt(spl[0]);
+    coords.col = parseInt(spl[1]) - 1; // do we want it to be zero indexed?
+    if (coords.row >= matrix.length) coords.row = matrix.length - 1;
+    if (coords.col >= matrix[coords.row].length) coords.col = matrix[coords.row].length - 1; // edge cases
   }
 };
 
