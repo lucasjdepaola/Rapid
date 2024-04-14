@@ -1,5 +1,10 @@
+console.log(JSTree);
+console.log(HTMLTree);
 // TODO local html file preview inside of an iframe
+// TODO syntax highlighting that is efficient
+// TODO debounce syntax highlighting
 // TODO add comma to regex of ciw, diw
+console.log(JSTree);
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
@@ -13,6 +18,8 @@ let userfiles;
 let currentFilename = "Untitled";
 let lastCursorPos = { x: 0, y: 0 };
 let smartLine = false;
+let syntaxHighlight = [[]]; // syntax highlighting
+let highlightCache = [[]]; // syntax highlighting cache
 const keys =
   "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()";
 const states = {
@@ -159,6 +166,7 @@ const stopDeleteRegex = /[ \[\]\(\)"'{}\.\-=\+,]/;
 const assertExploring = () => { exploring = currentFilename === "Explore" };
 
 const rapid = (key, isEmulating) => {
+  console.time("test");
   /* cases for alt key, control key, backspace, etc */
   assertExploring();
   if (key.key === " ") key.preventDefault();
@@ -694,6 +702,7 @@ const rapid = (key, isEmulating) => {
   }
   if (gameState) checkGame();
   if (keyBufferIsOn && isEmulating === undefined) keyBuffer(key);
+  console.timeEnd("test");
 };
 
 const importRealFile = async (fileHandler) => {
