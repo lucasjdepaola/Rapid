@@ -952,11 +952,11 @@ const renderText = () => {
   let relativeLine = coords.row - chart.start; // has to be the cursor
   let searchHighlightIndex = 0;
   for (let i = chart.start; i < chart.end; i++) {
-    // htmlstr += lineno < 10 ? "  " : lineno < 100 ? " " : "";
-    // htmlstr += lineno++ + "    ";
+    let style = ""; // convert chars to spans
     if (i === coords.row) { // if we're on the actual cursor, display a normal line
       htmlstr += Math.abs(lineno) < 10 ? "  " : lineno < 100 ? " " : "";
       htmlstr += "<span style='color:gold;'>" + lineno + "</span>" + "   ";
+      htmlstr += "<span style='position:absolute;background-color:rgba(255,255,255,.3);width:100%;z-index:-1;height:1.3em;'></span>"
     } else {
       htmlstr += Math.abs(relativeLine) < 10
         ? "  "
