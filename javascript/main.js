@@ -1,5 +1,3 @@
-console.log(JSTree);
-console.log(HTMLTree);
 // TODO local html file preview inside of an iframe
 // TODO syntax highlighting that is efficient
 // TODO debounce syntax highlighting
@@ -18,8 +16,6 @@ let userfiles;
 let currentFilename = "Untitled";
 let lastCursorPos = { x: 0, y: 0 };
 let smartLine = false;
-let syntaxHighlight = [[]]; // syntax highlighting
-let highlightCache = [[]]; // syntax highlighting cache
 const keys =
   "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()";
 const states = {
@@ -703,6 +699,7 @@ const rapid = (key, isEmulating) => {
   if (gameState) checkGame();
   if (keyBufferIsOn && isEmulating === undefined) keyBuffer(key);
   console.timeEnd("test");
+  syntaxHighlightFile();
 };
 
 const importRealFile = async (fileHandler) => {
@@ -2184,47 +2181,6 @@ const keyBuffer = (key) => {
   else if (key.key === "Enter") keyStr = "<enter>";
   // assume that key is called for every key press regardless
   keyBufferArr.push({ key: keyStr, time: KEYTIME });
-}
-
-
-/* previews a users local html file for live coding while editing the file */
-const localIframePreviewHTML = () => {
-
-}
-
-/* lex the page range of the render, to give syntax highlighting on the front end */
-const lex = (keyWords) => {
-  updateOffsetChart();
-  let accumStr = ""; // string used to accumulate a current token being built
-  const tokenArr = [];
-  const lexParseRegex = /[\[\]\(\)%!#*^;\.]/; // everything that can parse a word that also needs to be added
-  for (let i = chart.start; i < chart.end; i++) {
-    for (let j = 0; j < matrix[i].length; j++) {
-      const char = matrix[i][j];
-      if (lexParseRegex.test(char)) {
-        tokenArr.push(keyWords[char]); // push the char that fits a token
-        if (accumStr in keyWords)
-          tokenArr.push(keyWords[accumStr]);
-        accumStr = ""; // since the character parses the string
-      }
-      else if (char === " ") {
-        if (accumStr in keyWords) {
-          tokenArr.push(keyWords[accumStr]); // push the token if it exists
-          accumStr = "";
-        }
-      } else {
-        accumStr += char;
-      }
-    }
-  }
-
-}
-
-let highlightArr = []; // all the coordinates which are highlighted
-const syntaxHighlightFile = () => {
-  const extension = getFileExtension(currentFilename);
-  const keyWords = somemap[extension];
-  const lexedTokens = lex(keyWords);
 }
 
 renderText();
