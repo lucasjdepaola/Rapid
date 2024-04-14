@@ -876,6 +876,9 @@ const interpretCommand = (str) => {
     // smart line function to display tiny numbers per char
     smartLine = !smartLine;
   }
+  else if (/[0-9]+/.test(cmdstr)) {
+    coords.row = parseInt(cmdstr); // if the string is a number, then go to that line number
+  }
 };
 
 const save = (name) => {
