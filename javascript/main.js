@@ -975,6 +975,17 @@ const renderText = () => {
         if (coords.row === i && coords.col === j) {
           /* CURSOR CHAR */
           // render it here
+          if (syntaxHighlight.length > 0 && i === syntaxHighlight[0].coords.row && inRange(j, syntaxHighlight[0].coords.from, syntaxHighlight[0].coords.to)) {
+            // cursor is on a highlight
+            if (j === syntaxHighlight[0].coords.from) {
+              let style = "color:" + syntaxHighlight[0].color + ";";
+              htmlstr += "<span style=' " + style + "'>";
+            }
+            else if (j === syntaxHighlight[0].coords.to) {
+              htmlstr += "</span>"; // end the span being created in the state machine
+              syntaxHighlight.shift(); // take off the queue if we're at the end of the highlight
+            }
+          }
 
           let span = "<span";
           if (currentState === states.insert) {
