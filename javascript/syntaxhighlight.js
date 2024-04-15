@@ -49,7 +49,7 @@ const lex = (keyWords) => {
         else if (c === "(") {
           syntaxHighlight.push({ color: currentTheme["function"], coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         }
-        else if (/-?[0-9]+/.test(accumStr)) {
+        else if (/^-?[0-9]+$/.test(accumStr)) { // number case
           syntaxHighlight.push({ color: currentTheme["numbers"], coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         }
         accumStr = ""; // since the character parses the string
@@ -58,7 +58,7 @@ const lex = (keyWords) => {
         if (accumStr in keyWords) {
           syntaxHighlight.push({ color: currentTheme[keyWords[accumStr]], coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         }
-        else if (/-?[0-9]+/.test(accumStr)) {
+        else if (/^-?[0-9]+$/.test(accumStr)) {
           syntaxHighlight.push({ color: currentTheme["numbers"], coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         }
         accumStr = "";
