@@ -977,22 +977,6 @@ const renderText = () => {
         if (coords.row === i && coords.col === j) {
           /* CURSOR CHAR */
           // render it here
-          if (syntaxHighlight.length > 0 && i === syntaxHighlight[0].coords.row && inRange(j, syntaxHighlight[0].coords.from, syntaxHighlight[0].coords.to)) {
-            // cursor is on a highlight
-            if (j === syntaxHighlight[0].coords.from) {
-              let style = "color:" + syntaxHighlight[0].color + ";";
-              if ("background" in syntaxHighlight[0]) style += "background-color:" + syntaxHighlight[0].background + ";";
-              htmlstr += "<span style=' " + style + "'>";
-              if (syntaxHighlight[0].coords.from === syntaxHighlight[0].coords.to) {
-                htmlstr += "</span>";
-                syntaxHighlight.shift();
-              }
-            }
-            else if (j === syntaxHighlight[0].coords.to) {
-              htmlstr += "</span>"; // end the span being created in the state machine
-              syntaxHighlight.shift(); // take off the queue if we're at the end of the highlight
-            }
-          }
 
           let span = "<span";
           if (currentState === states.insert) {
@@ -1013,6 +997,22 @@ const renderText = () => {
           }
           span += ">" + renderChar + "</span>";
           htmlstr += span;
+          if (syntaxHighlight.length > 0 && i === syntaxHighlight[0].coords.row && inRange(j, syntaxHighlight[0].coords.from, syntaxHighlight[0].coords.to)) {
+            // cursor is on a highlight
+            if (j === syntaxHighlight[0].coords.from) {
+              let style = "color:" + syntaxHighlight[0].color + ";";
+              if ("background" in syntaxHighlight[0]) style += "background-color:" + syntaxHighlight[0].background + ";";
+              htmlstr += "<span style=' " + style + "'>";
+              if (syntaxHighlight[0].coords.from === syntaxHighlight[0].coords.to) {
+                htmlstr += "</span>";
+                syntaxHighlight.shift();
+              }
+            }
+            else if (j === syntaxHighlight[0].coords.to) {
+              htmlstr += "</span>"; // end the span being created in the state machine
+              syntaxHighlight.shift(); // take off the queue if we're at the end of the highlight
+            }
+          }
         }
         else if (
           currentlyHighlighting && capitalV &&
