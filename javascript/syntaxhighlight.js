@@ -24,7 +24,7 @@ const lex = (keyWords) => {
       }
     }
   }
-  const lexParseRegex = /[\[\]\(\)%!#*^;\.<>/]/; // everything that can parse a word that also needs to be added
+  const lexParseRegex = /[\[\]\(\)%!#*^;\.<>]/; // everything that can parse a word that also needs to be added
   let startQuote = false; // for quote state
   let quoteFrom = 0;
   for (let i = chart.start; i < chart.end; i++) {

@@ -9,6 +9,7 @@ const JSTree = {
     "this": "native",
     "of": "native",
     "in": "native",
+    "null": "native",
   },
   "extension": "js"
 }
