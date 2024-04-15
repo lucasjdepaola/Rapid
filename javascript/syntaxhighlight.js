@@ -24,10 +24,13 @@ const lex = (keyWords) => {
       }
     }
   }
-  let accumStr = ""; // string used to accumulate a current token being built
   const lexParseRegex = /[\[\]\(\)%!#*^;\.]/; // everything that can parse a word that also needs to be added
+  let startQuote = false; // for quote state
+  let quoteFrom = 0;
   for (let i = chart.start; i < chart.end; i++) {
+    let accumStr = ""; // string used to accumulate a current token being built, line basis
     for (let j = 0; j < matrix[i].length; j++) {
+      if (startQuote && matrix[i][j] !== '"') continue; // skip iteration if quote state
       const c = matrix[i][j];
       if (lexParseRegex.test(c)) { // when a special character occurs we reset the lexing
         if (accumStr in keyWords)
@@ -37,9 +40,24 @@ const lex = (keyWords) => {
       else if (c === " ") {
         if (accumStr in keyWords) {
           syntaxHighlight.push({ color: currentTheme[keyWords[accumStr]], coords: { row: i, from: j - accumStr.length, to: j - 1 } });
-          accumStr = "";
         }
-      } else {
+        accumStr = "";
+      }
+      else if (c === '"') {
+        if (startQuote) {
+          startQuote = false;
+          syntaxHighlight.push({ color: currentTheme["quotes"], coords: { row: i, from: quoteFrom, to: j } });
+        } else {
+          startQuote = true;
+          quoteFrom = j; // start the quote process
+        }
+      }
+      else if (c === "/" && peek(i) === "/") {
+        // comment state
+        syntaxHighlight.push({ color: currentTheme["comment"], coords: { row: i, from: i, to: matrix[i].length - 1 } });
+        i++; // go to next col
+      }
+      else {
         accumStr += c;
       }
     }
@@ -49,12 +67,11 @@ const lex = (keyWords) => {
 
 
 const syntaxHighlightFile = () => {
-  syntaxHighlight = [];
-  const extension = getFileExtension(currentFilename);
+  const extension = getFileExtension(currentFilename); // should not be called as often
   const keyWords = languageMap[extension];
   if (keyWords === undefined) return; // don't highlight on bad extensions
-  const lexedTokens = lex(keyWords["keywords"]);
+  syntaxHighlight = [];
+  lex(keyWords["keywords"]);
   console.log(syntaxHighlight);
-  console.log("hi");
   // there might need to be a step in between
 }

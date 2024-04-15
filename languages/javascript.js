@@ -6,7 +6,9 @@ const JSTree = {
     "if": "native",
     "while": "native",
     "return": "native",
-    "this": "native"
+    "this": "native",
+    "of": "native",
+    "in": "native",
   },
   "extension": "js"
 }

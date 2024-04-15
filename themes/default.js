@@ -1,10 +1,11 @@
 const themeCanvas = {
   "purple": "#ff7b72",
-  "numorange": "#ae603c"
+  "numorange": "#ae603c",
+  "quoteBlue": "#a5d6ff"
 };
 const defaultTheme = {
   "native": themeCanvas.purple,
-  "quotes": "blue",
+  "quotes": themeCanvas.quoteBlue,
   "background": 'grey',
   "text": "white",
   "braces": themeCanvas.purple,
