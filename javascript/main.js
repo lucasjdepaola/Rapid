@@ -157,6 +157,7 @@ const unsafeMap = { // this is for user inputting html tags, XSS doesn't really 
 };
 const XSSRegex = /[<>'"&]/; // regex to detect unsafe characters
 let smooth = false;
+let isSyntaxHighlighting = true;
 const stopDeleteRegex = /[ \[\]\(\)"'{}\.\-=\+,]/;
 
 const assertExploring = () => { exploring = currentFilename === "Explore" };
@@ -689,7 +690,8 @@ const rapid = (key, isEmulating) => {
       }
     }
   }
-  syntaxHighlightFile();
+  if (isSyntaxHighlighting)
+    syntaxHighlightFile();
   if (currentlyHighlighting) updateVisualCoordinates();
   updateCol();
   updateBar();
@@ -887,6 +889,9 @@ const interpretCommand = (str) => {
     if (coords.row >= matrix.length) coords.row = matrix.length - 1;
     if (coords.col >= matrix[coords.row].length) coords.col = matrix[coords.row].length - 1; // edge cases
   }
+  else if (cmdstr === "highlight") {
+    isSyntaxHighlighting = !isSyntaxHighlighting; // toggle
+  }
 };
 
 const save = (name) => {
@@ -969,9 +974,6 @@ const renderText = () => {
     for (let j = 0; j < matrix[i].length; j++) {
       if (matrix[i][j] !== undefined) {
         let renderChar = updateRenderChar(matrix[i][j]);
-        if (coords.row === i && coords.col === 0) { // first index of the row we're on
-          // htmlstr += "<span style='position:fixed;background-color:grey;width:100%;z-index:-10;height:1em;'></span>";
-        }
         if (coords.row === i && coords.col === j) {
           /* CURSOR CHAR */
           // render it here
@@ -1037,7 +1039,8 @@ const renderText = () => {
             let style = "color:" + syntaxHighlight[0].color + ";";
             htmlstr += "<span style=' " + style + "'>" + renderChar;
             if (syntaxHighlight[0].coords.from === syntaxHighlight[0].coords.to) {
-              htmlstr += renderChar + "</span>";
+              // htmlstr += renderChar + "</span>";
+              htmlstr += "</span>";
               syntaxHighlight.shift();
             }
           }
