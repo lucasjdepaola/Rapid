@@ -9,6 +9,12 @@ const languageMap = { // map containing the tokens
 let syntaxHighlight = []; // syntax highlighting
 let currentTheme = defaultTheme;
 
+const invertHex = (hex) => {
+  console.log(hex);
+  // temporary borrowed code from SO https://stackoverflow.com/a/54569758 TODO change and come up with own solution (no dependencies)
+  return (Number(`0x1${hex}`) ^ 0xFFFFFF).toString(16).substr(1).toUpperCase()
+}
+
 
 /* lex the page range of the render, to give syntax highlighting on the front end */
 const lex = (keyWords) => {
@@ -26,7 +32,7 @@ const lex = (keyWords) => {
       }
     }
   }
-  const lexParseRegex = /[\[\]\(\)%!#*^;\.<>/]/; // everything that can parse a word that also needs to be added
+  const lexParseRegex = /[\[\]\(\)%!*^;:\.<>/]/; // everything that can parse a word that also needs to be added
   let startQuote = false; // for quote state
   let quoteFrom = 0;
   for (let i = chart.start; i < chart.end; i++) {
@@ -52,6 +58,9 @@ const lex = (keyWords) => {
         else if (/^-?[0-9]+$/.test(accumStr)) { // number case
           syntaxHighlight.push({ color: currentTheme["numbers"], coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         }
+        else if (accumStr[0] === "#" && accumStr.length === 6) { // hex
+          syntaxHighlight.push({ background: accumStr, color: white, coords: { row: i, from: j - accumStr.length, to: j - 1 } });
+        }
         accumStr = ""; // since the character parses the string
       }
       else if (c === " ") {
@@ -61,6 +70,11 @@ const lex = (keyWords) => {
         else if (/^-?[0-9]+$/.test(accumStr)) {
           syntaxHighlight.push({ color: currentTheme["numbers"], coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         }
+        else if (accumStr[0] === "#" && accumStr.length === 7) {
+          console.log("hex color");
+          syntaxHighlight.push({ background: accumStr, color: "#" + invertHex(accumStr.slice(1, accumStr.length)), coords: { row: i, from: j - accumStr.length, to: j - 1 } });
+        }
+        console.log(accumStr[0] + ", " + accumStr.length);
         accumStr = "";
       }
       else if (c === '"') {

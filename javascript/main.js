@@ -981,6 +981,7 @@ const renderText = () => {
             // cursor is on a highlight
             if (j === syntaxHighlight[0].coords.from) {
               let style = "color:" + syntaxHighlight[0].color + ";";
+              if ("background" in syntaxHighlight[0]) style += "background-color:" + syntaxHighlight[0].background + ";";
               htmlstr += "<span style=' " + style + "'>";
               if (syntaxHighlight[0].coords.from === syntaxHighlight[0].coords.to) {
                 htmlstr += "</span>";
@@ -1037,6 +1038,7 @@ const renderText = () => {
           // highlight char
           if (j === syntaxHighlight[0].coords.from) {
             let style = "color:" + syntaxHighlight[0].color + ";";
+            if ("background" in syntaxHighlight[0]) style += "background-color:" + syntaxHighlight[0].background + ";";
             htmlstr += "<span style=' " + style + "'>" + renderChar;
             if (syntaxHighlight[0].coords.from === syntaxHighlight[0].coords.to) {
               // htmlstr += renderChar + "</span>";
