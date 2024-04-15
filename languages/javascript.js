@@ -4,6 +4,7 @@ const JSTree = {
     "let": "native",
     "const": "native",
     "if": "native",
+    "else": "native",
     "while": "native",
     "return": "native",
     "this": "native",
@@ -12,6 +13,7 @@ const JSTree = {
     "null": "native",
     "new": "native",
     "function": "native",
+    "var": "native",
     "undefined": "boolean",
     "true": "boolean",
     "false": "boolean"

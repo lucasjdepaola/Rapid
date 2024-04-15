@@ -7,6 +7,7 @@ Use this editor via [this link](https://lucasdepaola.com/Rapid)
 
 Updated editor footage
 ![Editor footage](https://i.imgur.com/IAHySZx.jpeg)
+![More Footage](https://i.imgur.com/hCApBDF.png)
 Rapid now has basic syntax highlighting, with a simple theme configuration, navigate there via ./themes/default.js
 
 ## Scope file-finding functionality (toggle Ctrl-f to access)
