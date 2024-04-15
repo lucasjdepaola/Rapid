@@ -1,5 +1,5 @@
 const themeCanvas = {
-  "purple": "#b095d6",
+  "purple": "#ff7b72",
   "numorange": "#ae603c"
 };
 const defaultTheme = {

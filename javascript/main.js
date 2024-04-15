@@ -952,7 +952,6 @@ const renderText = () => {
   let relativeLine = coords.row - chart.start; // has to be the cursor
   let searchHighlightIndex = 0;
   for (let i = chart.start; i < chart.end; i++) {
-    let style = ""; // convert chars to spans
     if (i === coords.row) { // if we're on the actual cursor, display a normal line
       htmlstr += Math.abs(lineno) < 10 ? "  " : lineno < 100 ? " " : "";
       htmlstr += "<span style='color:gold;'>" + lineno + "</span>" + "   ";
@@ -996,7 +995,8 @@ const renderText = () => {
           }
           span += ">" + renderChar + "</span>";
           htmlstr += span;
-        } else if (
+        }
+        else if (
           currentlyHighlighting && capitalV &&
           inRange(i, visualcoords.from.row, visualcoords.to.row)
         ) { // in visual range
@@ -1007,14 +1007,29 @@ const renderText = () => {
           }
           j--;
           htmlstr += "</span>";
-        } else if (
+        }
+        else if (
           currentlyHighlighting &&
           inRange(i, visualcoords.from.row, visualcoords.to.row) &&
           inRange(j, visualcoords.from.col, visualcoords.to.col)
         ) {
           htmlstr += "<span style='background-color:" + HIGHLIGHTCOLOR + ";'>" +
             renderChar + "</span>";
-        } else if (
+        }
+        else if (syntaxHighlight.length > 0 && i === syntaxHighlight[0].coords.row && inRange(j, syntaxHighlight[0].coords.from, syntaxHighlight[0].coords.to)) {
+          // highlight char
+          if (j === syntaxHighlight[0].coords.from) {
+            let style = "color:" + syntaxHighlight[0].color + ";";
+            htmlstr += "<span style=' " + style + "'>" + renderChar;
+          }
+          else if (j === syntaxHighlight[0].coords.to) {
+            htmlstr += renderChar + "</span>"; // end the span being created in the state machine
+            syntaxHighlight.shift(); // take off the queue if we're at the end of the highlight
+          } else {
+            htmlstr += renderChar;
+          }
+        }
+        else if (
           searchCoords.length > 0 &&
           (currentState === states.search || nKey) &&
           searchCoords[searchHighlightIndex] !== undefined &&
