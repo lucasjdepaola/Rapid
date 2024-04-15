@@ -689,6 +689,7 @@ const rapid = (key, isEmulating) => {
       }
     }
   }
+  syntaxHighlightFile();
   if (currentlyHighlighting) updateVisualCoordinates();
   updateCol();
   updateBar();
@@ -699,7 +700,6 @@ const rapid = (key, isEmulating) => {
   if (gameState) checkGame();
   if (keyBufferIsOn && isEmulating === undefined) keyBuffer(key);
   console.timeEnd("test");
-  syntaxHighlightFile();
 };
 
 const importRealFile = async (fileHandler) => {

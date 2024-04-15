@@ -24,7 +24,7 @@ const lex = (keyWords) => {
       }
     }
   }
-  const lexParseRegex = /[\[\]\(\)%!#*^;\.<>]/; // everything that can parse a word that also needs to be added
+  const lexParseRegex = /[\[\]\(\)%!#*^;\.<>/]/; // everything that can parse a word that also needs to be added
   let startQuote = false; // for quote state
   let quoteFrom = 0;
   for (let i = chart.start; i < chart.end; i++) {
@@ -33,6 +33,15 @@ const lex = (keyWords) => {
       if (startQuote && matrix[i][j] !== '"') continue; // skip iteration if quote state
       const c = matrix[i][j];
       if (lexParseRegex.test(c)) { // when a special character occurs we reset the lexing
+        if (c === "/" && peek(i, j) === "/") {
+          console.log("comment ?");
+          // comment state
+          syntaxHighlight.push({ color: currentTheme["comment"], coords: { row: i, from: j, to: matrix[i].length - 1 } });
+          i++; // go to next col
+          j = -1;
+          accumStr = "";
+          if (i >= matrix.length) break;
+        }
         if (accumStr in keyWords)
           syntaxHighlight.push({ color: currentTheme[keyWords[accumStr]], coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         accumStr = ""; // since the character parses the string
@@ -51,15 +60,6 @@ const lex = (keyWords) => {
           startQuote = true;
           quoteFrom = j; // start the quote process
         }
-      }
-      else if (c === "/" && peek(i, j) === "/") {
-        console.log("comment ?");
-        // comment state
-        syntaxHighlight.push({ color: currentTheme["comment"], coords: { row: i, from: j, to: matrix[i].length - 1 } });
-        i++; // go to next col
-        j = -1;
-        accumStr = "";
-        if (i >= matrix.length) break;
       }
       else {
         accumStr += c;

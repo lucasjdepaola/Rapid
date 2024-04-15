@@ -10,6 +10,7 @@ const JSTree = {
     "of": "native",
     "in": "native",
     "null": "native",
+    "new": "native",
   },
   "extension": "js"
 }
