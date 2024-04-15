@@ -11,8 +11,8 @@ let currentTheme = defaultTheme;
 /* lex the page range of the render, to give syntax highlighting on the front end */
 const lex = (keyWords) => {
   updateOffsetChart();
-  const peek = (index) => {
-    return index + 1 < keyWords.length ? keyWords[index + 1] : null;
+  const peek = (row, col) => {
+    return col + 1 < matrix[row].length ? matrix[row][col + 1] : null;
   }
   const returnMap = (color, row, from, to) => {
     return {
@@ -24,7 +24,7 @@ const lex = (keyWords) => {
       }
     }
   }
-  const lexParseRegex = /[\[\]\(\)%!#*^;\.]/; // everything that can parse a word that also needs to be added
+  const lexParseRegex = /[\[\]\(\)%!#*^;\.<>/]/; // everything that can parse a word that also needs to be added
   let startQuote = false; // for quote state
   let quoteFrom = 0;
   for (let i = chart.start; i < chart.end; i++) {
@@ -52,10 +52,14 @@ const lex = (keyWords) => {
           quoteFrom = j; // start the quote process
         }
       }
-      else if (c === "/" && peek(i) === "/") {
+      else if (c === "/" && peek(i, j) === "/") {
+        console.log("comment ?");
         // comment state
-        syntaxHighlight.push({ color: currentTheme["comment"], coords: { row: i, from: i, to: matrix[i].length - 1 } });
+        syntaxHighlight.push({ color: currentTheme["comment"], coords: { row: i, from: j, to: matrix[i].length - 1 } });
         i++; // go to next col
+        j = -1;
+        accumStr = "";
+        if (i >= matrix.length) break;
       }
       else {
         accumStr += c;
@@ -69,6 +73,7 @@ const lex = (keyWords) => {
 const syntaxHighlightFile = () => {
   const extension = getFileExtension(currentFilename); // should not be called as often
   const keyWords = languageMap[extension];
+  console.log(keyWords);
   if (keyWords === undefined) return; // don't highlight on bad extensions
   syntaxHighlight = [];
   lex(keyWords["keywords"]);

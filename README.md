@@ -5,7 +5,9 @@ The main goal of this editor is to show that with under 1000 lines of code (arou
 
 Use this editor via [this link](https://lucasdepaola.com/Rapid)
 
-![Editor footage](https://i.imgur.com/NZlaRrQ.jpeg)
+Updated editor footage
+![Editor footage](https://i.imgur.com/IAHySZx.jpeg)
+Rapid now has basic syntax highlighting, with a simple theme configuration, navigate there via ./themes/default.js
 
 ## Scope file-finding functionality (toggle Ctrl-f to access)
 ![Scope footage](https://i.imgur.com/QB47BBH.jpeg)
