@@ -11,6 +11,10 @@ const JSTree = {
     "in": "native",
     "null": "native",
     "new": "native",
+    "function": "native",
+    "undefined": "boolean",
+    "true": "boolean",
+    "false": "boolean"
   },
   "extension": "js"
 }

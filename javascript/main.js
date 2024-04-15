@@ -980,6 +980,10 @@ const renderText = () => {
             if (j === syntaxHighlight[0].coords.from) {
               let style = "color:" + syntaxHighlight[0].color + ";";
               htmlstr += "<span style=' " + style + "'>";
+              if (syntaxHighlight[0].coords.from === syntaxHighlight[0].coords.to) {
+                htmlstr += "</span>";
+                syntaxHighlight.shift();
+              }
             }
             else if (j === syntaxHighlight[0].coords.to) {
               htmlstr += "</span>"; // end the span being created in the state machine
@@ -1032,6 +1036,10 @@ const renderText = () => {
           if (j === syntaxHighlight[0].coords.from) {
             let style = "color:" + syntaxHighlight[0].color + ";";
             htmlstr += "<span style=' " + style + "'>" + renderChar;
+            if (syntaxHighlight[0].coords.from === syntaxHighlight[0].coords.to) {
+              htmlstr += renderChar + "</span>";
+              syntaxHighlight.shift();
+            }
           }
           else if (j === syntaxHighlight[0].coords.to) {
             htmlstr += renderChar + "</span>"; // end the span being created in the state machine

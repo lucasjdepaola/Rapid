@@ -2,7 +2,9 @@ console.log(JSTree); // javascript tokens
 console.log(HTMLTree); // html tokens
 const languageMap = { // map containing the tokens
   "js": JSTree,
-  "html": HTMLTree
+  "html": HTMLTree,
+  "c": CTree,
+  "py": PythonTree
 };
 let syntaxHighlight = []; // syntax highlighting
 let currentTheme = defaultTheme;
@@ -42,8 +44,11 @@ const lex = (keyWords) => {
           accumStr = "";
           if (i >= matrix.length) break;
         }
-        if (accumStr in keyWords)
+        else if (accumStr in keyWords)
           syntaxHighlight.push({ color: currentTheme[keyWords[accumStr]], coords: { row: i, from: j - accumStr.length, to: j - 1 } });
+        else if (c === "(") {
+          syntaxHighlight.push({ color: currentTheme["function"], coords: { row: i, from: j - accumStr.length, to: j - 1 } });
+        }
         accumStr = ""; // since the character parses the string
       }
       else if (c === " ") {
