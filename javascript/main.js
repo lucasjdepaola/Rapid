@@ -1,6 +1,7 @@
 // TODO local html file preview inside of an iframe
 // TODO notification system like alpha
 // TODO fix auto tab
+// TODO document mode, where the user can set margin lower an edit wrapped text (writing a document)
 // TODO fix w and b motion to use regex
 console.log(JSTree);
 const leaderKey = " ";
@@ -127,7 +128,6 @@ const TABWIDTH = "  ";
 const scopeElement = document.getElementById("scope");
 let scopeToggled = false;
 let scopeStr = "";
-let gameState = false; // might need to be higher
 let correctMatrix;
 let deleteHighlight = {
   color: "red",
@@ -139,9 +139,6 @@ let changeHighlight = {
 }
 let appendHighlight = {
   color: "green", // change to palatte
-}
-const gameModeTable = {
-  vertical: [["x", " "]] // unshift arrays of rand height
 }
 let chart = {
   PAGESIZE: 50, // 50 is good enough to have some overlap (not the exact page size)
@@ -1892,49 +1889,6 @@ const rand = (max) => {
   return Math.floor(Math.random() * max) + 1;
 }
 
-const start = (gameMatrix) => {
-  const RAND = 27;
-  /* the size should stay the same, it should be the x changing */
-  // matrix.unshift([" "]); // unshift new row
-  // correctMatrix.unshift([" "]); 
-  let randomNo = rand(RAND);
-  while (randomNo === coords.row) randomNo = rand(RAND);
-  matrix[randomNo] = gameMatrix[0]; // set gamematrix to a random row
-}
-
-const game = () => {
-  if (gameState) {
-    let gameMatrix = gameModeTable.vertical.slice(0);
-    correctMatrix = [[" "]];
-    matrix = [[" "]];
-    for (let i = 0; i < 27; i++) {
-      matrix.push([" "]); // push a new row
-      correctMatrix.push([" "]);
-    }
-    start(gameMatrix);
-    return;
-  }
-  unhighlightTab();
-  currentFilename = "game";
-  createFileButton("game");
-  updateFileName();
-  gameState = true;
-  let gameMatrix = gameModeTable.vertical.slice(0);
-  correctMatrix = [[" "]];
-  matrix = [[" "]];
-  for (let i = 0; i < 27; i++) {
-    matrix.push([" "]); // push a new row
-    correctMatrix.push([" "]);
-  }
-  start(gameMatrix);
-}
-
-const checkGame = () => {
-  if (matrixesAreEqual(matrix, correctMatrix)) {
-    start([["x", " "]]);// restart game
-    renderText();
-  }
-}
 
 const getFileExtension = (fileName) => {
   const _arr = fileName.split(".");

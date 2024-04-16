@@ -1,4 +1,4 @@
-let cmpIsOn = false; // change during testing
+let cmpIsOn = true; // change during testing
 const getCurrCmp = () => {
   let start = 0;
   let end = matrix[coords.row].length - 1;
