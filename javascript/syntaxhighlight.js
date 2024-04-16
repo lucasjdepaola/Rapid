@@ -1,3 +1,4 @@
+const lexParseRegex = /[\[\]\(\)%!*^;,:\.<>=/]/; // everything that can parse a word that also needs to be added
 const languageMap = { // map containing the tokens
   "js": JSTree,
   "html": HTMLTree,
@@ -5,6 +6,7 @@ const languageMap = { // map containing the tokens
   "py": PythonTree
 };
 let syntaxHighlight = []; // syntax highlighting
+let accumList = []; // list for accumulated words (should maybe have a larger scope)
 let currentTheme = defaultTheme;
 
 const invertHex = (hex) => {
@@ -19,21 +21,16 @@ const lex = (keyWords) => {
   const peek = (row, col) => {
     return col + 1 < matrix[row].length ? matrix[row][col + 1] : null;
   }
-  const returnMap = (color, row, from, to) => {
-    return {
-      color: color,
-      coords: {
-        row: row,
-        from: from,
-        to: to
-      }
-    }
+  const eraseAccum = () => {
+    if (!accumList.includes(accumStr))
+      accumList.push(accumStr);
+    accumStr = "";
   }
-  const lexParseRegex = /[\[\]\(\)%!*^;,:\.<>=/]/; // everything that can parse a word that also needs to be added
   let startQuote = false; // for quote state
   let quoteFrom = 0;
+  accumList = [];
+  let accumStr = ""; // string used to accumulate a current token being built, line basis
   for (let i = chart.start; i < chart.end; i++) {
-    let accumStr = ""; // string used to accumulate a current token being built, line basis
     for (let j = 0; j < matrix[i].length; j++) {
       if (startQuote && matrix[i][j] !== '"') continue; // skip iteration if quote state
       const c = matrix[i][j];
@@ -43,7 +40,7 @@ const lex = (keyWords) => {
           syntaxHighlight.push({ color: currentTheme["comment"], coords: { row: i, from: j, to: matrix[i].length - 1 } });
           i++; // go to next col
           j = -1;
-          accumStr = "";
+          eraseAccum();
           if (i >= matrix.length) break;
         }
         else if (accumStr in keyWords)
@@ -57,7 +54,7 @@ const lex = (keyWords) => {
         else if (accumStr[0] === "#" && accumStr.length === 6) { // hex
           syntaxHighlight.push({ background: accumStr, color: white, coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         }
-        accumStr = ""; // since the character parses the string
+        eraseAccum();
       }
       else if (c === " ") {
         if (accumStr in keyWords) {
@@ -69,7 +66,7 @@ const lex = (keyWords) => {
         else if (accumStr[0] === "#" && accumStr.length === 7) {
           syntaxHighlight.push({ background: accumStr, color: "#" + invertHex(accumStr.slice(1, accumStr.length)), coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         }
-        accumStr = "";
+        eraseAccum();
       }
       else if (c === '"') {
         if (startQuote) {
@@ -85,8 +82,8 @@ const lex = (keyWords) => {
       }
     }
   }
-  return syntaxHighlight;
 }
+
 
 
 const syntaxHighlightFile = () => {
@@ -95,5 +92,4 @@ const syntaxHighlightFile = () => {
   if (keyWords === undefined) return; // don't highlight on bad extensions
   syntaxHighlight = [];
   lex(keyWords["keywords"]);
-  // there might need to be a step in between
 }

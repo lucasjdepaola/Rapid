@@ -1013,6 +1013,13 @@ const renderText = () => {
               syntaxHighlight.shift(); // take off the queue if we're at the end of the highlight
             }
           }
+          // render cmp here
+          if (cmpIsOn) {
+            const cmp = getCurrCmp();
+            // accumList
+            const arr = fzfArr(cmp, accumList);
+            console.log(arr);
+          }
         }
         else if (
           currentlyHighlighting && capitalV &&
