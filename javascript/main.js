@@ -1018,7 +1018,10 @@ const renderText = () => {
             const cmp = getCurrCmp();
             // accumList
             const arr = fzfArr(cmp, accumList);
+            if (arr !== undefined && arr.length > 0)
+              htmlstr += "<span style='position:relative;'><span style='position:absolute;height:100px;width:100px;background-color:black;color:white;'>" + arr.join("\n") + "</span></span>";
             console.log(arr);
+            console.log(accumList);
           }
         }
         else if (
