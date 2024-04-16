@@ -1,7 +1,6 @@
 // TODO local html file preview inside of an iframe
-// TODO syntax highlighting that is efficient
-// TODO debounce syntax highlighting
-// TODO add comma to regex of ciw, diw
+// TODO notification system like alpha
+// TODO fix auto tab
 console.log(JSTree);
 const leaderKey = " ";
 const text = document.getElementById("text");
@@ -1014,14 +1013,12 @@ const renderText = () => {
             }
           }
           // render cmp here
-          if (cmpIsOn) {
+          if (cmpIsOn && currentState === states.insert) { // insert warrants an auto completion
             const cmp = getCurrCmp();
             // accumList
             const arr = fzfArr(cmp, accumList);
             if (arr !== undefined && arr.length > 0)
               htmlstr += "<span style='position:relative;'><span style='position:absolute;height:100px;width:100px;background-color:black;color:white;'>" + arr.join("\n") + "</span></span>";
-            console.log(arr);
-            console.log(accumList);
           }
         }
         else if (

@@ -3,7 +3,8 @@ const languageMap = { // map containing the tokens
   "js": JSTree,
   "html": HTMLTree,
   "c": CTree,
-  "py": PythonTree
+  "py": PythonTree,
+  "lua": luaTree
 };
 let syntaxHighlight = []; // syntax highlighting
 let accumList = []; // list for accumulated words (should maybe have a larger scope)
