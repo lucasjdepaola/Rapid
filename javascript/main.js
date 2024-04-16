@@ -1,6 +1,7 @@
 // TODO local html file preview inside of an iframe
 // TODO notification system like alpha
 // TODO fix auto tab
+// TODO fix w and b motion to use regex
 console.log(JSTree);
 const leaderKey = " ";
 const text = document.getElementById("text");
