@@ -1636,22 +1636,6 @@ const rightArrow = () => {
   }
 };
 
-const cachedump = () => { // dump to local storage
-  save();
-  for (filename in filemap) {
-    localStorage[filename + "_file"] = filemap[filename];
-  }
-};
-
-const loadcache = () => { // iterate over _file in localstorage and write to filemap
-  for (const filename in localStorage) {
-    if (filename.includes("_file")) {
-      const mapName = filename.replaceAll("_file", "");
-      filemap[mapName] = localStorage[filename];
-    }
-  }
-};
-
 const copyMatrixToOS = () => {
   let str = "";
   for (const row of matrix) {
@@ -1949,29 +1933,6 @@ const getHighlightedText = () => {
   return str;
 }
 
-const browserInstance = document.getElementById("browserinstance");
-
-/* given a string, return a google link query */
-const googleQuery = (str) => {
-  // return "https://www.google.com/search?q=" + str.replaceAll(" ", "+");
-  return "https://www.google.com/search?q=" + str.replaceAll(" ", "+") + "&igu=1";
-}
-
-const browserSearch = (str) => {
-  document.getElementById("browserinstance").style.display = "flex";
-  let url;
-  if (str.includes(".")) {
-    url = "https://" + str.trim();
-  }
-  else {
-    url = googleQuery(str);
-  }
-  document.getElementById("browseriframe").src = url;
-}
-
-const quitAllDivs = () => {
-  document.getElementById("browserinstance").style.display = "none";
-}
 
 let exploring = false;
 let workingDirectory;
