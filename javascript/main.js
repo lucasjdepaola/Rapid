@@ -896,12 +896,11 @@ const interpretCommand = (str) => {
     isSyntaxHighlighting = !isSyntaxHighlighting; // toggle
   }
   else if (splitcmd[0] === "notif") {
-    sendNotification(splitcmd[1], canvas.success);
+    sendNotification(cmdstr.replace("notif", ""), canvas.success);
   }
   else {
     sendNotification("Could not find command.", canvas.error)
   }
-
 };
 
 const save = (name) => {
