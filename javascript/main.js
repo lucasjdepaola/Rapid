@@ -100,10 +100,10 @@ const macros = {}; // a letter binds to a macro string, which is interpreted by 
 const mark = {}; // a letter binds to a coordinate which acts as a cursor position
 
 const motions = {
-  yank: "YANK",
-  delete: "DELETE",
-  c: "C",
-  visual: "VISUAL",
+  "yank": "YANK",
+  "delete": "DELETE",
+  "c": "C",
+  "visual": "VISUAL",
 };
 const HIGHLIGHTCOLOR = canvas.lightpink;
 const filebar = document.getElementById("topbar");

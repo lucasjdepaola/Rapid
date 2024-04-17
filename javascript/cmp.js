@@ -1,4 +1,4 @@
-let cmpIsOn = true; // change during testing
+let cmpIsOn = false; // change during testing
 const CMPLEN = 5; // only show 5 completions
 const getCurrCmp = () => {
   let start = 0;
