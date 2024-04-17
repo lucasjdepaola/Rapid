@@ -1,9 +1,7 @@
 // TODO local html file preview inside of an iframe
-// TODO notification system like alpha
 // TODO fix auto tab
 // TODO document mode, where the user can set margin lower an edit wrapped text (writing a document)
 // TODO fix w and b motion to use regex
-console.log(JSTree);
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
@@ -11,6 +9,7 @@ const bg = document.getElementById("bg");
 const command = document.getElementById("command");
 const bottombar = document.getElementById("bottombar"); // bottom ui bar
 let matrix = [[" "]];
+let matrixCache = [[" "]]; // for undoing
 let filemap = {}; // keep track of all files
 let realFileMap = {}; // for actual files
 let userfiles;
@@ -76,6 +75,8 @@ const canvas = {
   orangeprogress: "#ffa657",
   normalColor: "#ffa657",
   smartColor: "#ffa657",
+  success: "#3fb950",
+  error: "#f85149"
 };
 const media = { // collection of potential background images
   none: "none",
@@ -422,6 +423,10 @@ const rapid = (key, isEmulating) => {
           exploring = false;
         }
       }
+      else if (key.key === "u") { // undo tree?
+        console.log("undo");
+        matrix = matrixCache;
+      }
     } else if (currentState === states.insert) { // insert()
       /* append letter to the current row and column which increments */
       if (key.ctrlKey) {
@@ -698,6 +703,7 @@ const rapid = (key, isEmulating) => {
   }
   if (gameState) checkGame();
   if (keyBufferIsOn && isEmulating === undefined) keyBuffer(key);
+  matrixCache = matrix; // set cache
   console.timeEnd("test");
 };
 
@@ -889,6 +895,13 @@ const interpretCommand = (str) => {
   else if (cmdstr === "highlight") {
     isSyntaxHighlighting = !isSyntaxHighlighting; // toggle
   }
+  else if (splitcmd[0] === "notif") {
+    sendNotification(splitcmd[1], canvas.success);
+  }
+  else {
+    sendNotification("Could not find command.", canvas.error)
+  }
+
 };
 
 const save = (name) => {
@@ -1013,10 +1026,12 @@ const renderText = () => {
           // render cmp here
           if (cmpIsOn && currentState === states.insert) { // insert warrants an auto completion
             const cmp = getCurrCmp();
-            // accumList
-            const arr = fzfArr(cmp, accumList);
-            if (arr !== undefined && arr.length > 0)
-              htmlstr += "<span style='position:relative;'><span style='position:absolute;height:100px;width:100px;background-color:black;color:white;'>" + arr.join("\n") + "</span></span>";
+            if (cmp.length > 0) {
+              // accumList
+              const arr = fzfArr(cmp, accumList).slice(0, CMPLEN).sort((a, b) => a.length - b.length);
+              if (arr !== undefined && arr.length > 0)
+                htmlstr += "<span style='position:relative;'><span style='position:absolute;height:100px;width:100px;background-color:black;color:white;'>" + arr.join("\n") + "</span></span>";
+            }
           }
         }
         else if (
@@ -1143,7 +1158,12 @@ const replaceChar = (key) => {
   matrix[coords.row].splice(coords.col, 1, key);
 };
 
-document.addEventListener("click", (coords) => {
+document.getElementById("text").addEventListener("click", (event) => {
+  const selection = window.getSelection();
+  console.log(selection);
+  const range = selection.getRangeAt(0);
+  console.log(range.toString());
+  console.log(range.startOffset);
 }); // TODO implement a click cursor tracker mechanism
 
 document.addEventListener("wheel", (event) => {
@@ -2148,7 +2168,6 @@ const sourceConfig = () => {
 }
 
 const keyBufferInterval = () => {
-  // TODO find a way to count seconds down in order to decrement buffer
   const INTERVALTIME = 50;
   setInterval(() => {
     for (let i = 0; i < keyBufferArr.length; i++) {

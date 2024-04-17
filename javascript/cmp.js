@@ -1,4 +1,5 @@
 let cmpIsOn = true; // change during testing
+const CMPLEN = 5; // only show 5 completions
 const getCurrCmp = () => {
   let start = 0;
   let end = matrix[coords.row].length - 1;
@@ -37,6 +38,9 @@ const fzfArr = (string, arr) => {
     }
     if (!flag) a.push(e);
     flag = false;
+  }
+  for (let i = 0; i < a.length; i++) {
+    if (a[i].toLowerCase() === string) a.splice(i, 1);
   }
   return a;
 }
