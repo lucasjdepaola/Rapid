@@ -1,4 +1,5 @@
 const REMOVETIME = 5000; // display for 5 seconds
+//🛈 info char ⓧ x char ⚠ warning char
 const notifDiv = document.getElementById("notification");
 const styleMessage = (string, color) => {
   const node = document.createElement("div");
@@ -9,8 +10,8 @@ const styleMessage = (string, color) => {
 
 const notif = (string) => { sendNotification(string, "white"); }
 const notifSuccess = (string) => { sendNotification(string, canvas.success); }
-const notifWarning = (string) => { sendNotification(string, canvas.warning); }
-const notifErr = (string) => { sendNotification(string, canvas.error); }
+const notifWarning = (string) => { sendNotification("⚠ " + string, canvas.warning); }
+const notifErr = (string) => { sendNotification("ⓧ " + string, canvas.error); }
 
 const sendNotification = (message, color) => {
   notifDiv.appendChild(styleMessage(message, color));
