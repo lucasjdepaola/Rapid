@@ -1911,7 +1911,6 @@ const rand = (max) => {
   return Math.floor(Math.random() * max) + 1;
 }
 
-
 const getFileExtension = (fileName) => {
   const _arr = fileName.split(".");
   return _arr[_arr.length - 1];
@@ -1936,7 +1935,6 @@ const toggleComment = () => {
 
 let cvs;
 let cursorIsInit = false;
-const pollingRate = 500;
 
 // heavily inspired from https://github.com/qwreey/dotfiles/blob/master/vscode/trailCursorEffect/index.js
 // https://github.com/tholman/cursor-effects the useless web
@@ -2140,6 +2138,8 @@ const Explore = async (dir) => {
       }
       if (e.kind === "directory") {
         matrix[count].push(..." (directory) ".split(""));
+        matrix[count].unshift("📁", " ");
+        // TODO logo map for files like the folder above, html can have an icon, etc
       }
       else {
         matrix[count].push(" ");
