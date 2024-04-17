@@ -881,7 +881,7 @@ const interpretCommand = (str) => {
     // smart line function to display tiny numbers per char
     smartLine = !smartLine;
   }
-  else if (/[0-9]+/.test(cmdstr)) {
+  else if (/^[0-9]+$/.test(cmdstr)) {
     coords.row = parseInt(cmdstr); // if the string is a number, then go to that line number
     if (coords.row >= matrix.length) coords.row = matrix.length - 1; // edge case
   }
@@ -900,6 +900,9 @@ const interpretCommand = (str) => {
   }
   else if (splitcmd[0] === "err") {
     notifErr(cmdstr.replace("err ", ""));
+  }
+  else if (splitcmd[0] === "twitch") {
+    injectTMI(splitcmd[1]);
   }
   else {
     sendNotification("Could not find command.", canvas.error)
