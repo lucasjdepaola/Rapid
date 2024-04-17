@@ -76,6 +76,7 @@ const canvas = {
   normalColor: "#ffa657",
   smartColor: "#ffa657",
   success: "#3fb950",
+  warning: "#f7c600",
   error: "#f85149"
 };
 const media = { // collection of potential background images
@@ -895,10 +896,13 @@ const interpretCommand = (str) => {
     isSyntaxHighlighting = !isSyntaxHighlighting; // toggle
   }
   else if (splitcmd[0] === "notif") {
-    notifSuccess(cmdstr.replace("notif ", ""));
+    notif(cmdstr.replace("notif ", ""));
   }
   else if (splitcmd[0] === "err") {
     notifErr(cmdstr.replace("err ", ""));
+  }
+  else if (splitcmd[0] === "warn") {
+    notifWarning(cmdstr.replace("warn ", ""));
   }
   else if (splitcmd[0] === "twitch") {
     injectTMI(splitcmd[1]);
