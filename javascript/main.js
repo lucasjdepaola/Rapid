@@ -170,19 +170,8 @@ const rapid = (key, isEmulating) => {
     if (key.key === "Enter") {
       /* increment row, push new matrix before it */
       if (currentState === states.insert) {
-        if (inBraces()) {
-          autoTab += TABWIDTH;
-          matrix[coords.row].splice(coords.col, 1); // why?
-          appendRow();
-          matrix[coords.row].unshift(
-            ...autoTab.split("").slice(0, autoTab.length - TABWIDTH.length),
-            "}",
-          );
-          decrementRow();
-        }
         appendRow();
-        matrix[coords.row].unshift(...autoTab.split(""));
-        coords.col = autoTab.length;
+        autoTabFunc();
       } else if (currentState === states.search) {
         nKey = true;
         if (searchCoords.length < 1) {
@@ -332,9 +321,11 @@ const rapid = (key, isEmulating) => {
         buildAwaitStr += "t";
       } else if (key.key === "o") {
         appendRow();
+        autoTabFunc();
         currentState = states.insert;
       } else if (key.key === "O") {
         appendRowBackwards();
+        autoTabFunc();
         currentState = states.insert;
       } else if (key.key === "w") {
         movew();
@@ -801,6 +792,28 @@ const lsRecursive = async (dirHandle) => {
     }
   }
   return dirs;
+}
+
+/* assume we look at the row above, and determine the tab width */
+const autoTabFunc = () => {
+  let aboveCount = 0;
+  let braceAbove = false; // TODO change to things such as python colon, etc, whatever can auto indent
+  while (matrix[coords.row - 1][aboveCount] === " " && aboveCount !== matrix[coords.row - 1].length - 1) {
+    aboveCount++;
+  }
+  if (matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "{" || matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "}") {
+    if (matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "}") matrix[coords.row - 1].splice(matrix[coords.row - 1].length - 2, 1);
+    aboveCount += TABWIDTH.length; // TODO change to integer rather than string
+    braceAbove = true;
+  } else console.log(matrix[coords.row - 1][matrix[coords.row - 1].length - 2]);
+  for (let i = 0; i < aboveCount; i++) {
+    appendText(" ");
+  }
+  if (braceAbove) {
+    matrix.splice(coords.row + 1, 0, [..." ".repeat(aboveCount - TABWIDTH.length).split(""), "}", " "]); // very hacky
+  }
+  coords.col = matrix[coords.row].length - 1;
+  console.log(matrix[coords.row].length - 1);
 }
 
 document.addEventListener("keydown", rapid);
