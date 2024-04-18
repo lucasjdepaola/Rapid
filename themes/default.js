@@ -30,7 +30,7 @@ const hackerTheme = {
   "numbers": themeCanvas.numbers,
   "comment": themeCanvas.comment,
   "boolean": themeCanvas.booleanblue,
-  "fontcolor": "#4fdf4c",
-  "barcolor": "#4fdf4c",
-  "image": "none",
+  "fontcolor": "#56ff5e",
+  "barcolor": "#184517",
+  "image": "matrix",
 }

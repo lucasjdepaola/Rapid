@@ -94,10 +94,10 @@ const media = { // collection of potential background images
   coolhackergif: "https://i.pinimg.com/originals/8b/e4/ef/8be4efc0a8e5bc4903aae00db82cb982.gif"
 };
 
-const imagefunc = (url) => {
-  return url;
+const imagefunc = (string) => {
+  return media[string];
 };
-bg.style.backgroundImage = "url(" + imagefunc(media.coolplanet) + ")"; //test
+bg.style.backgroundImage = "url(" + imagefunc("coolplanet") + ")"; //test
 
 const macros = {}; // a letter binds to a macro string, which is interpreted by the emulateKeys function
 const mark = {}; // a letter binds to a coordinate which acts as a cursor position
