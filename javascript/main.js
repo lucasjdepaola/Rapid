@@ -91,7 +91,8 @@ const media = { // collection of potential background images
     "https://i.pinimg.com/originals/7e/ea/01/7eea01a7a420f7bcc39064b7dc9252fd.jpg",
   hawk:
     "https://wallpapers.com/images/hd/mysterious-1920-x-1080-wallpaper-kcflzidhjqcxcgpe.jpg",
-  coolhackergif: "https://i.pinimg.com/originals/8b/e4/ef/8be4efc0a8e5bc4903aae00db82cb982.gif"
+  coolhackergif: "https://i.pinimg.com/originals/8b/e4/ef/8be4efc0a8e5bc4903aae00db82cb982.gif",
+  matrixrain: "https://ld211.github.io/matrixrain.gif"
 };
 
 const imagefunc = (string) => {
