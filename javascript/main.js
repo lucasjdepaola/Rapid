@@ -1,7 +1,6 @@
 // TODO local html file preview inside of an iframe
 // TODO document mode, where the user can set margin lower an edit wrapped text (writing a document)
 // TODO fix w and b motion to use regex
-// TODO tomorrow, fix extra gen brace when inside braces and hitting enter (should not happen twice)
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
@@ -801,10 +800,10 @@ const autoTabFunc = () => {
   while (matrix[coords.row - 1][aboveCount] === " " && aboveCount !== matrix[coords.row - 1].length - 1) {
     aboveCount++;
   }
-  if (matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "{" || matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "}") {
+  if ((matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "{" || matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "}")) {
     if (matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "}") matrix[coords.row - 1].splice(matrix[coords.row - 1].length - 2, 1);
     aboveCount += TABWIDTH.length; // TODO change to integer rather than string
-    braceAbove = true;
+    if (currentState === states.insert) braceAbove = true;
   } else console.log(matrix[coords.row - 1][matrix[coords.row - 1].length - 2]);
   for (let i = 0; i < aboveCount; i++) {
     appendText(" ");

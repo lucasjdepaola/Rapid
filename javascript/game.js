@@ -32,8 +32,6 @@ const game = () => {
 const start = (gameMatrix) => {
   const RAND = 27;
   /* the size should stay the same, it should be the x changing */
-  // matrix.unshift([" "]); // unshift new row
-  // correctMatrix.unshift([" "]); 
   let randomNo = rand(RAND);
   while (randomNo === coords.row) randomNo = rand(RAND);
   matrix[randomNo] = gameMatrix[0]; // set gamematrix to a random row

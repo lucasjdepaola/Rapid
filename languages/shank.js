@@ -9,6 +9,7 @@ const ShankTree = {
     "string": "function",
     "from": "function",
     "var": "native",
+    "until": "function",
     "if": "native",
     "elsif": "native",
     "else": "native",
