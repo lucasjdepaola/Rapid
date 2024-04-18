@@ -1,0 +1,26 @@
+const Sia32Tree = {
+  "keywords": {
+    "math": "function",
+    "branch": "function",
+    "call": "function",
+    "push": "function",
+    "load": "function",
+    "store": "function",
+    "pop": "function",
+    "and": "native",
+    "or": "native",
+    "xor": "native",
+    "not": "native",
+    "ls": "native",
+    "rs": "native",
+    "add": "native",
+    "subtract": "native",
+    "eq": "native",
+    "neq": "native",
+    "lt": "native",
+    "gt": "native",
+    "ge": "native",
+    "le": "native",
+  },
+  "extension": "sia"
+}
