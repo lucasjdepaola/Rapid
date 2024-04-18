@@ -1,6 +1,7 @@
 // TODO local html file preview inside of an iframe
 // TODO document mode, where the user can set margin lower an edit wrapped text (writing a document)
 // TODO fix w and b motion to use regex
+// TODO tomorrow, fix extra gen brace when inside braces and hitting enter (should not happen twice)
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
@@ -1334,7 +1335,7 @@ const renderSearch = () => {
 
 const movew = () => {
   for (let i = coords.col; i < matrix[coords.row].length; i++) {
-    if (matrix[coords.row][i] === " " && i <= matrix[coords.row].length) {
+    if ((matrix[coords.row][i] === " " || stopDeleteRegex.test(matrix[coords.row][i])) && i <= matrix[coords.row].length) {
       coords.col = i + 1;
       coords.col = i + 1 < matrix[coords.row].length ? i + 1 : i;
       return true;
