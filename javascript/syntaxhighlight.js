@@ -10,7 +10,6 @@ const languageMap = { // map containing the tokens
 };
 let syntaxHighlight = []; // syntax highlighting
 let accumList = []; // list for accumulated words (should maybe have a larger scope)
-let currentTheme = defaultTheme;
 
 const invertHex = (hex) => {
   // temporary borrowed code from SO https://stackoverflow.com/a/54569758 TODO change and come up with own solution (no dependencies)

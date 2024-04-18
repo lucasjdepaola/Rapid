@@ -1,6 +1,9 @@
 // TODO local html file preview inside of an iframe
 // TODO document mode, where the user can set margin lower an edit wrapped text (writing a document)
 // TODO fix w and b motion to use regex
+// TODO fix pasting, pasting is not 100% set yet
+// TODO fix visual mode, only capital V is functioning so far
+// TODO fix braces bug that removes bracket when there's a new line added
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
@@ -918,6 +921,11 @@ const interpretCommand = (str) => {
   }
   else if (splitcmd[0] === "twitch") {
     injectTMI(splitcmd[1]);
+  }
+  else if (splitcmd[0] === "theme") {
+    if (splitcmd[1] in themeMap) {
+      updateTheme(themeMap[splitcmd[1]]);
+    }
   }
   else {
     sendNotification("Could not find command.", canvas.error)

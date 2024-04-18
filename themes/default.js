@@ -1,4 +1,4 @@
-const themeCanvas = {
+const themeCanvas = { // if you want to add an extra color map for visual purposes
   "red": "#ff7b72",
   "purple": "#d2a8ff",
   "numbers": "#79c0ff",
@@ -16,5 +16,21 @@ const defaultTheme = {
   "function": themeCanvas.purple,
   "numbers": themeCanvas.numbers,
   "comment": themeCanvas.comment,
-  "boolean": themeCanvas.booleanblue
+  "boolean": themeCanvas.booleanblue,
+  "fontcolor": "white",
+  "barcolor": "#3f4563"
 };
+
+const hackerTheme = {
+  "native": themeCanvas.red,
+  "quotes": themeCanvas.quoteBlue,
+  "background": "black",
+  "braces": themeCanvas.purple,
+  "function": themeCanvas.purple,
+  "numbers": themeCanvas.numbers,
+  "comment": themeCanvas.comment,
+  "boolean": themeCanvas.booleanblue,
+  "fontcolor": "#4fdf4c",
+  "barcolor": "#4fdf4c",
+  "image": "none",
+}
