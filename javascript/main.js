@@ -1,5 +1,4 @@
 // TODO local html file preview inside of an iframe
-// TODO fix auto tab
 // TODO document mode, where the user can set margin lower an edit wrapped text (writing a document)
 // TODO fix w and b motion to use regex
 const leaderKey = " ";
