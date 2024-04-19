@@ -243,6 +243,9 @@ const rapid = (key, isEmulating) => {
         updateScope();
       }
     }
+    else if (key.key === "Alt") {
+      key.preventDefault();
+    }
   } else {
     /* regular key case */
     if (currentState === states.normal) { //norm()
