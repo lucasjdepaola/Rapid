@@ -3,7 +3,6 @@
 // TODO fix w and b motion to use regex
 // TODO fix pasting, pasting is not 100% set yet
 // TODO fix visual mode, only capital V is functioning so far
-// TODO fix braces bug that removes bracket when there's a new line added
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
@@ -805,7 +804,7 @@ const autoTabFunc = () => {
     aboveCount++;
   }
   if ((matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "{" || matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "}")) {
-    if (matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "}") matrix[coords.row - 1].splice(matrix[coords.row - 1].length - 2, 1);
+    if (matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "}" && matrix[coords.row - 1][matrix[coords.row - 1].length - 3] === "{") matrix[coords.row - 1].splice(matrix[coords.row - 1].length - 2, 1);
     aboveCount += TABWIDTH.length; // TODO change to integer rather than string
     if (currentState === states.insert) braceAbove = true;
   } else console.log(matrix[coords.row - 1][matrix[coords.row - 1].length - 2]);
@@ -1602,11 +1601,6 @@ const motionInRange = (motion, start, end) => {
     deleteInRange(start, end);
     currentState = states.insert;
   }
-};
-
-const inBraces = () => {
-  return matrix[coords.row][coords.col - 1] === "{" &&
-    matrix[coords.row][coords.col] === "}";
 };
 
 const peek = () => {
