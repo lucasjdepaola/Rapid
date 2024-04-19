@@ -1,7 +1,7 @@
 // TODO local html file preview inside of an iframe
 // TODO document mode, where the user can set margin lower an edit wrapped text (writing a document)
-// TODO fix w and b motion to use regex
 // TODO fix pasting, pasting is not 100% set yet
+// TODO fix yanking, deleting etc in visual, as mentioned below
 // TODO fix visual mode, only capital V is functioning so far
 const leaderKey = " ";
 const text = document.getElementById("text");
@@ -1419,8 +1419,15 @@ const yankVisualRange = () => {
 };
 
 const pasteBuffer = () => {
+  // can potentially improve speed by not using appendtext(), or speeding up append text
   const originalrow = coords.row;
   const originalcol = coords.col;
+  if (vimcopybuffer.length === 1 && vimcopybuffer[0][vimcopybuffer.length - 1] === " ") { // paste without new line and return
+    for (const c of vimcopybuffer[0]) {
+      appendText(c);
+    }
+    return;
+  }
   for (line of vimcopybuffer) {
     appendRow();
     coords.col = 0;
