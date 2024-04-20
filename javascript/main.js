@@ -4,6 +4,7 @@
 // TODO fix yanking, deleting etc in visual, as mentioned below
 // TODO fix visual mode, only capital V is functioning so far
 // TODO toggle wpm counter function, to display users wpm per the standard (5 key presses per word)
+// TODO fix bad indent when o'ing after end braces
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
@@ -701,6 +702,9 @@ const rapid = (key, isEmulating) => {
   }
   if (gameState) checkGame();
   if (keyBufferIsOn && isEmulating === undefined) keyBuffer(key);
+  if (isDisplayingWPM && isEmulating === undefined && currentState === states.insert) {
+    keysPressed++;
+  }
   matrixCache = matrix; // set cache
   console.timeEnd("test");
 };
@@ -931,6 +935,9 @@ const interpretCommand = (str) => {
     if (splitcmd[1] in themeMap) {
       updateTheme(themeMap[splitcmd[1]]);
     }
+  }
+  else if (cmdstr === "wpm") {
+    initWPM();
   }
   else {
     sendNotification("Could not find command.", canvas.error)

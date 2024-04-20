@@ -160,6 +160,9 @@ body {
 #keybuffer {
   color : #0fff50;
 }
+#wpm {
+  color:yellow;
+}
 
 @font-face {
   font-family:"comicmono";
