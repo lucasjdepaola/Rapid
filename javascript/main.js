@@ -813,8 +813,10 @@ const autoTabFunc = () => {
     aboveCount++;
   }
   if ((matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "{" || matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "}")) {
-    if (matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "}" && matrix[coords.row - 1][matrix[coords.row - 1].length - 3] === "{") matrix[coords.row - 1].splice(matrix[coords.row - 1].length - 2, 1);
-    aboveCount += TABWIDTH.length; // TODO change to integer rather than string
+    if (matrix[coords.row - 1][matrix[coords.row - 1].length - 2] === "}" && matrix[coords.row - 1][matrix[coords.row - 1].length - 3] === "{") {
+      matrix[coords.row - 1].splice(matrix[coords.row - 1].length - 2, 1);
+      aboveCount += TABWIDTH.length;
+    }
     if (currentState === states.insert) braceAbove = true;
   } else console.log(matrix[coords.row - 1][matrix[coords.row - 1].length - 2]);
   for (let i = 0; i < aboveCount; i++) {
