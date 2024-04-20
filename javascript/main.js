@@ -3,6 +3,7 @@
 // TODO fix pasting, pasting is not 100% set yet
 // TODO fix yanking, deleting etc in visual, as mentioned below
 // TODO fix visual mode, only capital V is functioning so far
+// TODO toggle wpm counter function, to display users wpm per the standard (5 key presses per word)
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
