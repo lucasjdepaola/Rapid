@@ -1,8 +1,9 @@
 /* relating to keypresses on the status bar, keys pressed, keys per minute, and words per minute via the standard 5 keys per word */
 
+let keybufferIntervalID;
 const keyBufferInterval = () => {
   const INTERVALTIME = 50;
-  setInterval(() => {
+  keybufferIntervalID = setInterval(() => {
     for (let i = 0; i < keyBufferArr.length; i++) {
       if (keyBufferArr[i].time < 0) {// key time is up
         keyBufferArr.splice(i, 1);
@@ -55,11 +56,15 @@ const initWPM = () => {
   isDisplayingWPM = !isDisplayingWPM;
   if (isDisplayingWPM) {
     wpmInterval();
+  } else {
+    document.getElementById("wpm").innerText = ""; // clear inner text so you don't see "WPM:" frozen on screen
+    clearInterval(wpmIntervalID); // if user wants to toggle it
   }
 }
 
+let wpmIntervalID;
 const wpmInterval = () => {
-  setInterval(() => {
+  wpmIntervalID = setInterval(() => {
     displayWPM();
     keysPressed = 0;
   }, 1000); // on a second interval
