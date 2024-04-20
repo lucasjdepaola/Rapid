@@ -244,6 +244,7 @@ const rapid = (key, isEmulating) => {
       }
     }
     else if (key.key === "Alt") {
+      // without preventing default, it will unfocus the chrome tab
       key.preventDefault();
     }
   } else {
@@ -1393,16 +1394,27 @@ const deleteVisualRange = () => {
   const maxrow = Math.max(visualcoords.from.row, visualcoords.to.row);
   if (capitalV) {
     capitalV = false;
-  }
-  vimcopybuffer = matrix.splice(minrow, maxrow - minrow + 1); // this could have multiple lines
-  coords.col = 0;
-  coords.row = minrow;
-  if (matrix.length === 0) {
-    matrix = [[" "]];
-    coords.row = 0;
+    vimcopybuffer = matrix.splice(minrow, maxrow - minrow + 1); // this could have multiple lines
     coords.col = 0;
+    coords.row = minrow;
+    if (matrix.length === 0) {
+      matrix = [[" "]];
+      coords.row = 0;
+      coords.col = 0;
+    }
+    if (matrix[coords.row] === undefined) coords.row--;
+    return; // in the capital V case, we go no further
   }
-  if (matrix[coords.row] === undefined) coords.row--;
+  if (minrow === maxrow) {
+    vimcopybuffer = matrix[minrow].splice(mincol, maxcol - mincol + 1); // splice out from the min col and return
+    return;
+  }
+  vimcopybuffer = matrix[minrow].splice(mincol, matrix[minrow].length - mincol); // splice out after mincol
+  for (let i = minrow + 1; i < maxrow; i++) { // delete every middle row (encapsulated by the visual)
+    matrix.splice(i, 1);
+    // TODO push this to copybuffer
+  }
+  matrix[maxrow].splice(0, maxcol);
 };
 let globarr;
 const deleteInRange = (start, end) => {
