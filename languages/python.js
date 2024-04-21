@@ -17,6 +17,7 @@ const PythonTree = {
     "lambda": "native",
     "None": "boolean",
     "yield": "native",
+    "assert": "native",
     "else": "native",
     "in": "native",
     "with": "native",

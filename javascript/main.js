@@ -7,7 +7,10 @@
 // TODO fix bad indent when o'ing after end braces
 // TODO live markdown editor
 // TODO LAST todo, create a plugin system where extensions can create these features, rather than myself
+// TODO find a way to append text to new lines of the matrix, (like if you want output onto the page, shell cmd >> or >)
 const leaderKey = " ";
+console.log = notif;
+console.error = notifErr; // set errors to notifications on screen
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
 const bg = document.getElementById("bg");
@@ -425,7 +428,6 @@ const rapid = (key, isEmulating) => {
         }
       }
       else if (key.key === "u") { // undo tree?
-        console.log("undo");
         matrix = matrixCache;
       }
     } else if (currentState === states.insert) { // insert()
@@ -635,6 +637,12 @@ const rapid = (key, isEmulating) => {
           setNormal();
           clearAwait();
         }
+        else if (key.key === "j") {
+          const fn = validCommands["run"];
+          fn();
+          setNormal();
+          clearAwait();
+        }
         // else if(key.key === "")
       }
       else if (buildAwaitStr === "g") {
@@ -820,7 +828,7 @@ const autoTabFunc = () => {
       aboveCount += TABWIDTH.length;
     }
     if (currentState === states.insert) braceAbove = true;
-  } else console.log(matrix[coords.row - 1][matrix[coords.row - 1].length - 2]);
+  }
   for (let i = 0; i < aboveCount; i++) {
     appendText(" ");
   }
@@ -828,7 +836,6 @@ const autoTabFunc = () => {
     matrix.splice(coords.row + 1, 0, [..." ".repeat(aboveCount - TABWIDTH.length).split(""), "}", " "]); // very hacky
   }
   coords.col = matrix[coords.row].length - 1;
-  console.log(matrix[coords.row].length - 1);
 }
 
 document.addEventListener("keydown", rapid);
@@ -1083,10 +1090,7 @@ const replaceChar = (key) => {
 
 document.getElementById("text").addEventListener("click", (event) => {
   const selection = window.getSelection();
-  console.log(selection);
   const range = selection.getRangeAt(0);
-  console.log(range.toString());
-  console.log(range.startOffset);
 }); // TODO implement a click cursor tracker mechanism
 
 document.addEventListener("wheel", (event) => {
@@ -1213,7 +1217,6 @@ const search = () => {
   try {
     searchRegex = new RegExp(searchArr.join(""), "i");
   } catch (error) {
-    console.log(error);
   }
   for (let i = 0; i < matrix.length; i++) {
     const str = matrix[i].join("");

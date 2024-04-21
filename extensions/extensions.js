@@ -19,3 +19,16 @@ const extensionExample = () => {
   validCommands["commentall"] = commentAll;
 };
 extensionExample();
+
+const runJSExtension = () => {
+  const runJS = () => {
+    try {
+      const str = matrix.map((e) => e.join("")).join("\n");
+      eval(str);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  validCommands["run"] = runJS; // new command
+}
+runJSExtension();
