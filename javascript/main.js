@@ -6,6 +6,7 @@
 // TODO toggle wpm counter function, to display users wpm per the standard (5 key presses per word)
 // TODO fix bad indent when o'ing after end braces
 // TODO live markdown editor
+// TODO LAST todo, create a plugin system where extensions can create these features, rather than myself
 const leaderKey = " ";
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder")
