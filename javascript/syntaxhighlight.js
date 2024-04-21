@@ -45,6 +45,7 @@ const lex = (keyWords) => {
           eraseAccum();
           if (i >= matrix.length) break;
         }
+        // TODO if style !== undefined -> predefined style
         else if (accumStr in keyWords)
           syntaxHighlight.push({ color: currentTheme[keyWords[accumStr]], coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         else if (c === "(") {
