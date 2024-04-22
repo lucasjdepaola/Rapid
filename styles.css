@@ -20,23 +20,14 @@ iframe {
   z-index : -100;
 }
 
-#userfolder {
-  position:fixed;
-  margin-top:1%;
-  top:1%;
-  right:1%;
-  height:3%;
-  width:10%;
-  /* background-color:black; */
-  transform: translateY(-50%);
-  cursor:pointer;
-  border : 2px solid white;
-  border-radius: 5px;
-}
 #foldertext {
   position:fixed;
-  top:30%;
-  left:10%;
+  top:1%;
+  right:1%;
+  border : 2px solid white;
+  border-radius: 5px;
+  padding:4px;
+  cursor:pointer;
 }
 
 

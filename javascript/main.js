@@ -2,11 +2,13 @@
 // TODO fix yanking, deleting etc in visual, as mentioned below
 // TODO fix visual mode, only capital V is functioning so far
 // TODO live markdown editor
+// TODO fix select folder option not wrapping with the text (likely a position:absolute error)
 const leaderKey = " ";
 console.log = notif;
 console.error = notifErr; // set errors to notifications on screen
 const text = document.getElementById("text");
-const userFolder = document.getElementById("userfolder")
+const userFolder = document.getElementById("userfolder");
+const folderText = document.getElementById("foldertext");
 const bg = document.getElementById("bg");
 const command = document.getElementById("command");
 const bottombar = document.getElementById("bottombar"); // bottom ui bar
@@ -732,7 +734,7 @@ const importRealFile = async (fileHandler) => {
   renderText();
 }
 let dirHandle;
-userFolder.addEventListener("click", async () => {
+folderText.addEventListener("click", async () => {
   pickFiles();
 });
 
