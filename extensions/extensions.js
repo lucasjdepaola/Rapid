@@ -26,7 +26,7 @@ const runJSExtension = () => {
       const str = matrix.map((e) => e.join("")).join("\n");
       eval(str);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   }
   validCommands["run"] = runJS; // new command
