@@ -6,7 +6,7 @@ The main goal of this editor is to show that with under 1000 lines of code (arou
 Use this editor via [this link](https://lucasdepaola.com/Rapid)
 
 Updated editor footage
-![Editor footage](https://i.imgur.com/IAHySZx.jpeg)
+![Editor footage](https://i.imgur.com/i9I6Xdn.png)
 ![More Footage](https://i.imgur.com/hCApBDF.png)
 Rapid now has basic syntax highlighting, with a simple theme configuration, navigate there via ./themes/default.js
 

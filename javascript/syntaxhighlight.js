@@ -12,8 +12,6 @@ let syntaxHighlight = []; // syntax highlighting
 let accumList = []; // list for accumulated words (should maybe have a larger scope)
 
 const invertHex = (hex) => {
-  // temporary borrowed code from SO https://stackoverflow.com/a/54569758 TODO change and come up with own solution (no dependencies)
-  return (Number(`0x1${hex}`) ^ 0xFFFFFF).toString(16).substr(1).toUpperCase()
 }
 
 
