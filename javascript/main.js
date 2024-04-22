@@ -3,6 +3,7 @@
 // TODO fix visual mode, only capital V is functioning so far
 // TODO live markdown editor
 // TODO need a cacheable config file that can be resourced when a user opens the editor again.
+// TODO fix auto delete when there's zero characters left on command mode, also change command mode from dollar sign to colon, not really pressing dollar sign, non intuitive
 const leaderKey = " ";
 console.log = notif;
 console.error = notifErr; // set errors to notifications on screen
@@ -224,16 +225,16 @@ const rapid = (key, isEmulating) => {
       if (key.ctrlKey) {
         ctrlBack();
       } else if (currentState === states.command) {
-        commandArr.pop();
         if (commandArr.length === 0) {
           setNormal();
-          renderCommand();
         }
+        commandArr.pop();
+        renderCommand();
       } else if (currentState === states.search) {
-        searchArr.pop();
         if (searchArr.length === 0) {
           setNormal();
         }
+        searchArr.pop();
         search();
       } else if (currentState === states.insert) {
         delBackspace();
