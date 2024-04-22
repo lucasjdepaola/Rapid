@@ -2,7 +2,7 @@
 // TODO fix yanking, deleting etc in visual, as mentioned below
 // TODO fix visual mode, only capital V is functioning so far
 // TODO live markdown editor
-// TODO fix select folder option not wrapping with the text (likely a position:absolute error)
+// TODO need a cacheable config file that can be resourced when a user opens the editor again.
 const leaderKey = " ";
 console.log = notif;
 console.error = notifErr; // set errors to notifications on screen
@@ -458,28 +458,28 @@ const rapid = (key, isEmulating) => {
         else if (key.key === "s") {
           decrementCol();
           del(1);
-          appendStringAsText('console.log("line ' + coords.row + '" + );');
+          appendStringAsText('console.log();');
           coords.col -= 2; // go back in paren
           clearAwait();
         }
         else if (key.key === "c") {
           decrementCol();
           del(1);
-          appendStringAsText('printf("line ' + coords.row + ' ");');
+          appendStringAsText('printf();');
           coords.col -= 3; // go back in paren
           clearAwait();
         }
         else if (key.key === "v") {
           decrementCol();
           del(1);
-          appendStringAsText('System.out.println("line ' + coords.row + '" + );');
+          appendStringAsText('System.out.println();');
           coords.col -= 2; // go back in paren
           clearAwait();
         }
         else if (key.key === "p") {
           decrementCol();
           del(1);
-          appendStringAsText('print("line ' + coords.row + '" + );');
+          appendStringAsText('print();');
           coords.col -= 2; // go back in paren
           clearAwait();
         }
