@@ -121,6 +121,6 @@ const renderCommand = () => {
     command.innerHTML = "";
     return;
   }
-  command.innerHTML = "$ " + commandArr.join("") +
+  command.innerHTML = ":" + commandArr.join("") +
     "<span id='livecursor' style='border-left:1px solid white;'> </span>";
 };

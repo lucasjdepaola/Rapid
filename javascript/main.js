@@ -4,6 +4,7 @@
 // TODO live markdown editor
 // TODO need a cacheable config file that can be resourced when a user opens the editor again.
 // TODO fix auto delete when there's zero characters left on command mode, also change command mode from dollar sign to colon, not really pressing dollar sign, non intuitive
+// TODO prevent default upon CTRL+a, don't want to increment like in normal vim, instead highlight everything
 const leaderKey = " ";
 console.log = notif;
 console.error = notifErr; // set errors to notifications on screen
@@ -432,7 +433,12 @@ const rapid = (key, isEmulating) => {
       if (key.ctrlKey) {
         if (key.key === "c") {
           setNormal();
-        } else if (key.key === "v") {
+        }
+        else if (key.key === "a") {
+          key.preventDefault();
+          emulateKeys("jkggVG"); // go into normal mode and highlight all the text
+        }
+        else if (key.key === "v") {
           pasteFromOS();
         } else if (key.key === "y") {
           if (currentlyHighlighting) {
