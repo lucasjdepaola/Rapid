@@ -130,7 +130,7 @@ endmap["]"] = "[";
 endmap['"'] = '"';
 endmap["'"] = "'";
 const cmpregex = /[(\[{"]/;
-const endregex = /[)\]}"]/;
+const endregex = /[)\]}\"\']/;
 const wordBreakRegex = / ."\[\]\(\)!@#$%\^&\*/
 let autoTab = "";
 const TABWIDTH = "  ";
@@ -497,11 +497,15 @@ const rapid = (key, isEmulating) => {
         clearAwait();
         lastAwait = temp;
       } else if (cmpregex.test(key.key)) {
-        appendText(key.key);
-        appendText(startmap[key.key]);
-        coords.col--;
-        updatePrevCol();
-      } else if (endregex.test(key.key) && endregex.test(peek())) {
+        if (key.key === '"' && peek() === '"') {
+          incrementCol();
+        } else {
+          appendText(key.key);
+          appendText(startmap[key.key]);
+          coords.col--;
+          updatePrevCol();
+        }
+      } else if (endregex.test(key.key) && peek() === key.key) {
         incrementCol();
       } else {
         appendText(key.key);
