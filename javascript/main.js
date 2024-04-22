@@ -1,13 +1,7 @@
-// TODO local html file preview inside of an iframe
 // TODO document mode, where the user can set margin lower an edit wrapped text (writing a document)
-// TODO fix pasting, pasting is not 100% set yet
 // TODO fix yanking, deleting etc in visual, as mentioned below
 // TODO fix visual mode, only capital V is functioning so far
-// TODO toggle wpm counter function, to display users wpm per the standard (5 key presses per word)
-// TODO fix bad indent when o'ing after end braces
 // TODO live markdown editor
-// TODO LAST todo, create a plugin system where extensions can create these features, rather than myself
-// TODO find a way to append text to new lines of the matrix, (like if you want output onto the page, shell cmd >> or >)
 const leaderKey = " ";
 console.log = notif;
 console.error = notifErr; // set errors to notifications on screen
