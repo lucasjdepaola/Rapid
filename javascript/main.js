@@ -3,8 +3,7 @@
 // TODO fix visual mode, only capital V is functioning so far
 // TODO live markdown editor
 // TODO need a cacheable config file that can be resourced when a user opens the editor again.
-// TODO fix auto delete when there's zero characters left on command mode, also change command mode from dollar sign to colon, not really pressing dollar sign, non intuitive
-// TODO prevent default upon CTRL+a, don't want to increment like in normal vim, instead highlight everything
+// TODO create a better tab system, where it stays with the top bar, and cannot get out of sync
 const leaderKey = " ";
 console.log = notif;
 console.error = notifErr; // set errors to notifications on screen
