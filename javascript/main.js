@@ -4,6 +4,7 @@
 // TODO live markdown editor
 // TODO need a cacheable config file that can be resourced when a user opens the editor again.
 // TODO create a better tab system, where it stays with the top bar, and cannot get out of sync
+// TODO maybe last one, multiplayer system, socket controls the matrix, keypresses send into a queue
 const leaderKey = " ";
 console.log = notif;
 console.error = notifErr; // set errors to notifications on screen
