@@ -1482,16 +1482,25 @@ const createFileButton = (name) => {
   if (extension in languageMap && "icon" in languageMap[extension]) {
     icon = languageMap[extension]["icon"];
     let style = "color:" + languageMap[extension]["iconcolor"] + ";";
-    span.innerHTML = " <span style='" + style + "'>" + icon + "</span> " + name + "  ";
+    span.innerHTML = " <span style='" + style + "'>" + icon + "</span> " + name + " ";
   } else {
     span.innerText = "  " + name + "  ";
   }
+  const xBar = document.createElement("span");
+  xBar.innerText = " ";
+  xBar.style.color = "#f85149"
+  xBar.addEventListener("click", (event) => {
+    event.stopPropagation();
+    filebar.removeChild(span)
+  });
   span.style.position = "relative";
   span.style.height = "100%";
   span.style.verticalAlign = "middle";
   span.style.cursor = "pointer";
+  span.appendChild(xBar);
   if (filemap[name] === undefined) filemap[name] = [[" "]]; // bandaid solution
-  span.addEventListener("click", () => {
+  span.addEventListener("click", (event) => {
+    event.stopPropagation();
     matrix = filemap[name];
     if (matrix.length === 0) {
       matrix = [[" "]];
@@ -1508,8 +1517,10 @@ createFileButton(currentFilename);
 updateFileName();
 
 const unhighlightTab = () => {
-  document.getElementById(currentFilename + "_file").style.backgroundColor =
-    "transparent";
+  const currfile = document.getElementById(currentFilename + "_file");
+  if (currfile !== null) {
+    currfile.style.backgroundColor = "transparent";
+  }
 };
 
 const motionInChar = (char, motion) => {
