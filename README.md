@@ -26,3 +26,6 @@ When trying to decipher vims source code, it's nearly impossible to find code th
 ## UPDATE 4/14/2023
 
 I'm now at around 2200 lines of code, this project is much larger than I had expected it to turn out to be, I'm now ditching the paradigm of storing everything in one javascript file, as I feel this isn't feasible anymore. However, I still will keep things as less recursive as possible, and will try to keep the files in at most 5 directories. I'm currently implementing syntax highlighting, and storing large JSON'ish maps within this main.js file would not be reasonable, so I'm modifying this approach. At around 2000 lines of code, this project no longer could fit all at once into my head, and I started to forget important details about certain functions. Keeping the files in a nonrecursive directory that are somewhat separate will allow for an easier approach when scaling this editor
+
+Have a language that needs highlighting? Send a pull request with the following format below in ./languages
+![language format](https://imgur.com/a/b76xjZC)
