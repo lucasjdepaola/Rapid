@@ -756,6 +756,7 @@ const importRealFile = async (fileHandler) => {
   updateFileName();
   coords.col = 0;
   coords.row = 0;
+  if (isSyntaxHighlighting) syntaxHighlightFile();
   renderText();
 }
 let dirHandle;
@@ -1122,6 +1123,7 @@ document.addEventListener("wheel", (event) => {
     decrementRow();
   }
   updateLineNumber();
+  if (isSyntaxHighlighting) syntaxHighlightFile();
   renderText();
 });
 
