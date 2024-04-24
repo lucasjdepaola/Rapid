@@ -1439,9 +1439,9 @@ const updateLineNumber = () => {
 };
 
 const updateFileName = () => {
-  document.getElementById(currentFilename + "_file").style.backgroundColor =
-    canvas.vimgrey;
-  // document.getElementById(currentFilename + "_file").innerText = "  " + currentFilename + "  ";
+  const currfile = document.getElementById(currentFilename + "_file");
+  if (currfile === null) return; // temp solution ? 
+  currfile.style.backgroundColor = canvas.vimgrey;
   const extension = getFileExtension(currentFilename);
   if (extension in languageMap && "icon" in languageMap[extension]) {
     let style = "";
