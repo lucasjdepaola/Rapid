@@ -18,5 +18,6 @@ const JSTree = {
     "true": "boolean",
     "false": "boolean"
   },
-  "extension": "js"
+  "extension": "js",
+  "icon": ""
 }

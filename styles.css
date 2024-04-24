@@ -39,7 +39,7 @@ body {
   white-space:pre;
   color:white;
   /* font-family:"comicmono"; */
-  font-family:"nfm";
+  font-family:"nerdfont";
   background-color:rgba(48, 54, 61, .8);
   overflow:hidden;
   line-height:1.3;
@@ -162,4 +162,9 @@ body {
 @font-face {
   font-family:"nfm";
   src: url("./fonts/nfm.ttf");
+}
+
+@font-face {
+  font-family:"nerdfont";
+  src: url("./fonts/nerdfont.ttf");
 }

@@ -466,14 +466,14 @@ const rapid = (key, isEmulating) => {
           decrementCol();
           del(1);
           appendStringAsText('console.log()');
-          coords.col -= 2; // go back in paren
+          coords.col -= 1; // go back in paren
           clearAwait();
         }
         else if (key.key === "c") {
           decrementCol();
           del(1);
           appendStringAsText('printf();');
-          coords.col -= 3; // go back in paren
+          coords.col -= 2; // go back in paren
           clearAwait();
         }
         else if (key.key === "v") {
@@ -487,7 +487,7 @@ const rapid = (key, isEmulating) => {
           decrementCol();
           del(1);
           appendStringAsText('print()');
-          coords.col -= 2; // go back in paren
+          coords.col -= 1; // go back in paren
           clearAwait();
         }
         else {

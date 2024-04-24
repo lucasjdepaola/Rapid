@@ -28,5 +28,6 @@ const PythonTree = {
     "True": "boolean",
     "False": "boolean",
   },
-  "extension": "python"
+  "extension": "python",
+  "icon": ""
 }
