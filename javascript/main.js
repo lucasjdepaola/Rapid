@@ -23,6 +23,7 @@ let userfiles;
 let currentFilename = "Untitled";
 let lastCursorPos = { x: 0, y: 0 };
 let smartLine = false;
+let undoIndex = 0;
 const keys =
   "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()";
 const states = {
@@ -427,7 +428,8 @@ const rapid = (key, isEmulating) => {
         }
       }
       else if (key.key === "u") { // undo tree?
-        matrix = matrixCache;
+        matrix = matrixCache[undoIndex--];
+        if (undoIndex < 0) undoIndex = matrixCache.length;
       }
     } else if (currentState === states.insert) { // insert()
       /* append letter to the current row and column which increments */
@@ -723,7 +725,15 @@ const rapid = (key, isEmulating) => {
   if (isDisplayingWPM && isEmulating === undefined && currentState === states.insert) {
     keysPressed++;
   }
-  matrixCache = matrix; // set cache
+  if (currentState === states.normal && key.key !== "u") {
+    matrixCache.push(matrix);
+    if (matrixCache.length > 6) {
+      // dequeue last spot (6 cache len)
+      matrixCache.shift(); // take out first spot
+    }
+    undoIndex = matrixCache.length;
+    console.log(undoIndex);
+  }
   console.timeEnd("test");
 };
 
