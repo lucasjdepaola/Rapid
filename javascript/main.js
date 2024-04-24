@@ -8,6 +8,7 @@
 // TODO file tree system similar to <leader>e
 // TODO in the explorer, add the same logos as shown in the file and bar
 // TODO ? add auto complete inside the command mode for editing files.
+// TODO fix css hex color for example #ffffff should display as white
 const leaderKey = " ";
 console.log = notif;
 console.warn = notifWarning;
@@ -1885,66 +1886,6 @@ const getHighlightedText = () => {
     }
   }
   return str;
-}
-
-
-let exploring = false;
-let workingDirectory;
-const Explore = async (dir) => {
-  if (dir === undefined) return;
-  if (dir.kind === "file") {
-    // handle file selection
-    importRealFile(dir)
-    exploring = false;
-  }
-  // vim explore
-  exploring = true;
-  interpretCommand("e Explore"); // go to new file
-  if (dirHandle !== undefined) {
-    matrix = [[" "]];
-    workingDirectory = await ls(dir);
-    // TODO fix bug in here
-    let hasParent = dir.parent !== undefined;
-    if (hasParent) {
-      matrix[0] = [".", ".", " "];
-      workingDirectory.unshift(dir.parent); // add parent as first
-    }
-    let count = 0;
-    for (const e of workingDirectory) {
-      if (count === 0 && hasParent) {
-        count++;
-        continue;
-      }
-      e.parent = dir; // asserting that the parent is defined
-      for (let i = 0; i < e.name.length; i++) {
-        if (matrix[count] === undefined) matrix[count] = [" "];
-        matrix[count][i] = e.name[i];
-      }
-      if (e.kind === "directory") {
-        matrix[count].push(..." (directory) ".split(""));
-        matrix[count].unshift("📁", " ");
-        // TODO logo map for files like the folder above, html can have an icon, etc
-      }
-      else {
-        matrix[count].push(" ");
-      }
-      count++;
-    }
-  }
-  renderText();
-}
-
-const select = async (fileOrDir) => {
-  if (fileOrDir.kind === "file") {
-    if (filemap[fileOrDir.name] !== undefined) {
-      interpretCommand("e " + fileOrDir.name);
-      exploring = false; // stop exploring
-    } else {
-      importRealFile(fileOrDir);
-    }
-  } else {
-    Explore(fileOrDir); // continue to normal exploring
-  }
 }
 
 const sourceConfig = () => {
