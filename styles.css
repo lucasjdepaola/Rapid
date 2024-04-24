@@ -159,11 +159,13 @@ body {
   src: url("./fonts/ComicMono.ttf");
 }
 
+/* Copyright (c) 2014 Ryan L McIntyre (font license under MIT) */
 @font-face {
   font-family:"nfm";
   src: url("./fonts/nfm.ttf");
 }
 
+/* Copyright (c) 2014 Ryan L McIntyre (font license under MIT) */
 @font-face {
   font-family:"nerdfont";
   src: url("./fonts/nerdfont.ttf");
