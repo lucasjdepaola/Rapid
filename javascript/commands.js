@@ -107,6 +107,11 @@ const interpretCommand = (str) => {
   else if (cmdstr === "wpm") {
     initWPM();
   }
+  else if (splitcmd[0] === "alias") { // delimit with quotes
+    const arr = cmdstr.split(/\".*"/);
+    aliasCmd(cmdstr.split('\"'));
+    console.log(arr);
+  }
   else if (splitcmd[0] in validCommands) {
     const func = validCommands[splitcmd[0]];
     func(cmdstr.split(splitcmd[0]).join("").trim());
