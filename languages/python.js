@@ -29,5 +29,6 @@ const PythonTree = {
     "False": "boolean",
   },
   "extension": "python",
-  "icon": ""
+  "icon": "",
+  "iconcolor": "#3f7baa"
 }

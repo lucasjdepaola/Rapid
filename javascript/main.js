@@ -6,10 +6,12 @@
 // TODO create a better tab system, where it stays with the top bar, and cannot get out of sync
 // TODO maybe last one, multiplayer system, socket controls the matrix, keypresses send into a queue
 // TODO file tree system similar to <leader>e
+// TODO display colors on logo, rather than have it inherit color
 const leaderKey = " ";
 console.log = notif;
 console.warn = notifWarning;
 console.error = notifErr; // set errors to notifications on screen
+console.success = notifSuccess;
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder");
 const folderText = document.getElementById("foldertext");
@@ -1435,7 +1437,15 @@ const updateFileName = () => {
   document.getElementById(currentFilename + "_file").style.backgroundColor =
     canvas.vimgrey;
   // document.getElementById(currentFilename + "_file").innerText = "  " + currentFilename + "  ";
-  document.getElementById("currentlyediting").innerText = " 📁 " + currentFilename + "   ";
+  const extension = getFileExtension(currentFilename);
+  if (extension in languageMap && "icon" in languageMap[extension]) {
+    let style = "";
+    if ("iconcolor" in languageMap[extension]) style += "color:" + languageMap[extension]["iconcolor"] + ";";
+    document.getElementById("currentlyediting").innerHTML = " <span style='" + style + "'>" + languageMap[extension]["icon"] + "</span> " + currentFilename + "   ";
+  } else {
+    console.log(extension);
+    document.getElementById("currentlyediting").innerText = " 📄 " + currentFilename + "   ";
+  }
 };
 
 const updatePrevCol = () => {
@@ -1463,7 +1473,16 @@ const ctrlBack = () => {
 const createFileButton = (name) => {
   const span = document.getElementById("filename").cloneNode(true);
   span.id = name + "_file"; // no overlaps
-  span.innerText = "  " + name + "  ";
+  let icon = "";
+  const extension = getFileExtension(name);
+  if (extension in languageMap && "icon" in languageMap[extension]) {
+    icon = languageMap[extension]["icon"];
+    let style = "color:" + languageMap[extension]["iconcolor"] + ";";
+    console.log(style);
+    span.innerHTML = " <span style='" + style + "'>" + icon + "</span> " + name + "  ";
+  } else {
+    span.innerText = "  " + name + "  ";
+  }
   span.style.position = "relative";
   span.style.height = "100%";
   span.style.verticalAlign = "middle";
@@ -1790,34 +1809,6 @@ const clip = (text) => {
   navigator.clipboard.writeText(text);
 }
 
-const fileToString = (contents) => {
-  let str = "";
-  for (let i = 0; i < contents.length; i++) {
-    // str += contents[i].join("").trim();
-    // str += "\n";
-    let temp = contents[i].join("");
-    temp = temp.replace(/ $/, "\n");
-    str += temp;
-  }
-  return str;
-}
-
-const saveRealFile = async (name) => {
-  filemap[name] = matrix; // ?
-  if (dirHandle === undefined) {
-    save(name); // soft save
-    return; // no directory
-  }
-  if (realFileMap[name] === undefined) {
-    realFileMap[name] = await dirHandle.getFileHandle(name, { create: true });
-  }
-  const handler = realFileMap[name];
-  const writeable = await handler.createWritable({ type: "write" }); // only works in secure contexts
-  const data = fileToString(filemap[name]);
-  await writeable.write({ type: "write", data: data });
-  await writeable.close();
-}
-
 const matrixesAreEqual = (mOne, mTwo) => {
   if (mOne.length !== mTwo.length) return false;
   for (let i = 0; i < mOne.length; i++) {
@@ -1849,11 +1840,6 @@ const deleteTo = (key) => {
 
 const rand = (max) => {
   return Math.floor(Math.random() * max) + 1;
-}
-
-const getFileExtension = (fileName) => {
-  const _arr = fileName.split(".");
-  return _arr[_arr.length - 1];
 }
 
 const clearAwait = () => {

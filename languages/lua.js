@@ -23,5 +23,7 @@ const luaTree = {
     "for": "native",
     "local": "native",
   },
-  "extension": "lua"
+  "extension": "lua",
+  "icon": "",
+  "iconcolor": "#00007c"
 }

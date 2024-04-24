@@ -23,5 +23,7 @@ const CTree = {
     "case": "native",
     "auto": "native",
   },
-  "extension": "c"
+  "extension": "c",
+  "icon": "",
+  "iconcolor": "#598bb6"
 }

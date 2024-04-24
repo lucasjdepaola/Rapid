@@ -15,7 +15,9 @@ const HTMLTree = {
         "img": "native",
         "button": "native",
         "form": "native",
-        // "p": "native",
+        "p": "native",
     },
-    "extension": "html"
+    "extension": "html",
+    "icon": "",
+    "iconcolor": "orange"
 }
