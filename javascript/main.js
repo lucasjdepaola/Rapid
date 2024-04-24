@@ -8,6 +8,7 @@
 // TODO file tree system similar to <leader>e
 const leaderKey = " ";
 console.log = notif;
+console.warn = notifWarning;
 console.error = notifErr; // set errors to notifications on screen
 const text = document.getElementById("text");
 const userFolder = document.getElementById("userfolder");
@@ -727,12 +728,11 @@ const rapid = (key, isEmulating) => {
   }
   if (currentState === states.normal && key.key !== "u") {
     matrixCache.push(matrix);
-    if (matrixCache.length > 6) {
+    if (matrixCache.length > 6 && matrixCache.length > 0) {
       // dequeue last spot (6 cache len)
       matrixCache.shift(); // take out first spot
     }
-    undoIndex = matrixCache.length;
-    console.log(undoIndex);
+    undoIndex = matrixCache.length - 1; // set to end of the queue
   }
   console.timeEnd("test");
 };
@@ -766,6 +766,7 @@ const pickFiles = async () => {
     mode: "readwrite"
   };
   dirHandle = await window.showDirectoryPicker(options);
+  console.warn("Warning: you are now editing real files from your file system, text you edit and save here will modify the real file.");
   //TODO make recursive for recursive directories
   for await (const entry of dirHandle.values()) {
     if (entry.kind === "file") {
