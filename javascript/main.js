@@ -465,7 +465,7 @@ const rapid = (key, isEmulating) => {
         else if (key.key === "s") {
           decrementCol();
           del(1);
-          appendStringAsText('console.log();');
+          appendStringAsText('console.log()');
           coords.col -= 2; // go back in paren
           clearAwait();
         }
@@ -486,7 +486,7 @@ const rapid = (key, isEmulating) => {
         else if (key.key === "p") {
           decrementCol();
           del(1);
-          appendStringAsText('print();');
+          appendStringAsText('print()');
           coords.col -= 2; // go back in paren
           clearAwait();
         }
