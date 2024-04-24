@@ -6,7 +6,8 @@
 // TODO create a better tab system, where it stays with the top bar, and cannot get out of sync
 // TODO maybe last one, multiplayer system, socket controls the matrix, keypresses send into a queue
 // TODO file tree system similar to <leader>e
-// TODO display colors on logo, rather than have it inherit color
+// TODO in the explorer, add the same logos as shown in the file and bar
+// TODO ? add auto complete inside the command mode for editing files.
 const leaderKey = " ";
 console.log = notif;
 console.warn = notifWarning;
@@ -1443,7 +1444,6 @@ const updateFileName = () => {
     if ("iconcolor" in languageMap[extension]) style += "color:" + languageMap[extension]["iconcolor"] + ";";
     document.getElementById("currentlyediting").innerHTML = " <span style='" + style + "'>" + languageMap[extension]["icon"] + "</span> " + currentFilename + "   ";
   } else {
-    console.log(extension);
     document.getElementById("currentlyediting").innerText = " 📄 " + currentFilename + "   ";
   }
 };
@@ -1478,7 +1478,6 @@ const createFileButton = (name) => {
   if (extension in languageMap && "icon" in languageMap[extension]) {
     icon = languageMap[extension]["icon"];
     let style = "color:" + languageMap[extension]["iconcolor"] + ";";
-    console.log(style);
     span.innerHTML = " <span style='" + style + "'>" + icon + "</span> " + name + "  ";
   } else {
     span.innerText = "  " + name + "  ";
