@@ -102,7 +102,9 @@ const media = { // collection of potential background images
   hawk:
     "https://wallpapers.com/images/hd/mysterious-1920-x-1080-wallpaper-kcflzidhjqcxcgpe.jpg",
   coolhackergif: "https://i.pinimg.com/originals/8b/e4/ef/8be4efc0a8e5bc4903aae00db82cb982.gif",
-  matrixrain: "https://ld211.github.io/matrixrain.gif"
+  matrixrain: "https://ld211.github.io/matrixrain.gif",
+  blossomjpg: "https://i.pinimg.com/originals/2f/83/72/2f83722dd71fde59ca49f4b895fee3ce.jpg",
+  redditjpg: "https://www.reddit.com/media?url=https%3A%2F%2Fpreview.redd.it%2Fcherry-blossom-1920x1080-v0-adfe3rrihdaa1.png%3Fauto%3Dwebp%26s%3D8c17e63a0ce9e64f319a53341a3bec8cd23b85ac"
 };
 
 const imagefunc = (string) => {
@@ -932,7 +934,7 @@ const renderText = () => {
     if (i === coords.row) { // if we're on the actual cursor, display a normal line
       htmlstr += Math.abs(lineno) < 10 ? "  " : lineno < 100 ? " " : "";
       htmlstr += "<span style='color:gold;'>" + lineno + "</span>" + "   ";
-      htmlstr += "<span style='position:absolute;background-color:rgba(255,255,255,.3);width:100%;z-index:-1;height:1.3em;'></span>"
+      htmlstr += "<span style='position:absolute;background-color:rgba(255,255,255,.4);width:100%;z-index:-1;height:1.3em;'></span>"
     } else {
       htmlstr += Math.abs(relativeLine) < 10
         ? "  "
