@@ -1484,7 +1484,7 @@ const createFileButton = (name) => {
     let style = "color:" + languageMap[extension]["iconcolor"] + ";";
     span.innerHTML = " <span style='" + style + "'>" + icon + "</span> " + name + " ";
   } else {
-    span.innerText = "  " + name + "  ";
+    span.innerText = "  " + name + " ";
   }
   const xBar = document.createElement("span");
   xBar.innerText = " ";
