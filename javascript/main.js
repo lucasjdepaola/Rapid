@@ -1897,3 +1897,4 @@ const sourceConfig = () => {
 }
 
 renderText();
+configExtension();

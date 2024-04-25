@@ -1,8 +1,9 @@
 const validCommands = {}; // command to function mapping
 
 const interpretCommand = (str) => {
-  let cmdstr = commandArr.join("").trim();
+  let cmdstr = "";
   if (str !== undefined) cmdstr = str;
+  else cmdstr = commandArr.join("").trim();
   setNormal();
   commandArr = [];
   renderCommand(); // so the text goes away

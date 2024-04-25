@@ -44,15 +44,39 @@ setFontExtension(); // to change font size
 
 const configExtension = () => {
   const setConfig = () => {
-
+    let str = "";
+    for (const row of matrix) {
+      str += row.join("");
+      str += "\n";
+    }
+    localStorage[".rapid"] = str;
+    getConfig();
   }
 
   const getConfig = () => {
     if (".rapid" in localStorage) {
-      source(localStorage[".rapid"]);
+      const arr = localStorage[".rapid"].split("\n");
+      for (const e of arr) {
+        if (e.length > 1) {
+          interpretCommand(e.trim()); // source the commands
+        }
+      }
     } else {
       console.error("You don't have a cached config, source one by creating a .rapid config, then typing 'cache'");
     }
   }
+  validCommands["cache"] = setConfig;
+  if (".rapid" in localStorage) getConfig(); // source auto cached config
 }
+
+const curlExtension = () => {
+  const curl = async (javascriptLink) => {
+    const url = await fetch(javascriptLink);
+    const data = await url.json();
+    console.log(data);
+  }
+  validCommands["curl"] = curl;
+  // cannot use this extension due to buffer issues.
+}
+curlExtension();
 
