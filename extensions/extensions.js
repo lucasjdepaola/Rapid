@@ -32,3 +32,27 @@ const runJSExtension = () => {
   validCommands["run"] = runJS; // new command
 }
 runJSExtension();
+
+const setFontExtension = () => {
+  const setFont = (size) => {
+    document.body.style.fontSize = size + "px";
+    console.log(size + 'px');
+  }
+  validCommands["font"] = setFont;
+}
+setFontExtension(); // to change font size
+
+const configExtension = () => {
+  const setConfig = () => {
+
+  }
+
+  const getConfig = () => {
+    if (".rapid" in localStorage) {
+      source(localStorage[".rapid"]);
+    } else {
+      console.error("You don't have a cached config, source one by creating a .rapid config, then typing 'cache'");
+    }
+  }
+}
+

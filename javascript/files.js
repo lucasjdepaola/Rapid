@@ -28,6 +28,8 @@ const findFileExplore = (index, name) => {
 /* ideally we find all changes with the files, and try to remap the newly created names */
 /* can't even imagine how oil does it on edge cases such as the user appending a line, but can try to work around */
 /* I think making it a hashmap is a better idea, this is likely how oil does it, otherwise it would be impossible */
+/* UPDATE, there is no possible or feasible way to move directories, the only way to move files would be to copy files from one page to another */
+/* this is going to be the only possible way to do this now */
 const oilExploreSave = () => {
   const map = {}; // create hashmap for oil
   for (let i = 0; i < workingDirectory.length; i++) {
