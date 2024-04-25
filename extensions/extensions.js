@@ -54,6 +54,8 @@ const configExtension = () => {
   }
 
   const getConfig = () => {
+
+    filemap[".rapid"] = localStorage[".rapid"].split("\n");
     if (".rapid" in localStorage) {
       const arr = localStorage[".rapid"].split("\n");
       for (const e of arr) {
