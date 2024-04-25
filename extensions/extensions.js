@@ -62,6 +62,7 @@ const configExtension = () => {
           interpretCommand(e.trim()); // source the commands
         }
       }
+      currentState = states.insert;
     } else {
       console.error("You don't have a cached config, source one by creating a .rapid config, then typing 'cache'");
     }

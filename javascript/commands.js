@@ -1,10 +1,10 @@
 const validCommands = {}; // command to function mapping
 
-const interpretCommand = (str) => {
+const interpretCommand = (str, emulating) => {
   let cmdstr = "";
   if (str !== undefined) cmdstr = str;
   else cmdstr = commandArr.join("").trim();
-  setNormal();
+  setNormal(); // be careful setting normal here
   commandArr = [];
   renderCommand(); // so the text goes away
   // now interpret the command
