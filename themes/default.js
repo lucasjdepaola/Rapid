@@ -22,11 +22,11 @@ const defaultTheme = {
 };
 
 const hackerTheme = {
-  "native": themeCanvas.red,
-  "quotes": themeCanvas.quoteBlue,
+  "native": "#3cb241",
+  "function": "#226525",
+  "quotes": "#a5ff00",
   "background": "black",
   "braces": themeCanvas.purple,
-  "function": themeCanvas.purple,
   "numbers": themeCanvas.numbers,
   "comment": themeCanvas.comment,
   "boolean": themeCanvas.booleanblue,
