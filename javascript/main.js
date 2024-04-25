@@ -844,6 +844,7 @@ const lsRecursive = async (dirHandle) => {
 
 /* assume we look at the row above, and determine the tab width */
 const autoTabFunc = () => {
+  if (coords.row === 0) return;
   let aboveCount = 0;
   let braceAbove = false; // TODO change to things such as python colon, etc, whatever can auto indent
   while (matrix[coords.row - 1][aboveCount] === " " && aboveCount !== matrix[coords.row - 1].length - 1) {
