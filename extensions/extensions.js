@@ -36,7 +36,6 @@ runJSExtension();
 const setFontExtension = () => {
   const setFont = (size) => {
     document.body.style.fontSize = size + "px";
-    console.log(size + 'px');
   }
   validCommands["font"] = setFont;
 }
