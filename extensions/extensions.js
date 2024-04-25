@@ -82,3 +82,16 @@ const curlExtension = () => {
 }
 curlExtension();
 
+const stateExtension = () => {
+  const setState = (stateTo) => {
+    if (stateTo === states.insert) {
+      currentState = states.insert;
+    }
+    else if (stateTo === states.normal) {
+      currentState = states.normal;
+    }
+  }
+  validCommands["state"] = setState;
+}
+stateExtension();
+
