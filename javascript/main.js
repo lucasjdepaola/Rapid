@@ -9,6 +9,7 @@
 // TODO in the explorer, add the same logos as shown in the file and bar
 // TODO ? add auto complete inside the command mode for editing files.
 // TODO fix css hex color for example #ffffff should display as white
+// TODO oil.nvim file renaming system
 const leaderKey = " ";
 console.log = notif;
 console.warn = notifWarning;
