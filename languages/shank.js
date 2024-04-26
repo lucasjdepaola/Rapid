@@ -20,6 +20,9 @@ const ShankTree = {
     "true": "boolean",
     "false": "boolean",
     "none": "boolean",
+    "constants": "native",
+    "variables": "native",
+    "define": "native",
   },
   "extension": "shank"
 }
