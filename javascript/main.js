@@ -10,14 +10,13 @@
 // TODO ? add auto complete inside the command mode for editing files.
 // TODO fix css hex color for example #ffffff should display as white
 // TODO oil.nvim file renaming system
+// TODO highlight todo comments on the editor, similar to how vim does it (under certain weird circumstances)
 const leaderKey = " ";
 console.log = notif;
 console.warn = notifWarning;
 console.error = notifErr; // set errors to notifications on screen
 console.success = notifSuccess;
 const text = document.getElementById("text");
-const userFolder = document.getElementById("userfolder");
-const folderText = document.getElementById("foldertext");
 const bg = document.getElementById("bg");
 const command = document.getElementById("command");
 const bottombar = document.getElementById("bottombar"); // bottom ui bar
@@ -227,6 +226,9 @@ const rapid = (key, isEmulating) => {
           appendText(" ");
         }
       }
+      else if (currentState === states.command) {
+        // auto complete command arr here TODO arr()
+      }
     }
     else if (key.key === "Escape") {
       setNormal();
@@ -234,7 +236,10 @@ const rapid = (key, isEmulating) => {
       clearAwait();
     } else if (key.key === "Backspace") {
       if (key.ctrlKey) {
-        ctrlBack();
+        if (currentState === states.insert)
+          ctrlBack();
+        else if (currentState === states.command)
+          ctrlBackCommand();
       } else if (currentState === states.command) {
         if (commandArr.length === 0) {
           setNormal();
@@ -1377,6 +1382,21 @@ const ctrlBack = () => {
   }
   coords.col = 0;
   matrix[coords.row] = [" "];
+};
+
+const ctrlBackCommand = () => {
+  let count = 0;
+  for (let i = commandArr.length - 1; i >= 0; i--) {
+    if (isStopDelete(commandArr[i]) && i !== commandArr.length - 1) {//&& i < coords.col - 1
+      commandArr.splice(i + 1, count);
+      renderCommand();
+      return;
+    } else {
+      count++;
+    }
+  }
+  currentState = states.normal; // if we cannot ctrl back any further
+  renderCommand();
 };
 
 const createFileButton = (name) => {

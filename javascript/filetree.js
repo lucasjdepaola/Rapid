@@ -1,3 +1,4 @@
+// todo next step (ideally today)
 const fileTree = document.getElementById("filetree");
 let fileTreeIsOn = false;
 

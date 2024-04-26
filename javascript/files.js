@@ -1,5 +1,6 @@
 /* ideally place all file related functions here */
-
+const userFolder = document.getElementById("userfolder");
+const folderText = document.getElementById("foldertext");
 const getFileExtension = (fileName) => {
   const _arr = fileName.split(".");
   return _arr[_arr.length - 1];
