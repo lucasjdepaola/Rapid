@@ -159,3 +159,101 @@ const select = async (fileOrDir) => {
     Explore(fileOrDir); // continue to normal exploring
   }
 }
+
+const importRealFile = async (fileHandler) => {
+  const file = await fileHandler.getFile();
+  let newmatrix = await file.text();
+  newmatrix = newmatrix.split(/\r?\n/);
+  for (let i = 0; i < newmatrix.length; i++) {
+    newmatrix[i] = newmatrix[i].split("");
+    newmatrix[i].push(" ");
+  }
+  matrix = newmatrix;
+  filemap[file.name] = newmatrix;
+  unhighlightTab(currentFilename);
+  currentFilename = file.name;
+  createFileButton(currentFilename);
+  updateFileName();
+  coords.col = 0;
+  coords.row = 0;
+  if (isSyntaxHighlighting) syntaxHighlightFile();
+  renderText();
+}
+let dirHandle;
+folderText.addEventListener("click", async () => {
+  pickFiles();
+});
+
+const pickFiles = async () => {
+  filemap = {};
+  const options = {
+    mode: "readwrite"
+  };
+  dirHandle = await window.showDirectoryPicker(options);
+  console.warn("Warning: you are now editing real files from your file system, text you edit and save here will modify the real file.");
+  //TODO make recursive for recursive directories
+  for await (const entry of dirHandle.values()) {
+    if (entry.kind === "file") {
+      //handle file
+      realFileMap[entry.name] = entry;
+      await importRealFile(entry);
+    }
+    else if (entry.kind === "directory") {
+    }
+  }
+}
+
+const getSubFiles = async (dirHandle) => {
+  let file = { name: "", filehandle: "" };
+  const filearr = [];
+  for await (const entry of dirHandle.values()) {
+    if (entry.kind === "file") {
+      //handle file
+      realFileMap[entry.name] = entry;
+      await importRealFile(entry);
+    }
+    else if (entry.kind === "directory") {
+      getSubFiles(entry, parents + "/" + entry.name);
+    }
+  }
+  return filearr;
+}
+
+const lsDirs = async (dirHandle) => {
+  const dirs = [];
+  for await (const entry of dirHandle.values()) {
+    if (entry.kind === "directory") {
+      dirs.push(entry);
+    }
+  }
+  return dirs;
+}
+
+const ls = async (dirHandle) => {
+  if (dirHandle.kind === "file") {
+  }
+  const dirs = [];
+  for await (const entry of dirHandle.values()) {
+    if (entry.kind === "directory") {
+      dirs.push(entry);
+    }
+  }
+
+  for await (const entry of dirHandle.values()) {
+    if (entry.kind === "file") {
+      dirs.push(entry);
+    }
+  }
+  return dirs;
+}
+
+const lsRecursive = async (dirHandle) => {
+  const dirs = [];
+  for await (const entry of dirHandle.values()) {
+    if (entry.kind === "directory") {
+      dirs.push(entry);
+      dirs.push(...lsRecursive(entry)); // recurse
+    }
+  }
+  return dirs;
+}
