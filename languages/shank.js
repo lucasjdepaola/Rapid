@@ -24,5 +24,7 @@ const ShankTree = {
     "variables": "native",
     "define": "native",
   },
-  "extension": "shank"
+  "extension": "shank",
+  "icon": "󰧼",
+  "iconcolor": "red"
 }

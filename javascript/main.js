@@ -1353,6 +1353,7 @@ const updateFileName = () => {
   const currfile = document.getElementById(currentFilename + "_file");
   if (currfile === null) return; // temp solution ? 
   currfile.style.backgroundColor = canvas.vimgrey;
+  currfile.getElementsByTagName("span")[0].style.color = canvas.error;
   const extension = getFileExtension(currentFilename);
   if (extension in languageMap && "icon" in languageMap[extension]) {
     let style = "";
@@ -1446,6 +1447,8 @@ const unhighlightTab = () => {
   const currfile = document.getElementById(currentFilename + "_file");
   if (currfile !== null) {
     currfile.style.backgroundColor = "transparent";
+    // change red x to white
+    currfile.getElementsByTagName("span")[0].style.color = "white"; // temp solution
   }
 };
 
