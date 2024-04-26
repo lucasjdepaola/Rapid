@@ -1260,7 +1260,8 @@ const yankVisualRange = () => {
   if (capitalV) {
     capitalV = false;
   }
-  vimcopybuffer = matrix.slice(minrow, maxrow - minrow + 1);
+  vimcopybuffer = matrix.slice(minrow, maxrow + 1);
+  console.log(vimcopybuffer + ", " + minrow + "," + maxrow);
 };
 
 const pasteBuffer = () => {
