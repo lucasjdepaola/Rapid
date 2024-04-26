@@ -34,6 +34,8 @@ const oilExploreSave = () => {
   const map = {}; // create hashmap for oil
   for (let i = 0; i < workingDirectory.length; i++) {
     map[workingDirectory[i].name] = workingDirectory[i]; // name to handle mapping
+    console.log(workingDirectory[i].name);
+    // all working directories
   }
 
   const matrixStringArr = [];
@@ -49,24 +51,26 @@ const oilExploreSave = () => {
     if (!matrixStringArr[i] in map) {
       changedMatrixFiles.push(matrixStringArr[i]); // push the changed file (in relative order)
     } else {
+      console.log(map[matrixStringArr[i]]);
+      console.log(matrixStringArr[i]);
       dirsNotChanged.push(map[matrixStringArr[i]]); // push the non changed directories
     }
   }
 
-  // now we filter the non changed dirs, and find the remaining that have been changed
-  const dirsChanged = [];
+  const changedDirs = [];
   for (let i = 0; i < workingDirectory.length; i++) {
     let flag = false;
     for (let j = 0; j < dirsNotChanged.length; j++) {
-      if (workingDirectory[j].name === dirsNotChanged[j].name) {
+      console.log(dirsNotChanged[j]);
+      if (dirsNotChanged[j].name === workingDirectory[i].name) {
         flag = true;
-        break;
       }
     }
-    if (!flag) dirsChanged.push(workingDirectory[i]); // if not in notchanged, push
+    console.log(flag);
+    if (!flag) changedDirs.push(workingDirectory[i]);
   }
-
-  console.log(dirsChanged);
+  console.log(changedDirs);
+  console.log("test");
 }
 
 const saveRealFile = async (name) => {
