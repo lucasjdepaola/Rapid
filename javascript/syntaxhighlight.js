@@ -13,6 +13,7 @@ let syntaxHighlight = []; // syntax highlighting
 let accumList = []; // list for accumulated words (should maybe have a larger scope)
 
 const invertHex = (hex) => {
+  return "black";
 }
 
 
@@ -66,7 +67,7 @@ const lex = (keyWords) => {
           syntaxHighlight.push({ color: currentTheme["numbers"], coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         }
         else if (accumStr[0] === "#" && accumStr.length === 7) {
-          syntaxHighlight.push({ background: accumStr, color: "#" + invertHex(accumStr.slice(1, accumStr.length)), coords: { row: i, from: j - accumStr.length, to: j - 1 } });
+          syntaxHighlight.push({ background: accumStr, color: "" + invertHex(accumStr.slice(1, accumStr.length)), coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         }
         eraseAccum();
       }
