@@ -48,18 +48,19 @@ const configExtension = () => {
       str += row.join("");
       str += "\n";
     }
-    localStorage[".rapid"] = str;
+    localStorage[".rapid"] = str.trim();
     getConfig();
   }
 
   const getConfig = () => {
-
-    filemap[".rapid"] = localStorage[".rapid"].split("\n");
+    const temprapidarr = localStorage[".rapid"].split("\n");
+    filemap[".rapid"] = temprapidarr.map((e) => e.split("")); // split up the characters, so it's not one long string
     if (".rapid" in localStorage) {
       const arr = localStorage[".rapid"].split("\n");
-      for (const e of arr) {
-        if (e.length > 1) {
-          interpretCommand(e.trim()); // source the commands
+      console.log(arr);
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i].length > 1) {
+          interpretCommand(arr[i].trim()); // source the commands
         }
       }
       currentState = states.insert;

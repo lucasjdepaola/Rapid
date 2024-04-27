@@ -363,7 +363,6 @@ const rapid = (key, isEmulating) => {
         visualcoords.to.col = matrix[coords.row].length - 1; // we highlight the entire col for V
         currentlyHighlighting = !currentlyHighlighting;
         capitalV = !capitalV;
-        coords.col = matrix[coords.row].length - 1; // emacs() visual line
       } else if (key.key === "d") {
         if (currentlyHighlighting) {
           deleteVisualRange();
