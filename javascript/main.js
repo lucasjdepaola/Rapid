@@ -460,7 +460,7 @@ const rapid = (key, isEmulating) => {
           updateScope();
           appendSearchScopeText("");
         }
-      } else if (key.key === "j") {
+      } else if (key.key === "j" || key.key === "J") { // insert normal mode on Jk or jk
         buildAwaitStr = "j";
         appendText(key.key);
       } else if (buildAwaitStr === "j") {

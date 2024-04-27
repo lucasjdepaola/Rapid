@@ -57,7 +57,6 @@ const configExtension = () => {
     filemap[".rapid"] = temprapidarr.map((e) => e.split("")); // split up the characters, so it's not one long string
     if (".rapid" in localStorage) {
       const arr = localStorage[".rapid"].split("\n");
-      console.log(arr);
       for (let i = 0; i < arr.length; i++) {
         if (arr[i].length > 1) {
           interpretCommand(arr[i].trim()); // source the commands
