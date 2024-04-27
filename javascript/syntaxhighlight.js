@@ -57,6 +57,9 @@ const lex = (keyWords) => {
         else if (accumStr[0] === "#" && accumStr.length === 7) { // hex
           syntaxHighlight.push({ background: accumStr, color: "white", coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         }
+        else if (accumStr === "TODO") {
+          syntaxHighlight.push({ background: currentTheme["boolean"], color: "white", coords: { row: i, from: j - accumStr.length, to: j - 1 } })
+        }
         eraseAccum();
       }
       else if (c === " ") {
@@ -68,6 +71,9 @@ const lex = (keyWords) => {
         }
         else if (accumStr[0] === "#" && accumStr.length === 7) {
           syntaxHighlight.push({ background: accumStr, color: "" + invertHex(accumStr.slice(1, accumStr.length)), coords: { row: i, from: j - accumStr.length, to: j - 1 } });
+        }
+        else if (accumStr === "TODO") {
+          syntaxHighlight.push({ background: currentTheme["boolean"], color: "white", coords: { row: i, from: j - accumStr.length, to: j - 1 } })
         }
         eraseAccum();
       }
