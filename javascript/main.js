@@ -4,6 +4,7 @@
 // TODO file tree system similar to <leader>e
 // TODO ? add auto complete inside the command mode for editing files.
 // TODO oil.nvim file renaming system
+// TODO fix blank space on cache
 const leaderKey = " ";
 console.log = notif;
 console.warn = notifWarning;
