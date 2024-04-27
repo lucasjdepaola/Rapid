@@ -130,3 +130,18 @@ const renderCommand = () => {
   command.innerHTML = ":" + commandArr.join("") +
     "<span id='livecursor' style='border-left:1px solid white;'> </span>";
 };
+
+let currSearch = "";
+let autoCmpIndex = 0;
+const autoCompleteCommand = () => {
+  const spacesArr = commandArr.join("").split(" ");
+  const lastStr = spacesArr[spacesArr.length - 1];
+  const filemapNames = [];
+  for (const key in filemap) {
+    filemapNames.push(key); // name of filemap
+  }
+  const replaceArr = filemapNames.filter((name) => name.toLowerCase().includes(lastStr.toLowerCase()));
+  const replaceStr = replaceArr[autoCmpIndex++];
+  if (autoCmpIndex >= replaceArr.length) autoCmpIndex = 0;
+  commandArr.splice(commandArr.length - lastStr.length, lastStr.length, ...replaceStr.split(""));
+}

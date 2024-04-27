@@ -219,6 +219,7 @@ const rapid = (key, isEmulating) => {
       }
       else if (currentState === states.command) {
         // auto complete command arr here TODO arr()
+        autoCompleteCommand();
       }
     }
     else if (key.key === "Escape") {
