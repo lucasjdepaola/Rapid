@@ -122,7 +122,7 @@ const motions = {
   "c": "C",
   "visual": "VISUAL",
 };
-const HIGHLIGHTCOLOR = canvas.lightpink;
+const HIGHLIGHTCOLOR = currentTheme.highlight; // is applied earlier
 const filebar = document.getElementById("topbar");
 let fileStyles =
   "style='position:inherit; height:100%; margin-top:auto; margin-bottom:auto; vertical-align:middle; align-items:center;'";
@@ -201,10 +201,8 @@ const rapid = (key, isEmulating) => {
         setNormal();
         // searchArr = []; // dont keep this, we want searches to stay on a successful case
         renderSearch();
-        // TODO find function that sets cursor to the first highlight
       }
       else if (currentState === states.scope) {
-        //bandaid TODO
         interpretCommand("e " + priorityStr);
         toggleScope();
         priorityStr = "";
@@ -649,7 +647,6 @@ const rapid = (key, isEmulating) => {
       }
       else if (buildAwaitStr === leaderKey) {
         if (key.key === "w") {
-          // save TODO interpretcommand(string) so commands can be bound
           saveRealFile(currentFilename);
           setNormal();
           clearAwait();
@@ -787,7 +784,6 @@ const centerCursor = () => {
 };
 let prevCursortop = 0;
 const scrollRelToCursor = () => {
-  //TODO work on this
   if (matrix.length === 1) return;
   const rect = document.getElementById("livecursor");
   const wrapper = document.getElementById("textwrapper");
@@ -1248,28 +1244,35 @@ const deleteVisualRange = () => {
 };
 let globarr;
 const deleteInRange = (start, end) => {
-  vimcopybuffer = [matrix[coords.row].splice(start, end - start)];
+  vimcopybuffer = matrix[coords.row].splice(start, end - start);
 };
 
 const yankVisualRange = () => {
   currentlyHighlighting = false;
-  const mincol = Math.min(visualcoords.from.col, visualcoords.to.col);
-  const maxcol = Math.max(visualcoords.from.col, visualcoords.to.col);
+  const fromCol = visualcoords.from.col;
+  const toCol = visualcoords.to.col;
   const minrow = Math.min(visualcoords.from.row, visualcoords.to.row);
   const maxrow = Math.max(visualcoords.from.row, visualcoords.to.row);
   if (capitalV) {
     capitalV = false;
+    vimcopybuffer = matrix.slice(minrow, maxrow + 1);
+    return;
   }
-  vimcopybuffer = matrix.slice(minrow, maxrow + 1);
-  console.log(vimcopybuffer + ", " + minrow + "," + maxrow);
+  //TODO
+  const arr = [[""]];
+  for (let i = fromCol; i < matrix[visualcoords.from.row].length; i++) {
+    // arr[0].push(matrix[])
+  }
 };
 
 const pasteBuffer = () => {
   // can potentially improve speed by not using appendtext(), or speeding up append text
   const originalrow = coords.row;
   const originalcol = coords.col;
-  if (vimcopybuffer.length === 1 && vimcopybuffer[0][vimcopybuffer.length - 1] === " ") { // paste without new line and return
-    for (const c of vimcopybuffer[0]) {
+  console.log("test");
+  if (vimcopybuffer.every((row) => !Array.isArray(row))) { // paste without new line and return
+    incrementCol(); // appending needs to go up one
+    for (const c of vimcopybuffer) {
       appendText(c);
     }
     return;
@@ -1351,9 +1354,9 @@ const updateLineNumber = () => {
 
 const updateFileName = () => {
   const currfile = document.getElementById(currentFilename + "_file");
-  if (currfile === null) return; // temp solution ? 
+  if (currfile === null) return; // temp solution ?
   currfile.style.backgroundColor = canvas.vimgrey;
-  currfile.getElementsByTagName("span")[0].style.color = canvas.error;
+  // currfile.getElementsByTagName("span");
   const extension = getFileExtension(currentFilename);
   if (extension in languageMap && "icon" in languageMap[extension]) {
     let style = "";
@@ -1414,7 +1417,7 @@ const createFileButton = (name) => {
     span.innerText = "  " + name + " ";
   }
   const xBar = document.createElement("span");
-  xBar.innerText = " ";
+  xBar.innerText = " ";
   xBar.style.color = "#f85149"
   xBar.addEventListener("click", (event) => {
     event.stopPropagation();
@@ -1448,7 +1451,7 @@ const unhighlightTab = () => {
   if (currfile !== null) {
     currfile.style.backgroundColor = "transparent";
     // change red x to white
-    currfile.getElementsByTagName("span")[0].style.color = "white"; // temp solution
+    // currfile.getElementsByTagName("span")[0].style.color = "white"; // temp solution
   }
 };
 

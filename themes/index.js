@@ -9,4 +9,5 @@ const updateTheme = (theme) => {
   document.getElementById("text").style.color = currentTheme.fontcolor;
   document.getElementById("topbar").style.backgroundColor = currentTheme.barcolor;
   document.getElementById("bg").style.backgroundImage = "url(" + imagefunc(currentTheme.image) + ")"; //test
+  HIGHLIGHTCOLOR = currentTheme.highlight;
 }

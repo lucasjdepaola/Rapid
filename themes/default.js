@@ -18,7 +18,8 @@ const defaultTheme = {
   "comment": themeCanvas.comment,
   "boolean": themeCanvas.booleanblue,
   "fontcolor": "white",
-  "barcolor": "#3f4563"
+  "barcolor": "#3f4563",
+  "highlight": "rgba(255, 255, 255, .3)"
 };
 
 const hackerTheme = {

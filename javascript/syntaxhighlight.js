@@ -54,8 +54,8 @@ const lex = (keyWords) => {
         else if (/^-?[0-9]+$/.test(accumStr)) { // number case
           syntaxHighlight.push({ color: currentTheme["numbers"], coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         }
-        else if (accumStr[0] === "#" && accumStr.length === 6) { // hex
-          syntaxHighlight.push({ background: accumStr, color: white, coords: { row: i, from: j - accumStr.length, to: j - 1 } });
+        else if (accumStr[0] === "#" && accumStr.length === 7) { // hex
+          syntaxHighlight.push({ background: accumStr, color: "white", coords: { row: i, from: j - accumStr.length, to: j - 1 } });
         }
         eraseAccum();
       }
