@@ -1,16 +1,9 @@
-// TODO document mode, where the user can set margin lower an edit wrapped text (writing a document)
-// TODO fix yanking, deleting etc in visual, as mentioned below
-// TODO fix visual mode, only capital V is functioning so far
 // TODO live markdown editor
-// TODO need a cacheable config file that can be resourced when a user opens the editor again.
-// TODO create a better tab system, where it stays with the top bar, and cannot get out of sync
+// TODO document mode, where the user can set margin lower an edit wrapped text (writing a document)
 // TODO maybe last one, multiplayer system, socket controls the matrix, keypresses send into a queue
 // TODO file tree system similar to <leader>e
-// TODO in the explorer, add the same logos as shown in the file and bar
 // TODO ? add auto complete inside the command mode for editing files.
-// TODO fix css hex color for example #ffffff should display as white
 // TODO oil.nvim file renaming system
-// TODO highlight todo comments on the editor, similar to how vim does it (under certain weird circumstances)
 const leaderKey = " ";
 console.log = notif;
 console.warn = notifWarning;
@@ -1399,6 +1392,7 @@ const ctrlBackCommand = () => {
       count++;
     }
   }
+  commandArr = []; // reset array
   currentState = states.normal; // if we cannot ctrl back any further
   renderCommand();
 };
