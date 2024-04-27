@@ -111,7 +111,6 @@ const interpretCommand = (str, emulating) => {
   else if (splitcmd[0] === "alias") { // delimit with quotes
     const arr = cmdstr.split(/\".*"/);
     aliasCmd(cmdstr.split('\"'));
-    console.log(arr);
   }
   else if (splitcmd[0] in validCommands) {
     const func = validCommands[splitcmd[0]];
