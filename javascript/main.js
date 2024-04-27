@@ -1251,6 +1251,8 @@ const yankVisualRange = () => {
   currentlyHighlighting = false;
   const fromCol = visualcoords.from.col;
   const toCol = visualcoords.to.col;
+  const mincol = Math.min(visualcoords.from.col, visualcoords.to.col);
+  const maxcol = Math.max(visualcoords.from.col, visualcoords.to.col);
   const minrow = Math.min(visualcoords.from.row, visualcoords.to.row);
   const maxrow = Math.max(visualcoords.from.row, visualcoords.to.row);
   if (capitalV) {
@@ -1258,10 +1260,9 @@ const yankVisualRange = () => {
     vimcopybuffer = matrix.slice(minrow, maxrow + 1);
     return;
   }
-  //TODO
   const arr = [[""]];
-  for (let i = fromCol; i < matrix[visualcoords.from.row].length; i++) {
-    // arr[0].push(matrix[])
+  if (minrow === maxrow) {
+    vimcopybuffer = matrix[minrow].slice(mincol, maxcol + 1);
   }
 };
 
@@ -1269,7 +1270,6 @@ const pasteBuffer = () => {
   // can potentially improve speed by not using appendtext(), or speeding up append text
   const originalrow = coords.row;
   const originalcol = coords.col;
-  console.log("test");
   if (vimcopybuffer.every((row) => !Array.isArray(row))) { // paste without new line and return
     incrementCol(); // appending needs to go up one
     for (const c of vimcopybuffer) {
