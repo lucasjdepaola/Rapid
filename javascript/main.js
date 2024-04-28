@@ -265,9 +265,18 @@ const rapid = (key, isEmulating) => {
     /* regular key case */
     if (currentState === states.normal) { //norm()
       if (key.key === "j") {
-        if (coords.row < matrix.length - 1) {
-          incrementRow();
-          updateLineNumber();
+        if (key.ctrlKey) {
+          key.preventDefault();
+          const temp = matrix[coords.row];
+          if (coords.row < matrix.length && coords.row > 0) {
+            matrix[coords.row] = matrix[coords.row + 1];
+            matrix[coords.row + 1] = temp;
+            incrementRow();
+          }
+          else if (coords.row < matrix.length - 1) {
+            incrementRow();
+            updateLineNumber();
+          }
         }
       }
       else if (/[1-9]/.test(key.key)) {
@@ -281,9 +290,19 @@ const rapid = (key, isEmulating) => {
         }
       }
       else if (key.key === "k") {
-        if (coords.row > 0) {
-          decrementRow();
-          updateLineNumber();
+        key.preventDefault();
+        if (key.ctrlKey) {
+          const temp = matrix[coords.row];
+          if (coords.row < matrix.length && coords.row > 0) {
+            matrix[coords.row] = matrix[coords.row - 1];
+            matrix[coords.row - 1] = temp;
+            decrementRow();
+          }
+        } else {
+          if (coords.row > 0) {
+            decrementRow();
+            updateLineNumber();
+          }
         }
       }
       else if (key.key === "K") {
