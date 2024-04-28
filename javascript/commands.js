@@ -112,6 +112,9 @@ const interpretCommand = (str, emulating) => {
     const arr = cmdstr.split(/\".*"/);
     aliasCmd(cmdstr.split('\"'));
   }
+  else if (cmdstr === "dot") {
+    emacsDot = !emacsDot; // toggle emacs dot
+  }
   else if (splitcmd[0] in validCommands) {
     const func = validCommands[splitcmd[0]];
     func(cmdstr.split(splitcmd[0]).join("").trim());

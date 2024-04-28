@@ -5,6 +5,7 @@
 // TODO fix horizontal relative line numbers to display when syntax highlighting is turned on
 // TODO fix undo tree, so it can properly undo (with relatively efficient time complexity)
 // TODO music queueing similar to how a discord bot would
+// TODO emacs visual spacing· <- use that character
 const leaderKey = " ";
 console.log = notif;
 console.warn = notifWarning;
@@ -14,6 +15,7 @@ const text = document.getElementById("text");
 const bg = document.getElementById("bg");
 const command = document.getElementById("command");
 const bottombar = document.getElementById("bottombar"); // bottom ui bar
+let emacsDot = true;
 let matrix = [[" "]];
 let matrixCache = [[" "]]; // for undoing
 let filemap = {}; // keep track of all files
@@ -931,6 +933,7 @@ const renderText = () => {
         ) { // in visual range
           htmlstr += "<span style='background-color:" + HIGHLIGHTCOLOR + ";'>"; // build inner text
           while (j < matrix[i].length && (coords.row !== i || coords.col !== j)) {
+            if (renderChar === " " && emacsDot) renderChar = "·";
             htmlstr += renderChar;
             renderChar = updateRenderChar(matrix[i][++j]);
           }
