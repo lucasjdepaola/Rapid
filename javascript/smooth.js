@@ -33,7 +33,8 @@ const createTrail = () => {
   let height = document.body.clientHeight;
   let sizeX = 9.3;
   // let sizeY = sizeX*2.2;
-  let sizeY = 17;
+  let sizeY = parseInt(document.body.style.fontSize.split("px")[0]) * 1.3;
+  console.log(sizeY * 1.5);
   const updateSize = (x, y) => {
     width = x;
     height = y;
