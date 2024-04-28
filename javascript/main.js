@@ -1,10 +1,7 @@
-// TODO live markdown editor
 // TODO document mode, where the user can set margin lower an edit wrapped text (writing a document)
 // TODO maybe last one, multiplayer system, socket controls the matrix, keypresses send into a queue
 // TODO file tree system similar to <leader>e
-// TODO ? add auto complete inside the command mode for editing files.
-// TODO oil.nvim file renaming system
-// TODO fix blank space on cache
+// TODO oil.nvim file renaming system (extremely tough challenge for little to no reward)
 const leaderKey = " ";
 console.log = notif;
 console.warn = notifWarning;

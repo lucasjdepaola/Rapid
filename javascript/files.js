@@ -67,11 +67,8 @@ const oilExploreSave = () => {
         flag = true;
       }
     }
-    console.log(flag);
     if (!flag) changedDirs.push(workingDirectory[i]);
   }
-  console.log(changedDirs);
-  console.log("test");
 }
 
 const saveRealFile = async (name) => {

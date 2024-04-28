@@ -48,7 +48,9 @@ const configExtension = () => {
       str += row.join("");
       str += "\n";
     }
-    localStorage[".rapid"] = str.trim();
+    str = str.trim();
+    str += " ";
+    localStorage[".rapid"] = str;
     getConfig();
   }
 

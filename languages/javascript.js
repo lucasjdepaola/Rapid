@@ -16,6 +16,9 @@ const JSTree = {
     "var": "native",
     "undefined": "boolean",
     "true": "boolean",
+    "{": "function",
+    "}": "function",
+    "{}": "function",
     "false": "boolean"
   },
   "extension": "js",

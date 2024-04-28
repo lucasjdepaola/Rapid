@@ -7,7 +7,8 @@ const languageMap = { // map containing the tokens
   "lua": luaTree,
   "shank": ShankTree,
   "sia": Sia32Tree,
-  "css": CSSTree
+  "css": CSSTree,
+  "md": MDTree
 };
 let syntaxHighlight = []; // syntax highlighting
 let accumList = []; // list for accumulated words (should maybe have a larger scope)
