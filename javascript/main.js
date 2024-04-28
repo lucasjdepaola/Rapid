@@ -1,7 +1,10 @@
 // TODO document mode, where the user can set margin lower an edit wrapped text (writing a document)
-// TODO maybe last one, multiplayer system, socket controls the matrix, keypresses send into a queue
+// TODO maybe last one, multiplayer system, socket controls the matrix, keypresses send into a queue (not really possible, nor feasible)
 // TODO file tree system similar to <leader>e
 // TODO oil.nvim file renaming system (extremely tough challenge for little to no reward)
+// TODO fix horizontal relative line numbers to display when syntax highlighting is turned on
+// TODO fix undo tree, so it can properly undo (with relatively efficient time complexity)
+// TODO music queueing similar to how a discord bot would
 const leaderKey = " ";
 console.log = notif;
 console.warn = notifWarning;
@@ -430,8 +433,20 @@ const rapid = (key, isEmulating) => {
         }
       }
       else if (key.key === "u") { // undo tree?
-        matrix = matrixCache[undoIndex--];
-        if (undoIndex < 0) undoIndex = matrixCache.length;
+        // matrix = matrixCache[undoIndex--];
+        // if (undoIndex < 0) undoIndex = matrixCache.length;
+        // delete for now, until optimized properly
+      }
+      else if (key.key === "m") {
+        macroing = true;
+        // more intuitive keyword for macro recording
+        // MACRO()
+      }
+      else if (key.key === "@") {
+        macroing = false;
+        // just execute the macro, does not need to map to all 26 keys, just one macro will do
+        executeMacro();
+        //recordMacroKey(key);
       }
     } else if (currentState === states.insert) { // insert()
       /* append letter to the current row and column which increments */
@@ -712,6 +727,7 @@ const rapid = (key, isEmulating) => {
       }
     }
   }
+  if (macroing && (key.key !== "m" && currentState === states.normal)) recordMacroKey(key);
   if (isSyntaxHighlighting)
     syntaxHighlightFile();
   if (currentlyHighlighting) updateVisualCoordinates();
@@ -810,6 +826,20 @@ const updateOffsetChart = () => {
   if (chart.start < 0 || chart.end > matrix.length) {
   }
   return chart;
+}
+
+
+const executeMacro = () => {
+  for (const key of macroBuffer) {
+    rapid(key);
+  }
+  macroBuffer = []; // reset the macro key buffer
+}
+
+const macroBuffer = [];
+let macroing = false;
+const recordMacroKey = (key) => {
+  macroBuffer.push(key);
 }
 
 const updateRenderChar = (char) => {
@@ -1763,6 +1793,7 @@ const deleteFind = (key) => {
   for (let i = start; i < matrix[coords.row].length; i++) {
     if (matrix[coords.row][i] === key) {
       deleteInRange(start, i + 1);
+      return;
     }
   }
 }

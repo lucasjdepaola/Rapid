@@ -9,7 +9,8 @@ const languageMap = { // map containing the tokens
   "sia": Sia32Tree,
   "css": CSSTree,
   "md": MDTree,
-  "sql": SQLTree
+  "sql": SQLTree,
+  "json": JSONTree
 };
 let syntaxHighlight = []; // syntax highlighting
 let accumList = []; // list for accumulated words (should maybe have a larger scope)
