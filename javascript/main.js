@@ -5,8 +5,10 @@
 // TODO fix horizontal relative line numbers to display when syntax highlighting is turned on
 // TODO fix undo tree, so it can properly undo (with relatively efficient time complexity)
 // TODO music queueing similar to how a discord bot would
-// TODO emacs visual spacing· <- use that character
+// TODO multi cursor
+// TODO fix enter and backspace bugs
 const leaderKey = " ";
+const log = console.log;
 console.log = notif;
 console.warn = notifWarning;
 console.error = notifErr; // set errors to notifications on screen
@@ -267,16 +269,20 @@ const rapid = (key, isEmulating) => {
       if (key.key === "j") {
         if (key.ctrlKey) {
           key.preventDefault();
-          const temp = matrix[coords.row];
-          if (coords.row < matrix.length && coords.row > 0) {
-            matrix[coords.row] = matrix[coords.row + 1];
-            matrix[coords.row + 1] = temp;
-            incrementRow();
+          if (capitalV) {
+
+          } else {
+            const temp = matrix[coords.row];
+            if (coords.row < matrix.length - 1) {
+              matrix[coords.row] = matrix[coords.row + 1];
+              matrix[coords.row + 1] = temp;
+              incrementRow();
+            }
           }
-          else if (coords.row < matrix.length - 1) {
-            incrementRow();
-            updateLineNumber();
-          }
+        }
+        else if (coords.row < matrix.length - 1) {
+          incrementRow();
+          updateLineNumber();
         }
       }
       else if (/[1-9]/.test(key.key)) {
@@ -290,13 +296,17 @@ const rapid = (key, isEmulating) => {
         }
       }
       else if (key.key === "k") {
-        key.preventDefault();
         if (key.ctrlKey) {
-          const temp = matrix[coords.row];
-          if (coords.row < matrix.length && coords.row > 0) {
-            matrix[coords.row] = matrix[coords.row - 1];
-            matrix[coords.row - 1] = temp;
-            decrementRow();
+          key.preventDefault();
+          if (capitalV) {
+            // swap out highlighted rows TODO
+          } else {
+            const temp = matrix[coords.row];
+            if (coords.row < matrix.length && coords.row > 0) {
+              matrix[coords.row] = matrix[coords.row - 1];
+              matrix[coords.row - 1] = temp;
+              decrementRow();
+            }
           }
         } else {
           if (coords.row > 0) {
@@ -1048,7 +1058,13 @@ const del = (num) => {
 };
 const delBackspace = () => {
   if (coords.col === 0) {
-    if (coords.row !== 0) coords.row--;
+    if (coords.row !== 0) {
+      const arr = matrix.splice(coords.row, 1)[0];
+      log(arr);
+      decrementRow();
+      matrix[coords.row].splice(matrix[coords.row].length - 1, 1, ...arr);
+      coords.col = matrix[coords.row].length - 1;
+    }
   } else {
     const char = matrix[coords.row].splice(--coords.col, 1);
     if (startmap[char] === peek()) {
