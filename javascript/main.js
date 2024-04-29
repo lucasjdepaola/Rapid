@@ -183,8 +183,7 @@ const rapid = (key, isEmulating) => {
     if (key.key === "Enter") {
       /* increment row, push new matrix before it */
       if (currentState === states.insert) {
-        appendRow();
-        autoTabFunc();
+        enterFunction();
       } else if (currentState === states.search) {
         nKey = true;
         if (searchCoords.length < 1) {
@@ -783,6 +782,22 @@ const rapid = (key, isEmulating) => {
   }
   console.timeEnd("test");
 };
+
+const enterFunction = () => {
+  if (coords.col !== matrix[coords.row].length - 1) {
+    const arr = matrix[coords.row].splice(coords.col, matrix[coords.row].length - 1 - coords.col);
+    log(arr);
+    appendRow();
+    matrix[coords.row].unshift(...arr);
+    // append row auto increments the current row
+    autoTabFunc();
+    coords.col = 0;
+    while (matrix[coords.row][coords.col] === " ") coords.col++; // increment coords.col from 0
+    return;
+  }
+  appendRow();
+  autoTabFunc();
+}
 
 /* assume we look at the row above, and determine the tab width */
 const autoTabFunc = () => {
@@ -1435,6 +1450,14 @@ const scrollDown = (lines) => {
 };
 
 const ctrlBack = () => {
+  if (coords.col === 0) {
+    const arr = matrix.splice(coords.row, 1)[0];
+    log(arr);
+    decrementRow();
+    matrix[coords.row].splice(matrix[coords.row].length - 1, 1, ...arr);
+    coords.col = matrix[coords.row].length - 1;
+    return;
+  }
   let count = 0;
   for (let i = coords.col; i >= 0; i--) {
     if (isStopDelete(matrix[coords.row][i]) && i < coords.col - 1) {
