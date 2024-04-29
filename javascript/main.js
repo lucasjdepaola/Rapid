@@ -784,7 +784,7 @@ const rapid = (key, isEmulating) => {
 };
 
 const enterFunction = () => {
-  if (coords.col !== matrix[coords.row].length - 1) {
+  if (coords.col !== matrix[coords.row].length - 1 && (matrix[coords.row][coords.col] !== "{" && matrix[coords.row][coords.col] !== "}")) {
     const arr = matrix[coords.row].splice(coords.col, matrix[coords.row].length - 1 - coords.col);
     log(arr);
     appendRow();
