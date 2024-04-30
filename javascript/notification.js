@@ -12,6 +12,7 @@ const notif = (string) => { sendNotification(string, "white"); }
 const notifSuccess = (string) => { sendNotification(string, canvas.success); }
 const notifWarning = (string) => { sendNotification("⚠ " + string, canvas.warning); }
 const notifErr = (string) => { sendNotification("ⓧ " + string, canvas.error); }
+const notifTwitch = (string) => { sendNotification("Twitch Message: " + string, canvas.twitchPurple) };
 
 const sendNotification = (message, color) => {
   notifDiv.appendChild(styleMessage(message, color));

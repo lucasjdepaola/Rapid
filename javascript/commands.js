@@ -97,9 +97,6 @@ const interpretCommand = (str, emulating) => {
   else if (splitcmd[0] === "warn") {
     notifWarning(cmdstr.replace("warn ", ""));
   }
-  else if (splitcmd[0] === "twitch") {
-    injectTMI(splitcmd[1]);
-  }
   else if (splitcmd[0] === "theme") {
     if (splitcmd[1] in themeMap) {
       updateTheme(themeMap[splitcmd[1]]);

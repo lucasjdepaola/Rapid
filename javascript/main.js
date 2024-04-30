@@ -13,6 +13,7 @@ console.log = notif;
 console.warn = notifWarning;
 console.error = notifErr; // set errors to notifications on screen
 console.success = notifSuccess;
+console.purple = notifTwitch;
 const text = document.getElementById("text");
 const bg = document.getElementById("bg");
 const command = document.getElementById("command");
@@ -88,7 +89,8 @@ const canvas = {
   smartColor: "#ffa657",
   success: "#3fb950",
   warning: "#f7c600",
-  error: "#f85149"
+  error: "#f85149",
+  twitchPurple: "#d2a8ff"
 };
 const media = { // collection of potential background images
   none: "none",
