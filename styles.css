@@ -178,3 +178,8 @@ body {
   font-family:"nerdfont";
   src: url("./fonts/nerdfont.ttf");
 }
+
+@font-face {
+  font-family:"zed";
+  src: url("./fonts/zed.ttf");
+}

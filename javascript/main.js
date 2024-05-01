@@ -82,6 +82,7 @@ const canvas = {
   highlightyellow: "rgba(252, 221, 57, 1)",
   highlightorange: "rgba(240, 136, 62, 1)",
   vimgrey: "#30363d",
+  // vimgrey: "#282c33",
   visualpurple: "#5a24b1",
   insertblue: "#0b9dff",
   orangeprogress: "#ffa657",
@@ -387,9 +388,11 @@ const rapid = (key, isEmulating) => {
           Explore(dirHandle); // ctrl E is going to explore
         } else movee();
       } else if (key.key === "v") {
-        visualcoords.from.row = coords.row;
-        visualcoords.from.col = coords.col;
-        currentlyHighlighting = !currentlyHighlighting;
+        if (!key.ctrlKey) {
+          visualcoords.from.row = coords.row;
+          visualcoords.from.col = coords.col;
+          currentlyHighlighting = !currentlyHighlighting;
+        }
       } else if (key.key === "V") {
         visualcoords.from.row = coords.row;
         visualcoords.from.col = 0;
@@ -782,6 +785,7 @@ const rapid = (key, isEmulating) => {
     }
     undoIndex = matrixCache.length - 1; // set to end of the queue
   }
+  document.getElementById("mobile").innerText = ""; // reset the mobile inner text that's being typed on
   console.timeEnd("test");
 };
 
@@ -1593,8 +1597,17 @@ const peek = () => {
   return matrix[coords.row][coords.col];
 };
 
-const pasteFromOS = async () => {
-  let buffer = await navigator.clipboard.readText();
+document.addEventListener("paste", (event) => {
+  event.preventDefault();
+  const data = event.clipboardData.getData("text/plain");
+  pasteFromOS(data); // handle paste event
+});
+
+const pasteFromOS = (buffer) => {
+  // let buffer = await navigator.clipboard.readText();
+  // document.getElementById("mobile").focus();
+  // let buffer = document.getElementById("mobile").innerText;
+  // console.log(buffer);
   buffer = buffer.split(/\r?\n/).join("\n");
   for (const char of buffer) {
     if (char === "\n") {
