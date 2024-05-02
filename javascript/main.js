@@ -231,6 +231,8 @@ const rapid = (key, isEmulating) => {
     else if (key.key === "Escape") {
       setNormal();
       scopestate = false;
+      currentlyHighlighting = false;
+      capitalV = false;
       clearAwait();
     } else if (key.key === "Backspace") {
       if (key.ctrlKey) {
@@ -494,7 +496,7 @@ const rapid = (key, isEmulating) => {
           emulateKeys("jkggVG"); // go into normal mode and highlight all the text
         }
         else if (key.key === "v") {
-          pasteFromOS();
+          // pasteFromOS();
         } else if (key.key === "y") {
           if (currentlyHighlighting) {
             copyInHighlightedRange();
@@ -777,15 +779,6 @@ const rapid = (key, isEmulating) => {
   if (isDisplayingWPM && isEmulating === undefined && currentState === states.insert) {
     keysPressed++;
   }
-  if (currentState === states.normal && key.key !== "u") {
-    matrixCache.push(matrix);
-    if (matrixCache.length > 6 && matrixCache.length > 0) {
-      // dequeue last spot (6 cache len)
-      matrixCache.shift(); // take out first spot
-    }
-    undoIndex = matrixCache.length - 1; // set to end of the queue
-  }
-  document.getElementById("mobile").innerText = ""; // reset the mobile inner text that's being typed on
   console.timeEnd("test");
 };
 
@@ -930,7 +923,6 @@ const renderText = () => {
         if (coords.row === i && coords.col === j) {
           /* CURSOR CHAR */
           // render it here
-
           let span = "<span";
           if (currentState === states.insert) {
             span += " id='livecursor' style='border-left: 1px solid white;'";
@@ -973,7 +965,8 @@ const renderText = () => {
               // accumList
               const arr = fzfArr(cmp, accumList).slice(0, CMPLEN).sort((a, b) => a.length - b.length);
               if (arr !== undefined && arr.length > 0)
-                htmlstr += "<span style='position:relative;'><span style='position:absolute;height:100px;width:100px;background-color:black;color:white;'>" + arr.join("\n") + "</span></span>";
+                //cmp()
+                htmlstr += renderCmp(arr);
             }
           }
         }
@@ -990,11 +983,7 @@ const renderText = () => {
           j--;
           htmlstr += "</span>";
         }
-        else if (
-          currentlyHighlighting &&
-          inRange(i, visualcoords.from.row, visualcoords.to.row) &&
-          inRange(j, visualcoords.from.col, visualcoords.to.col)
-        ) {
+        else if (isInRegularVisualRange(i, j)) {
           htmlstr += "<span style='background-color:" + HIGHLIGHTCOLOR + ";'>" +
             renderChar + "</span>";
         }
@@ -1057,6 +1046,26 @@ const renderText = () => {
   // render with id here
   centerCursor();
 };
+
+const isInRegularVisualRange = (row, col) => {
+  if (!currentlyHighlighting) return false; // return early if not highlighting
+  const upperBound = visualcoords.from.row > visualcoords.to.row ? visualcoords.from : visualcoords.to;
+  const lowerBound = visualcoords.from.row <= visualcoords.to.row ? visualcoords.from : visualcoords.to;
+  if (upperBound.row === lowerBound.row) return row === upperBound.row && inRange(col, upperBound.col, lowerBound.col); // if one line return regular highlight col range
+
+  /* highlight a lot of lines that doesn't account for top and bottom row technicalities */
+  if (inRange(row, upperBound.row, upperBound.to) && i !== upperBound.row && i !== lowerBound.row) return true;
+
+  if (row === upperBound.row && upperBound.col <= col) return true; // upper visual bound wraps right
+
+  if (row === lowerBound.row && lowerBound.col >= col) return true; // lower visual bound wraps to the left
+
+  return false;
+}
+
+const renderCmp = (arr) => {
+  return "<span style='position:relative;'><span style='position:absolute;width:100px;border-radius:5px;border:2px solid white;background-color:" + currentTheme.background + ";color:white;'>" + arr.join("\n") + "</span></span>";
+}
 
 const updateLastCursor = () => {
   let csr = document.getElementById("livecursor");
@@ -1600,10 +1609,12 @@ const peek = () => {
 document.addEventListener("paste", (event) => {
   event.preventDefault();
   const data = event.clipboardData.getData("text/plain");
-  pasteFromOS(data); // handle paste event
+  pasteFromOS(data + ""); // handle paste event
 });
 
 const pasteFromOS = (buffer) => {
+  log(typeof buffer);
+  log(buffer);
   // let buffer = await navigator.clipboard.readText();
   // document.getElementById("mobile").focus();
   // let buffer = document.getElementById("mobile").innerText;
