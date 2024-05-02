@@ -97,3 +97,8 @@ const stateExtension = () => {
 }
 stateExtension();
 
+validCommands["mapcmd"] = (args) => {
+  const cmdargs = args.split(" ");
+  // validCommands[args[0]] = args[1]; // map command, still trying to figure it out
+  validCommands[cmdargs[0]] = () => { interpretCommand(cmdargs[1]) };
+}

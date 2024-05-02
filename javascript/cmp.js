@@ -1,4 +1,5 @@
 let cmpIsOn = false; // change during testing
+validCommands["cmp"] = () => { cmpIsOn = !cmpIsOn }; // toggle cmp
 const CMPLEN = 5; // only show 5 completions
 const getCurrCmp = () => {
   let start = 0;
