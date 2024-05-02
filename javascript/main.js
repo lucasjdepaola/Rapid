@@ -291,8 +291,10 @@ const rapid = (key, isEmulating) => {
       }
       else if (/[1-9]/.test(key.key)) {
         /* numbers case */
-        buildAwaitStr += key.key;
-        setAwait();
+        if (!key.ctrlKey) {
+          buildAwaitStr += key.key;
+          setAwait();
+        }
       }
       else if (key.key === "J") {
         for (let i = 0; i < 10; i++) {

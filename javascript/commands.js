@@ -144,3 +144,11 @@ const autoCompleteCommand = () => {
   if (autoCmpIndex >= replaceArr.length) autoCmpIndex = 0;
   commandArr.splice(commandArr.length - lastStr.length, lastStr.length, ...replaceStr.split(""));
 }
+
+/* NOTE: you can create a command (preferably in the extensions directory) via the following syntax */
+validCommands["your_command_here"] = (strargs) => {
+  // perform a command here, modify the matrix, anything you want
+  console.log(strargs);
+  // call the command via <ESC>:your_command_here hello<CR>
+  // this will print "hello" on the notification queue
+}
