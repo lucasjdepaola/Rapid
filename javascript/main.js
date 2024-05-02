@@ -240,6 +240,8 @@ const rapid = (key, isEmulating) => {
           ctrlBack();
         else if (currentState === states.command)
           ctrlBackCommand();
+        else if (currentState === states.search)
+          ctrlBackSearch();
       } else if (currentState === states.command) {
         if (commandArr.length === 0) {
           setNormal();
@@ -649,7 +651,7 @@ const rapid = (key, isEmulating) => {
             ciw();
             clearAwait();
             currentState = states.insert;
-          } else if (/[()\[\]{}\"'<>]/.test(key.key)) {
+          } else if (/[\(\)\[\]{}\"'<>]/.test(key.key)) {
             const motion = buildAwaitStr[0] === "d"
               ? motions.delete
               : buildAwaitStr[0] === "c"
@@ -658,6 +660,7 @@ const rapid = (key, isEmulating) => {
                   ? motions.visual
                   : motions.yank;
             motionInChar(key.key, motion);
+            if (motion !== motions.c) setNormal();
             clearAwait();
           }
         }
@@ -1501,7 +1504,23 @@ const ctrlBackCommand = () => {
     }
   }
   commandArr = []; // reset array
-  currentState = states.normal; // if we cannot ctrl back any further
+  // currentState = states.normal; // if we cannot ctrl back any further
+  renderCommand();
+};
+
+const ctrlBackSearch = () => {
+  let count = 0;
+  for (let i = searchArr.length - 1; i >= 0; i--) {
+    if (isStopDelete(searchArr[i]) && i !== searchArr.length - 1) {//&& i < coords.col - 1
+      searchArr.splice(i + 1, count);
+      renderCommand();
+      return;
+    } else {
+      count++;
+    }
+  }
+  searchArr = []; // reset array
+  // currentState = states.normal; // if we cannot ctrl back any further
   renderCommand();
 };
 
