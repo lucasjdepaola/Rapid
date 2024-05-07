@@ -19,7 +19,9 @@ const defaultTheme = {
   "boolean": themeCanvas.booleanblue,
   "fontcolor": "white",
   "barcolor": "#3f4563",
-  "highlight": "rgba(255, 255, 255, .3)"
+  "highlight": "rgba(255, 255, 255, .3)",
+  // "icursor": cursors.block,
+  "visualradius": "0px"
 };
 
 const hackerTheme = {

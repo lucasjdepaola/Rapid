@@ -152,3 +152,11 @@ validCommands["your_command_here"] = (strargs) => {
   // call the command via <ESC>:your_command_here hello<CR>
   // this will print "hello" on the notification queue
 }
+
+validCommands["function"] = (javascriptcode) => {
+  try {
+    eval(javascriptcode);
+  } catch (e) {
+    console.error(e);
+  }
+}

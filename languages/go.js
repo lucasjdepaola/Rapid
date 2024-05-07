@@ -1,4 +1,5 @@
-const JSTree = {
+
+const GoTree = {
   "keywords": {
     "for": "native",
     "let": "native",
@@ -20,10 +21,9 @@ const JSTree = {
     "}": "function",
     "{}": "function",
     "false": "boolean",
-    ":": "function",
-    "=": "function",
+    ":=": "function"
   },
-  "extension": "js",
-  "icon": "",
-  "iconcolor": "yellow"
+  "extension": "go",
+  "icon": "",
+  "iconcolor": "#519aba"
 }

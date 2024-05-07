@@ -9,6 +9,7 @@
 // TODO fix enter and backspace bugs
 const leaderKey = " ";
 const log = console.log;
+const glowAnimationStyle = "-webkit-animation: glow 1s ease-in-out infinite alternate; -moz-animation: glow 1s ease-in-out infinite alternate; animation: glow 1s ease-in-out infinite alternate;";
 console.log = notif;
 console.warn = notifWarning;
 console.error = notifErr; // set errors to notifications on screen
@@ -30,22 +31,38 @@ let smartLine = false;
 let undoIndex = 0;
 const keys =
   "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()";
-const states = {
-  "insert": "INSERT",
-  "normal": "NORMAL",
-  "visual": "VISUAL",
-  "awaitKey": "AWAITKEY",
-  "search": "SEARCH",
-  "command": "COMMAND",
-  "scope": "SCOPE",
+const states = { // enum states
+  "insert": 0,
+  "normal": 1,
+  "visual": 2,
+  "awaitKey": 3,
+  "search": 4,
+  "command": 5,
+  "scope": 6
 };
 
-const cursors = {
-  "block": "BLOCK",
-  "underscore": "UNDERSCORE",
-  "half": "HALF",
-  "insert": "INSERT",
+// const states = {
+//   "insert": "INSERT",
+//   "normal": "NORMAL",
+//   "visual": "VISUAL",
+//   "awaitKey": "AWAITKEY",
+//   "search": "SEARCH",
+//   "command": "COMMAND",
+//   "scope": "SCOPE",
+// };
+
+const cursors = { // cursor enum
+  "block": 0,
+  "underscore": 1,
+  "half": 2,
+  "insert": 3,
 }
+// const cursors = { // TODO change comparison to enum style
+//   "block": "BLOCK",
+//   "underscore": "UNDERSCORE",
+//   "half": "HALF",
+//   "insert": "INSERT",
+// }
 let currentCursor = cursors.block;
 let currentlyHighlighting = false;
 let capitalV = false;
@@ -979,7 +996,7 @@ const renderText = () => {
           currentlyHighlighting && capitalV &&
           inRange(i, visualcoords.from.row, visualcoords.to.row)
         ) { // in visual range
-          htmlstr += "<span style='background-color:" + HIGHLIGHTCOLOR + ";'>"; // build inner text
+          htmlstr += "<span style='background-color:" + HIGHLIGHTCOLOR + ";border-radius:" + (currentTheme.visualradius || "0px") + ";'>"; // build inner text
           while (j < matrix[i].length && (coords.row !== i || coords.col !== j)) {
             if (renderChar === " " && emacsDot) renderChar = "·";
             htmlstr += renderChar;

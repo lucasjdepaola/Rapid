@@ -10,7 +10,8 @@ const languageMap = { // map containing the tokens
   "css": CSSTree,
   "md": MDTree,
   "sql": SQLTree,
-  "json": JSONTree
+  "json": JSONTree,
+  "go": GoTree
 };
 let syntaxHighlight = []; // syntax highlighting
 let accumList = []; // list for accumulated words (should maybe have a larger scope)
