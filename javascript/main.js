@@ -235,6 +235,10 @@ const rapid = (key, isEmulating) => {
     }
     else if (key.key === "Tab") {
       key.preventDefault();
+      if (holdKey === "Tab" && currentState === states.insert) {
+        holdFlag = true;
+        currentState = states.normal;
+      }
       if (currentState === states.insert) {
         for (let i = 0; i < TABWIDTH.length; i++) {
           appendText(" ");
@@ -568,6 +572,10 @@ const rapid = (key, isEmulating) => {
           coords.col -= 1; // go back in paren
           clearAwait();
         }
+        else if (key.key === holdKey && currentState !== states.normal) {
+          currentState = states.normal;
+          holdFlag = true;
+        }
         else {
           appendText(key.key);
         }
@@ -848,6 +856,20 @@ document.addEventListener("keydown", rapid);
 document.addEventListener("touchstart", () => {
   document.getElementById("mobile").focus();
 });
+let holdKey = "Tab" // space is the most intuitive
+let holdFlag = false; // to determine proper holding states
+const keyupFunc = (key) => {
+  if (key.key === holdKey && holdFlag) {
+    currentState = states.insert;
+    clearAwait(); // clear any pending states
+    currentlyHighlighting = false;
+    // appendText(key.key) // can remove if the button is instead something that you wouldn't like to type
+    renderText();
+    holdFlag = false;
+  }
+  // if (isSyntaxHighlighting) syntaxHighlight();
+}
+document.addEventListener("keyup", keyupFunc)
 
 const save = (name) => {
   filemap[name] = matrix;
